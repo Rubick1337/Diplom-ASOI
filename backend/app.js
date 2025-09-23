@@ -1,6 +1,8 @@
 require("dotenv").config()
 const express = require('express');
 const app = express()
+const sequelize = require('../backend/config/dbConfig');
+const models = require('../backend/models/index');
 const cors = require('cors');
 const router = require("./routes/indexRoute");
 const { connectRedis, checkRedisConnection, client } = require("./config/redisConfig");
@@ -19,8 +21,8 @@ const start = async () => {
 
         await checkRedisConnection();
 
-        // await sequelize.authenticate();
-        // await sequelize.sync();
+        await sequelize.authenticate();
+        await sequelize.sync();
 
         app.listen(PORT, () => {
             console.log("Server started on port " + PORT);
