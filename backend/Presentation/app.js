@@ -7,11 +7,13 @@ const cors = require('cors');
 const router = require("./routes/indexRoute");
 const errorHandler = require("./middleware/ErrorHandlingMiddleware");
 const { connectRedis, checkRedisConnection, client } = require("../Data/config/redisConfig");
+const passport = require('./Auth/passport');
+const cookieParser = require('cookie-parser');
 
 app.use(cors({ origin: process.env.CLIENT_URL, credentials: true }));
-
+app.use(cookieParser());
+app.use(passport.initialize());
 app.use(express.json());
-app.use(cors());
 app.use('/api', router);
 app.use(errorHandler);
 
@@ -19,9 +21,9 @@ const PORT = process.env.PORT || 8500;
 
 const start = async () => {
     try {
-        await connectRedis();
-
-        await checkRedisConnection();
+        // await connectRedis();
+        //
+        // await checkRedisConnection();
 
         await sequelize.authenticate();
         await sequelize.sync();

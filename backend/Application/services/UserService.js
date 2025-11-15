@@ -1,0 +1,271 @@
+// application/services/UserService.js
+
+const bcrypt = require("bcryptjs");
+
+const UserCreateDto = require("../dto/Users/UserCreateDto");
+const UserResponseDto = require("../dto/Users/UserResponseDto");
+const UserUpdateDto = require("../dto/Users/UserUpdateDto");
+
+const LoginDto = require("../dto/Auth/LoginDto");
+const RefreshTokenDto = require("../dto/Auth/RefreshTokenDto");
+
+const validateUserCreate = require("../validators/Users/validateUserCreate");
+const validateUserUpdate = require("../validators/Users/validateUserUpdate");
+const validateLogin = require("../validators/Auth/validateLogin");
+
+const UserEntity = require("../../domain/entities/User");
+const tokenService = require("./TokenService");
+
+class UserService {
+    constructor(userRepository) {
+        this.userRepository = userRepository;
+    }
+
+    // ========== Регистрация ==========
+    async register(rawData) {
+        const dto = new UserCreateDto(rawData);
+        validateUserCreate(dto);
+
+        // проверка email/username
+        if (await this.userRepository.findOne({ email: dto.email })) {
+            throw new Error("Пользователь с такой почтой уже существует");
+        }
+
+        if (await this.userRepository.findOne({ username: dto.username })) {
+            throw new Error("Username уже занят");
+        }
+
+        const hashPassword = dto.password
+            ? await bcrypt.hash(dto.password, 5)
+            : null;
+
+        const userEntity = new UserEntity({
+            username: dto.username,
+            password: hashPassword,
+            email: dto.email,
+            role: dto.role,
+            googleId: null,
+            githubId: null,
+            experience: 0
+        });
+
+        const createdUser = await this.userRepository.create(userEntity);
+
+        const tokens = tokenService.generateTokens({
+            id: createdUser.id,
+            email: createdUser.email,
+            role: createdUser.role
+        });
+
+        await this.userRepository.setRefreshToken(createdUser.id, tokens.refreshToken);
+
+        return {
+            user: new UserResponseDto(createdUser),
+            ...tokens
+        };
+    }
+
+    // ========== Логин ==========
+    async login(rawData) {
+        const dto = new LoginDto(rawData);
+        validateLogin(dto);
+
+        // email или username
+        let user = await this.userRepository.findOne({ email: dto.login });
+        if (!user) {
+            user = await this.userRepository.findOne({ username: dto.login });
+        }
+
+        if (!user) throw new Error("Неверный логин или пароль");
+
+        if (!user.password)
+            throw new Error("Пользователь зарегистрирован через OAuth2");
+
+        const isEqual = await bcrypt.compare(dto.password, user.password);
+        if (!isEqual) throw new Error("Неверный логин или пароль");
+
+        const tokens = tokenService.generateTokens({
+            id: user.id,
+            email: user.email,
+            role: user.role
+        });
+
+        await this.userRepository.setRefreshToken(user.id, tokens.refreshToken);
+
+        return {
+            user: new UserResponseDto(user),
+            ...tokens
+        };
+    }
+
+
+    async logout(refreshToken) {
+        if (!refreshToken) return true;
+
+        const user = await this.userRepository.findOne({ refreshToken });
+        if (!user) return true;
+
+        await this.userRepository.clearRefreshToken(user.id);
+        return true;
+    }
+
+
+    // ========== Refresh ==========
+    async refresh(rawData) {
+        const dto = new RefreshTokenDto(rawData);
+
+        if (!dto.refreshToken)
+            throw new Error("Refresh token отсутствует");
+
+        const payload = tokenService.validateRefreshToken(dto.refreshToken);
+        if (!payload) throw new Error("Refresh token неверный");
+
+        const user = await this.userRepository.findById(payload.sub || payload.id);
+
+        if (!user || user.refreshToken !== dto.refreshToken)
+            throw new Error("Refresh token устарел");
+
+        const newTokens = tokenService.generateTokens({
+            id: user.id,
+            email: user.email,
+            role: user.role
+        });
+
+        await this.userRepository.setRefreshToken(user.id, newTokens.refreshToken);
+
+        return {
+            user: new UserResponseDto(user),
+            ...newTokens
+        };
+    }
+
+    // ========================================================================
+    // ========== GET ALL USERS (пагинация + фильтры) ==========
+    // ========================================================================
+    async getAll(query) {
+        const filter = {};
+        const page = Number(query.page) || 1;
+        const pageSize = Number(query.pageSize || query.limit) || 10;
+
+        if (query.role !== undefined) filter.role = Number(query.role);
+        if (query.usernameLike) filter.usernameLike = query.usernameLike;
+        if (query.search) filter.search = query.search;
+
+        if (query.minExperience) filter.minExperience = Number(query.minExperience);
+        if (query.maxExperience) filter.maxExperience = Number(query.maxExperience);
+
+        const result = await this.userRepository.findMany(filter, {
+            page,
+            pageSize,
+            orderBy: "id",
+            orderDirection: "ASC"
+        });
+
+        return {
+            items: result.items.map(u => new UserResponseDto(u)),
+            total: result.total,
+            page: result.page,
+            pageSize: result.pageSize,
+            totalPages: result.totalPages
+        };
+    }
+
+    // ========================================================================
+    // ========== UPDATE USER ==========
+    // ========================================================================
+    async updateUser(id, rawData) {
+        const dto = new UserUpdateDto({
+            id,
+            username: rawData.username,
+            email: rawData.email,
+            role: rawData.role,
+            googleId: rawData.googleId,
+            githubId: rawData.githubId,
+            experience: rawData.experience
+        });
+
+        validateUserUpdate(dto);
+
+        const existing = await this.userRepository.findById(id);
+        if (!existing) throw new Error("Пользователь не найден");
+
+        // выборочные обновления
+        existing.username = dto.username ?? existing.username;
+        existing.email = dto.email ?? existing.email;
+        existing.role = dto.role ?? existing.role;
+        existing.googleId = dto.googleId ?? existing.googleId;
+        existing.githubId = dto.githubId ?? existing.githubId;
+
+        if (dto.experience !== undefined && dto.experience !== null) {
+            existing.experience = dto.experience;
+        }
+
+        const updated = await this.userRepository.update(existing);
+        return new UserResponseDto(updated);
+    }
+
+    // ========== OAuth Google ==========
+    async loginWithGoogle(profile) {
+        const googleId = profile.id;
+        const email = profile.emails?.[0]?.value || null;
+        const username = profile.displayName || email;
+
+        let user = await this.userRepository.findOne({ googleId });
+
+        if (!user && email) user = await this.userRepository.findOne({ email });
+
+        if (!user) {
+            const entity = new UserEntity({
+                username,
+                email,
+                googleId,
+                role: 0
+            });
+
+            user = await this.userRepository.create(entity);
+        }
+
+        const tokens = tokenService.generateTokens({ id: user.id, role: user.role });
+
+        await this.userRepository.setRefreshToken(user.id, tokens.refreshToken);
+
+        return {
+            user: new UserResponseDto(user),
+            ...tokens
+        };
+    }
+
+    // ========== OAuth GitHub ==========
+    async loginWithGithub(profile) {
+        const githubId = profile.id;
+        const email = profile.emails?.[0]?.value || null;
+        const username = profile.username || email;
+
+        let user = await this.userRepository.findOne({ githubId });
+
+        if (!user && email)
+            user = await this.userRepository.findOne({ email });
+
+        if (!user) {
+            const entity = new UserEntity({
+                username,
+                email,
+                githubId,
+                role: 0
+            });
+
+            user = await this.userRepository.create(entity);
+        }
+
+        const tokens = tokenService.generateTokens({ id: user.id, role: user.role });
+
+        await this.userRepository.setRefreshToken(user.id, tokens.refreshToken);
+
+        return {
+            user: new UserResponseDto(user),
+            ...tokens
+        };
+    }
+}
+
+module.exports = UserService;
