@@ -1,0 +1,39 @@
+.register-main {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.register-bg-video {
+    position: absolute;
+    inset: 0;
+
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+
+    z-index: -2;
+    filter: brightness(0.35);
+}
+
+.register-overlay {
+    position: absolute;
+    inset: 0;
+
+    background:
+            rgba(0,0,0,0.55);
+
+    z-index: -1;
+}
+
+.register-content {
+    z-index: 5;
+    width: 100%;
+    max-width: 420px;
+    padding: 20px;
+}

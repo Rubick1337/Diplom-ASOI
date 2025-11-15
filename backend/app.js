@@ -5,6 +5,7 @@ const sequelize = require('../backend/config/dbConfig');
 const models = require('../backend/models/index');
 const cors = require('cors');
 const router = require("./routes/indexRoute");
+const errorHandler = require("./middleware/ErrorHandlingMiddleware");
 const { connectRedis, checkRedisConnection, client } = require("./config/redisConfig");
 
 app.use(cors({ origin: process.env.CLIENT_URL, credentials: true }));
@@ -12,6 +13,7 @@ app.use(cors({ origin: process.env.CLIENT_URL, credentials: true }));
 app.use(express.json());
 app.use(cors());
 app.use('/api', router);
+app.use(errorHandler);
 
 const PORT = process.env.PORT || 8500;
 

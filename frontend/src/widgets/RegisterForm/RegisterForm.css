@@ -1,0 +1,92 @@
+.register-form {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 32px;
+    border-radius: 18px;
+}
+
+.register-title {
+    margin: 0 0 20px;
+    text-align: center;
+    font-size: 1.7rem;
+    font-weight: 800;
+    background: linear-gradient(90deg, #FF6B35, #F04949);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+.reg-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 18px;
+}
+
+.reg-field label {
+    font-size: 0.9rem;
+    color: #ccc;
+}
+
+.reg-field input {
+    padding: 12px 14px;
+    border-radius: 10px;
+    width: 100%;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: #fff;
+    outline: none;
+}
+
+.reg-field input:focus {
+    border-color: #FF6B35;
+}
+
+.reg-pass-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.reg-pass-wrap input {
+    padding-right: 94px;
+}
+
+.reveal-btn {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    padding: 6px 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: .02em;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.06);
+    color: #fff;
+    transition: .2s;
+}
+
+.reveal-btn:hover {
+    background: rgba(255, 255, 255, 0.12);
+}
+
+.register-btn {
+    width: 100%;
+    padding: 12px 20px;
+    margin-top: 6px;
+    border-radius: 10px;
+    background: linear-gradient(90deg, #FF6B35, #F04949);
+    border: none;
+    color: #fff;
+    font-weight: 700;
+    cursor: pointer;
+    transition: .25s;
+}
+
+.register-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 22px rgba(240, 73, 73, 0.45);
+}
