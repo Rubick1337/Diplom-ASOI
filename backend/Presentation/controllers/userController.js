@@ -1,5 +1,5 @@
 const ApiError = require('../ErrorExtend/ApiError');
-const userService = require('../services/userService');
+const userService = require('../../Application/services/userService');
 const {validationResult } = require('express-validator');
 const { Op } = require('sequelize');
 

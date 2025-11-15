@@ -1,12 +1,12 @@
 require("dotenv").config()
 const express = require('express');
 const app = express()
-const sequelize = require('../backend/config/dbConfig');
-const models = require('../backend/models/index');
+const sequelize = require('../Data/config/dbConfig');
+const models = require('../Data/models');
 const cors = require('cors');
 const router = require("./routes/indexRoute");
 const errorHandler = require("./middleware/ErrorHandlingMiddleware");
-const { connectRedis, checkRedisConnection, client } = require("./config/redisConfig");
+const { connectRedis, checkRedisConnection, client } = require("../Data/config/redisConfig");
 
 app.use(cors({ origin: process.env.CLIENT_URL, credentials: true }));
 
