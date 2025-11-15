@@ -204,66 +204,140 @@ class UserService {
         return new UserResponseDto(updated);
     }
 
-    // ========== OAuth Google ==========
     async loginWithGoogle(profile) {
         const googleId = profile.id;
-        const email = profile.emails?.[0]?.value || null;
-        const username = profile.displayName || email;
+        const email = profile.emails?.[0]?.value ?? null;
+        const baseUsername =
+            profile.displayName || email || `google_${googleId}`;
 
+        if (!email) {
+            // на всякий случай, если Google вдруг не вернул email
+            throw new Error(
+                'Google не вернул email. Разреши доступ к email в аккаунте или используй обычную регистрацию.'
+            );
+        }
+
+        // 1. Пытаемся найти по googleId
         let user = await this.userRepository.findOne({ googleId });
 
-        if (!user && email) user = await this.userRepository.findOne({ email });
+        // 2. Если нет — ищем по email (чтобы привязать Google к уже существующему аккаунту)
+        if (!user) {
+            user = await this.userRepository.findOne({ email });
+        }
 
         if (!user) {
+            // 3. Новый пользователь. Проверим, занят ли username.
+            let finalUsername = baseUsername;
+
+            const existingByUsername = await this.userRepository.findOne({
+                username: baseUsername,
+            });
+
+            if (existingByUsername) {
+                // username уже занят — придумываем уникальный
+                const suffix = googleId.toString().slice(-4); // например, последние 4 цифры id
+                finalUsername = `${baseUsername}_${suffix}`;
+            }
+
             const entity = new UserEntity({
-                username,
+                id: null,
+                username: finalUsername,
+                password: null, // для OAuth пароль не нужен
                 email,
+                role: 0,
+                refreshToken: null,
                 googleId,
-                role: 0
+                githubId: null,
+                experience: 0,
             });
 
             user = await this.userRepository.create(entity);
+        } else if (!user.googleId) {
+            // 4. Пользователь найден по email, но googleId ещё не привязан — привязываем
+            user.googleId = googleId;
+            user = await this.userRepository.update(user);
         }
 
-        const tokens = tokenService.generateTokens({ id: user.id, role: user.role });
+        // 5. Генерируем токены
+        const tokens = tokenService.generateTokens({
+            id: user.id,
+            email: user.email,
+            role: user.role,
+        });
 
         await this.userRepository.setRefreshToken(user.id, tokens.refreshToken);
 
         return {
             user: new UserResponseDto(user),
-            ...tokens
+            ...tokens,
         };
     }
 
-    // ========== OAuth GitHub ==========
     async loginWithGithub(profile) {
         const githubId = profile.id;
-        const email = profile.emails?.[0]?.value || null;
-        const username = profile.username || email;
+        const email = profile.emails?.[0]?.value ?? null;
+        const baseUsername = profile.username || email || `github_${githubId}`;
 
+        if (!email) {
+            // GitHub может не вернуть email, если он скрыт в настройках
+            throw new Error(
+                'GitHub не вернул email. Сделай email публичным в GitHub или используй обычную регистрацию.'
+            );
+        }
+
+        // 1. Пытаемся найти по githubId
         let user = await this.userRepository.findOne({ githubId });
 
-        if (!user && email)
+        // 2. Если нет — ищем по email (привяжем GitHub к существующему аккаунту)
+        if (!user) {
             user = await this.userRepository.findOne({ email });
+        }
 
         if (!user) {
+            // 3. Новый пользователь. Проверяем, занят ли username
+            let finalUsername = baseUsername;
+
+            const existingByUsername = await this.userRepository.findOne({
+                username: baseUsername,
+            });
+
+            if (existingByUsername) {
+                // username уже занят — придумываем уникальный
+                const suffix = githubId.toString().slice(-4);
+                finalUsername = `${baseUsername}_${suffix}`;
+            }
+
             const entity = new UserEntity({
-                username,
+                id: null,
+                username: finalUsername,
+                password: null,        // для OAuth пароль не нужен (пока)
                 email,
+                role: 0,
+                refreshToken: null,
+                googleId: null,
                 githubId,
-                role: 0
+                experience: 0,
             });
 
             user = await this.userRepository.create(entity);
+        } else if (!user.githubId) {
+            // 4. Пользователь найден по email, но ещё без githubId — привязываем
+            user.githubId = githubId;
+            user = await this.userRepository.update(user);
         }
 
-        const tokens = tokenService.generateTokens({ id: user.id, role: user.role });
+        // 5. Генерируем токены
+        const tokens = tokenService.generateTokens({
+            id: user.id,
+            email: user.email,
+            role: user.role,
+        });
 
         await this.userRepository.setRefreshToken(user.id, tokens.refreshToken);
 
         return {
             user: new UserResponseDto(user),
-            ...tokens
+            ...tokens,
         };
     }
 }

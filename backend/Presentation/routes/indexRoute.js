@@ -4,6 +4,6 @@ const userRouter = require("./userRouter");
 const authRouter = require('./authRouter');
 
 router.use("/users", userRouter);
-router.use('/api/auth', authRouter);
+router.use('/auth', authRouter);
 
 module.exports = router

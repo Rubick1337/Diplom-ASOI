@@ -90,3 +90,60 @@
     transform: translateY(-2px);
     box-shadow: 0 0 22px rgba(240, 73, 73, 0.45);
 }
+.register-divider {
+    margin: 22px 0;
+    text-align: center;
+    color: rgba(255,255,255,0.5);
+    font-size: .9rem;
+    position: relative;
+}
+
+.register-divider::before,
+.register-divider::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    width: 42%;
+    height: 1px;
+    background: rgba(255,255,255,0.15);
+}
+
+.register-divider::before {
+    left: 0;
+}
+
+.register-divider::after {
+    right: 0;
+}
+
+.register-social {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* кнопка */
+.social-btn {
+    width: 100%;
+    border-radius: 12px;
+    padding: 10px 14px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.12);
+
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    color: #fff;
+    font-size: .95rem;
+    font-weight: 600;
+
+    cursor: pointer;
+    transition: background .2s ease, transform .15s ease, border-color .2s ease;
+}
+
+.social-btn:hover {
+    background: rgba(255,255,255,0.12);
+    transform: translateY(-2px);
+    border-color: rgba(255,255,255,0.2);
+}

@@ -23,6 +23,7 @@ passport.use(
                 // мы передадим только user, а токены положим в cookie позже в контроллере
                 return done(null, result);
             } catch (err) {
+                console.error('loginWithGoogle error:', err);
                 return done(err, null);
             }
         }
