@@ -8,7 +8,6 @@ export interface AuthUser {
     username: string;
     email: string;
     role: number;
-    // сюда можно добавить googleId/githubId/experience, если нужно
 }
 
 export interface AuthResponse {
@@ -37,19 +36,36 @@ export default class AuthService {
             };
 
             return authResponse;
-        } catch (error: any) {
-            if (error.response) {
-                console.error('Server Error:', error.response.data);
-                throw new Error(
-                    error.response.data.message || 'Неизвестная ошибка при авторизации'
-                );
-            } else if (error.request) {
-                console.error('Request Error:', error.request);
-                throw new Error('Не удалось установить соединение с сервером');
-            } else {
-                console.error('Error:', error.message);
-                throw new Error('Ошибка при настройке запроса');
+        } catch (error: unknown) {
+            // аккуратно сужаем unknown
+            if (typeof error === 'object' && error !== null) {
+                const err = error as {
+                    response?: { data?: { message?: string } };
+                    request?: unknown;
+                    message?: string;
+                };
+
+                if (err.response) {
+                    console.error('Server Error:', err.response.data);
+                    throw new Error(
+                        err.response.data?.message ||
+                        'Неизвестная ошибка при авторизации'
+                    );
+                }
+
+                if (err.request) {
+                    console.error('Request Error:', err.request);
+                    throw new Error('Не удалось установить соединение с сервером');
+                }
+
+                if (typeof err.message === 'string') {
+                    console.error('Error:', err.message);
+                    throw new Error('Ошибка при настройке запроса');
+                }
             }
+
+            console.error('Unknown auth error:', error);
+            throw new Error('Неизвестная ошибка при авторизации');
         }
     }
 

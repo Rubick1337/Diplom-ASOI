@@ -1,9 +1,9 @@
 // data/repositories/UserRepositorySequelize.js
 
 const { Op } = require('sequelize');
-const IUserRepository = require('../../domain/repository/IUserRepository');
-const UserEntity = require('../../domain/entities/User');
-const UserModel = require('../models/userModel');
+const IUserRepository = require('../../Domain/repository/IUserRepository');
+const UserEntity = require('../../Domain/entities/User');
+const UserModel = require('../models/UserModel');
 
 class UserRepositorySequelize extends IUserRepository {
 

@@ -17,6 +17,10 @@ app.use(express.json());
 app.use('/api', router);
 app.use(errorHandler);
 
+app.get('/health', (req, res) => {
+    res.status(200).json({ status: 'ok' });
+});
+
 const PORT = process.env.PORT || 8500;
 
 const start = async () => {

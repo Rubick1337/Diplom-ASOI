@@ -1,5 +1,3 @@
-// Data/models/challengeModel.js
-
 const sequelize = require('../config/dbConfig');
 const { DataTypes } = require('sequelize');
 
@@ -40,7 +38,7 @@ const ChallengeModel = sequelize.define(
         },
         createdByUserId: {
             type: DataTypes.INTEGER,
-            allowNull: false,
+            allowNull: true,
         },
     },
     {

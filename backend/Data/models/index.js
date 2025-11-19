@@ -1,8 +1,8 @@
 const sequelize = require('../config/dbConfig');
 
 const User = require('./UserModel');
-const Challenge = require('./challengeModel');
-const ChallengeTestCase = require('./challengeTestCaseModel');
+const Challenge = require('./ChallengeModel');
+const ChallengeTestCase = require('./ChallengeTestCaseModel');
 
 User.hasMany(Challenge, {
     foreignKey: 'createdByUserId',

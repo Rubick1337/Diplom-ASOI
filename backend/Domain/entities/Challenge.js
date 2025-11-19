@@ -7,7 +7,7 @@ class Challenge {
                     funcName,
                     properties = null,
                     timeLimitMs = 2000,
-                    createdByUserId,
+                    createdByUserId = null,
                     testCases = [],
                 }) {
         this.id = id;

@@ -13,7 +13,7 @@ const validateUserCreate = require("../validators/Users/validateUserCreate");
 const validateUserUpdate = require("../validators/Users/validateUserUpdate");
 const validateLogin = require("../validators/Auth/validateLogin");
 
-const UserEntity = require("../../domain/entities/User");
+const UserEntity = require("../../Domain/entities/User");
 const tokenService = require("./TokenService");
 
 class UserService {

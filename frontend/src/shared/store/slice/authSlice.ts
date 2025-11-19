@@ -1,7 +1,7 @@
 'use client';
 
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import AuthService, { AuthUser } from '@/shared/services/AuthService';
+import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
+import AuthService, { AuthUser, AuthResponse } from '@/shared/services/AuthService';
 
 interface AuthState {
     user: AuthUser | null;
@@ -19,30 +19,34 @@ const initialState: AuthState = {
 
 // === Thunks ===
 
-export const login = createAsyncThunk(
+export const login = createAsyncThunk<
+    AuthResponse,
+    { login: string; password: string },
+    { rejectValue: string }
+>(
     'auth/login',
-    async (
-        payload: { login: string; password: string },
-        { rejectWithValue }
-    ) => {
+    async (payload, { rejectWithValue }) => {
         try {
             const res = await AuthService.login(payload.login, payload.password);
             if (typeof window !== 'undefined') {
                 localStorage.setItem('token', res.accessToken);
             }
             return res;
-        } catch (e: any) {
-            return rejectWithValue(e.message || 'Ошибка при входе');
+        } catch (error: unknown) {
+            const message =
+                error instanceof Error ? error.message : 'Ошибка при входе';
+            return rejectWithValue(message);
         }
     }
 );
 
-export const registration = createAsyncThunk(
+export const registration = createAsyncThunk<
+    AuthResponse,
+    { username: string; email: string; password: string; role: number },
+    { rejectValue: string }
+>(
     'auth/registration',
-    async (
-        payload: { username: string; email: string; password: string; role: number },
-        { rejectWithValue }
-    ) => {
+    async (payload, { rejectWithValue }) => {
         try {
             const res = await AuthService.registration(
                 payload.username,
@@ -54,37 +58,47 @@ export const registration = createAsyncThunk(
                 localStorage.setItem('token', res.accessToken);
             }
             return res;
-        } catch (e: any) {
-            return rejectWithValue(e.message || 'Ошибка при регистрации');
+        } catch (error: unknown) {
+            const message =
+                error instanceof Error ? error.message : 'Ошибка при регистрации';
+            return rejectWithValue(message);
         }
     }
 );
 
-export const logout = createAsyncThunk(
+export const logout = createAsyncThunk<void, void, { rejectValue: string }>(
     'auth/logout',
-    async (_, { rejectWithValue }) => {
+    async (_: void, { rejectWithValue }) => {
         try {
             await AuthService.logout();
             if (typeof window !== 'undefined') {
                 localStorage.removeItem('token');
             }
-        } catch (e: any) {
-            return rejectWithValue(e.message || 'Ошибка при выходе');
+        } catch (error: unknown) {
+            const message =
+                error instanceof Error ? error.message : 'Ошибка при выходе';
+            return rejectWithValue(message);
         }
     }
 );
 
-export const checkAuth = createAsyncThunk(
+export const checkAuth = createAsyncThunk<
+    AuthResponse,
+    void,
+    { rejectValue: string }
+>(
     'auth/checkAuth',
-    async (_, { rejectWithValue }) => {
+    async (_: void, { rejectWithValue }) => {
         try {
             const res = await AuthService.refresh();
             if (typeof window !== 'undefined') {
                 localStorage.setItem('token', res.accessToken);
             }
             return res;
-        } catch (e: any) {
-            return rejectWithValue(e.message || 'Не авторизован');
+        } catch (error: unknown) {
+            const message =
+                error instanceof Error ? error.message : 'Не авторизован';
+            return rejectWithValue(message);
         }
     }
 );
@@ -95,7 +109,7 @@ const authSlice = createSlice({
     name: 'auth',
     initialState,
     reducers: {
-        setUserFromStorage(state, action) {
+        setUserFromStorage(state, action: PayloadAction<AuthUser | null>) {
             state.user = action.payload;
             state.isAuth = !!action.payload;
         },
@@ -115,7 +129,7 @@ const authSlice = createSlice({
             })
             .addCase(login.rejected, (state, action) => {
                 state.isLoading = false;
-                state.error = (action.payload as string) ?? 'Ошибка входа';
+                state.error = action.payload ?? 'Ошибка входа';
                 state.isAuth = false;
             })
 
@@ -131,7 +145,7 @@ const authSlice = createSlice({
             })
             .addCase(registration.rejected, (state, action) => {
                 state.isLoading = false;
-                state.error = (action.payload as string) ?? 'Ошибка регистрации';
+                state.error = action.payload ?? 'Ошибка регистрации';
             })
 
             // LOGOUT

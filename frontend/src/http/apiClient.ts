@@ -1,4 +1,4 @@
-'use client'; // важно: этот файл используется только в клиентских компонентах
+'use client';
 
 import axios from 'axios';
 import { API_ENDPOINTS } from './apiEndpoints';
@@ -11,7 +11,6 @@ const $api = axios.create({
     withCredentials: true,
 });
 
-// ДОБАВЛЯЕМ Authorization из localStorage (только на клиенте)
 $api.interceptors.request.use((config) => {
     if (typeof window !== 'undefined') {
         const token = localStorage.getItem('token');
@@ -22,7 +21,6 @@ $api.interceptors.request.use((config) => {
     return config;
 });
 
-// ОБРАБОТКА ОТВЕТОВ: refresh при 401
 $api.interceptors.response.use(
     (response) => response,
     async (error) => {
@@ -37,9 +35,7 @@ $api.interceptors.response.use(
             try {
                 const refreshResponse = await axios.get(
                     API_ENDPOINTS.USER.REFRESH,
-                    {
-                        withCredentials: true,
-                    }
+                    { withCredentials: true }
                 );
 
                 const newAccessToken = refreshResponse.data.accessToken;
@@ -48,8 +44,8 @@ $api.interceptors.response.use(
                 }
 
                 return $api.request(originalRequest);
-            } catch (e) {
-                console.log('Не авторизован (refresh не прошёл)');
+            } catch (refreshError) {
+                console.error('Не авторизован (refresh не прошёл)', refreshError);
             }
         }
 
