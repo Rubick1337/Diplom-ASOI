@@ -4,10 +4,12 @@ import BackgroundVideo from '@/shared/components/BackgroundVideo/BackgroundVideo
 import RegisterForm from '@/widgets/RegisterForm/RegisterForm';
 import './RegisterPage.css';
 import AuthHeader from "@/widgets/AuthHeader/AuthHeader";
+import ReduxProvider from "@/app/ReduxProvider";
 
 export default function RegisterPage() {
     return (
         <>
+            <ReduxProvider>
             <AuthHeader/>
         <main className="register-main">
             <BackgroundVideo src="/video/background_wave.mp4" className="register-bg-video" />
@@ -16,6 +18,7 @@ export default function RegisterPage() {
                 <RegisterForm />
             </div>
         </main>
+            </ReduxProvider>
         </>
     );
 }
