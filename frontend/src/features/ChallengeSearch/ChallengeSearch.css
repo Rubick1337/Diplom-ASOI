@@ -1,0 +1,31 @@
+.challenge-search {
+    width: 100%;
+    max-width: 460px;
+}
+
+.challenge-search-input {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.14);
+    background: rgba(14,14,14,0.9);
+    color: #f5f3f3;
+    font-size: 0.98rem;
+    outline: none;
+
+    box-shadow: 0 0 0 rgba(240,73,73,0);
+    transition:
+            border-color .15s ease,
+            box-shadow .15s ease,
+            background .15s ease;
+}
+
+.challenge-search-input::placeholder {
+    color: rgba(245,243,243,0.55);
+}
+
+.challenge-search-input:focus {
+    border-color: rgba(240,73,73,0.6);
+    box-shadow: 0 0 18px rgba(240,73,73,0.35);
+    background: rgba(14,14,14,0.95);
+}
