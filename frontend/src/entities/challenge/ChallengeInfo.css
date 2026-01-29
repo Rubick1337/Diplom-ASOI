@@ -1,0 +1,50 @@
+.challenge-info-container {
+    background-color: #161616;
+    color: #eeeeee;
+    padding: 24px;
+    height: 93%;
+    overflow-y: auto;
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    width: 100%;
+}
+
+.info-text {
+    font-size: 16px;
+    line-height: 1.6;
+    margin-bottom: 16px;
+    color: #dddddd;
+}
+
+.examples-header {
+    font-size: 16px;
+    margin-bottom: 12px;
+    color: #ffffff;
+}
+
+.examples-block {
+    background-color: #0b121b;
+    color: #40c4ff;
+    padding: 20px;
+    border-radius: 8px;
+    margin: 0;
+    border: 1px solid #1a2e42;
+    box-shadow: 0 4px 12px rgba(0, 170, 255, 0.05);
+    font-family: 'Fira Code', 'JetBrains Mono', monospace;
+    font-size: 13px;
+    line-height: 1.6;
+    overflow-x: auto;
+    white-space: pre-wrap;
+}
+
+.examples-block::-webkit-scrollbar {
+    height: 4px;
+}
+
+.examples-block::-webkit-scrollbar-thumb {
+    background-color: #1e88e5;
+    border-radius: 2px;
+}
+
+.examples-block::-webkit-scrollbar-track {
+    background: transparent;
+}
