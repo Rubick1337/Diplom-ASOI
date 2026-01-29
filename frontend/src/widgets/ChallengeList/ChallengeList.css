@@ -1,0 +1,19 @@
+.challenge-list-column {
+    margin-top: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.challenge-list-loading,
+.challenge-list-empty {
+    margin-top: 1.5rem;
+    padding: 16px 14px;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: linear-gradient(180deg, rgba(255, 255, 255, .03), rgba(14, 14, 14, 1));
+    color: #f5f3f3;
+    opacity: .9;
+    text-align: center;
+    font-size: 0.98rem;
+}
