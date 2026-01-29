@@ -19,8 +19,7 @@ passport.use(
         async (accessToken, refreshToken, profile, done) => {
             try {
                 const result = await userService.loginWithGoogle(profile);
-                // result: { user, accessToken, refreshToken }
-                // мы передадим только user, а токены положим в cookie позже в контроллере
+
                 return done(null, result);
             } catch (err) {
                 console.error('loginWithGoogle error:', err);

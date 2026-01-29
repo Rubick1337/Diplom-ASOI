@@ -1,5 +1,3 @@
-// data/repositories/UserRepositorySequelize.js
-
 const { Op } = require('sequelize');
 const IUserRepository = require('../../Domain/repository/IUserRepository');
 const UserEntity = require('../../Domain/entities/User');
@@ -7,7 +5,6 @@ const UserModel = require('../models/UserModel');
 
 class UserRepositorySequelize extends IUserRepository {
 
-    // --- ORM → Domain ---
     mapToEntity(row) {
         if (!row) return null;
         const data = row.toJSON ? row.toJSON() : row;
@@ -25,7 +22,6 @@ class UserRepositorySequelize extends IUserRepository {
         });
     }
 
-    // --- построение where по универсальному фильтру ---
     buildWhere(filter = {}) {
         const where = {};
 
@@ -38,12 +34,10 @@ class UserRepositorySequelize extends IUserRepository {
         }
 
         if (filter.username) {
-            // точное совпадение
             where.username = filter.username;
         }
 
         if (filter.usernameLike) {
-            // поиск по части никнейма
             where.username = { [Op.like]: `%${filter.usernameLike}%` };
         }
 
@@ -73,7 +67,6 @@ class UserRepositorySequelize extends IUserRepository {
             }
         }
 
-        // общий текстовый поиск (по username/email)
         if (filter.search) {
             where[Op.or] = [
                 { username: { [Op.like]: `%${filter.search}%` } },
@@ -84,27 +77,17 @@ class UserRepositorySequelize extends IUserRepository {
         return where;
     }
 
-    // --------- универсальный поиск одного пользователя ---------
-
     async findOne(filter = {}) {
         const where = this.buildWhere(filter);
         const row = await UserModel.findOne({ where });
         return this.mapToEntity(row);
     }
 
-    // --------- поиск по id для удобства ---------
-
     async findById(id) {
         const row = await UserModel.findByPk(id);
         return this.mapToEntity(row);
     }
 
-    // --------- поиск многих с пагинацией ---------
-
-    /**
-     * filter: см. buildWhere
-     * options: { page = 1, pageSize = 10, orderBy = 'id', orderDirection = 'ASC' }
-     */
     async findMany(filter = {}, options = {}) {
         const {
             page = 1,
@@ -135,8 +118,6 @@ class UserRepositorySequelize extends IUserRepository {
         };
     }
 
-    // --------- создание ---------
-
     async create(userEntity) {
         const row = await UserModel.create({
             username: userEntity.username,
@@ -151,8 +132,6 @@ class UserRepositorySequelize extends IUserRepository {
 
         return this.mapToEntity(row);
     }
-
-    // --------- обновление ---------
 
     async update(userEntity) {
         await UserModel.update(
@@ -174,8 +153,6 @@ class UserRepositorySequelize extends IUserRepository {
         const updated = await UserModel.findByPk(userEntity.id);
         return this.mapToEntity(updated);
     }
-
-    // --------- работа с refresh токеном ---------
 
     async setRefreshToken(userId, refreshToken) {
         await UserModel.update(

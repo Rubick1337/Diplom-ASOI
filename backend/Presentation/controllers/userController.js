@@ -1,19 +1,14 @@
-// controllers/UserController.js (путь у тебя свой, я оставляю как есть)
-
 const UserRepositorySequelize = require('../../Data/repository/UserRepositorySequelize');
 const UserService = require('../../Application/services/UserService');
 
 const ApiError = require('../ErrorExtend/ApiError');
 
-// создаём один экземпляр репозитория и сервиса
 const userRepository = new UserRepositorySequelize();
 const userService = new UserService(userRepository);
 
 class UserController {
-    // ====== РЕГИСТРАЦИЯ ======
     async registration(req, res, next) {
         try {
-            // ожидаем в body: { username, email, password, role }
             const rawData = {
                 username: req.body.username,
                 password: req.body.password,
@@ -23,19 +18,18 @@ class UserController {
 
             const result = await userService.register(rawData);
 
-            // кладём токены в куки
             res.cookie('accessToken', result.accessToken, {
                 httpOnly: true,
-                secure: false,       // в проде поставь true (https)
+                secure: false,
                 sameSite: 'strict',
-                maxAge: 30 * 60 * 1000 // 30 минут
+                maxAge: 30 * 60 * 1000
             });
 
             res.cookie('refreshToken', result.refreshToken, {
                 httpOnly: true,
                 secure: false,
                 sameSite: 'strict',
-                maxAge: 10 * 24 * 60 * 60 * 1000 // 10 дней
+                maxAge: 10 * 24 * 60 * 60 * 1000
             });
 
             return res.status(201).json({
@@ -62,10 +56,8 @@ class UserController {
         }
     }
 
-    // ====== ЛОГИН ======
     async login(req, res, next) {
         try {
-            // поддержка и login, и email, и username
             const loginValue = req.body.login || req.body.email || req.body.username;
 
             const rawData = {
@@ -113,7 +105,6 @@ class UserController {
         }
     }
 
-    // ====== REFRESH ======
     async refresh(req, res, next) {
         try {
             const refreshToken = req.cookies?.refreshToken;
@@ -154,13 +145,10 @@ class UserController {
         }
     }
 
-    // ====== LOGOUT ======
     async logout(req, res, next) {
         try {
             const refreshToken = req.cookies?.refreshToken;
 
-            // сейчас UserService.logout ожидает userId.
-            // Если захочешь, можно переделать logout в сервисе под refreshToken.
             await userService.logout(refreshToken);
 
             res.clearCookie('accessToken');
@@ -178,10 +166,8 @@ class UserController {
         }
     }
 
-    // ====== GET ALL USERS ======
     async getAll(req, res, next) {
         try {
-            // query: page, pageSize/limit, role, search, usernameLike, minExperience, maxExperience
             const result = await userService.getAll(req.query);
 
             return res.json(result);
@@ -196,12 +182,11 @@ class UserController {
         }
     }
 
-    // ====== UPDATE USER ======
     async updateUser(req, res, next) {
         try {
             const id = Number(req.params.id);
             if (!id) {
-                return res.status(400).json({ message: "Некорректный id пользователя" });
+                return res.status(400).json({ message: "Некорректный [id] пользователя" });
             }
 
             const updatedUser = await userService.updateUser(id, req.body);

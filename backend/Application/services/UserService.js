@@ -1,5 +1,3 @@
-// application/services/UserService.js
-
 const bcrypt = require("bcryptjs");
 
 const UserCreateDto = require("../dto/Users/UserCreateDto");
@@ -21,12 +19,10 @@ class UserService {
         this.userRepository = userRepository;
     }
 
-    // ========== Регистрация ==========
     async register(rawData) {
         const dto = new UserCreateDto(rawData);
         validateUserCreate(dto);
 
-        // проверка email/username
         if (await this.userRepository.findOne({ email: dto.email })) {
             throw new Error("Пользователь с такой почтой уже существует");
         }
@@ -65,12 +61,10 @@ class UserService {
         };
     }
 
-    // ========== Логин ==========
     async login(rawData) {
         const dto = new LoginDto(rawData);
         validateLogin(dto);
 
-        // email или username
         let user = await this.userRepository.findOne({ email: dto.login });
         if (!user) {
             user = await this.userRepository.findOne({ username: dto.login });
@@ -98,7 +92,6 @@ class UserService {
         };
     }
 
-
     async logout(refreshToken) {
         if (!refreshToken) return true;
 
@@ -109,8 +102,6 @@ class UserService {
         return true;
     }
 
-
-    // ========== Refresh ==========
     async refresh(rawData) {
         const dto = new RefreshTokenDto(rawData);
 
@@ -139,9 +130,6 @@ class UserService {
         };
     }
 
-    // ========================================================================
-    // ========== GET ALL USERS (пагинация + фильтры) ==========
-    // ========================================================================
     async getAll(query) {
         const filter = {};
         const page = Number(query.page) || 1;
@@ -170,9 +158,6 @@ class UserService {
         };
     }
 
-    // ========================================================================
-    // ========== UPDATE USER ==========
-    // ========================================================================
     async updateUser(id, rawData) {
         const dto = new UserUpdateDto({
             id,
@@ -189,7 +174,6 @@ class UserService {
         const existing = await this.userRepository.findById(id);
         if (!existing) throw new Error("Пользователь не найден");
 
-        // выборочные обновления
         existing.username = dto.username ?? existing.username;
         existing.email = dto.email ?? existing.email;
         existing.role = dto.role ?? existing.role;
@@ -207,42 +191,31 @@ class UserService {
     async loginWithGoogle(profile) {
         const googleId = profile.id;
         const email = profile.emails?.[0]?.value ?? null;
-        const baseUsername =
-            profile.displayName || email || `google_${googleId}`;
+        const baseUsername = profile.displayName || email || `google_${googleId}`;
 
         if (!email) {
-            // на всякий случай, если Google вдруг не вернул email
-            throw new Error(
-                'Google не вернул email. Разреши доступ к email в аккаунте или используй обычную регистрацию.'
-            );
+            throw new Error('Google не вернул email. Разреши доступ к email в аккаунте или используй обычную регистрацию.');
         }
 
-        // 1. Пытаемся найти по googleId
         let user = await this.userRepository.findOne({ googleId });
 
-        // 2. Если нет — ищем по email (чтобы привязать Google к уже существующему аккаунту)
         if (!user) {
             user = await this.userRepository.findOne({ email });
         }
 
         if (!user) {
-            // 3. Новый пользователь. Проверим, занят ли username.
             let finalUsername = baseUsername;
-
-            const existingByUsername = await this.userRepository.findOne({
-                username: baseUsername,
-            });
+            const existingByUsername = await this.userRepository.findOne({ username: baseUsername });
 
             if (existingByUsername) {
-                // username уже занят — придумываем уникальный
-                const suffix = googleId.toString().slice(-4); // например, последние 4 цифры id
+                const suffix = googleId.toString().slice(-4);
                 finalUsername = `${baseUsername}_${suffix}`;
             }
 
             const entity = new UserEntity({
                 id: null,
                 username: finalUsername,
-                password: null, // для OAuth пароль не нужен
+                password: null,
                 email,
                 role: 0,
                 refreshToken: null,
@@ -253,12 +226,10 @@ class UserService {
 
             user = await this.userRepository.create(entity);
         } else if (!user.googleId) {
-            // 4. Пользователь найден по email, но googleId ещё не привязан — привязываем
             user.googleId = googleId;
             user = await this.userRepository.update(user);
         }
 
-        // 5. Генерируем токены
         const tokens = tokenService.generateTokens({
             id: user.id,
             email: user.email,
@@ -279,30 +250,20 @@ class UserService {
         const baseUsername = profile.username || email || `github_${githubId}`;
 
         if (!email) {
-            // GitHub может не вернуть email, если он скрыт в настройках
-            throw new Error(
-                'GitHub не вернул email. Сделай email публичным в GitHub или используй обычную регистрацию.'
-            );
+            throw new Error('GitHub не вернул email. Сделай email публичным в GitHub или используй обычную регистрацию.');
         }
 
-        // 1. Пытаемся найти по githubId
         let user = await this.userRepository.findOne({ githubId });
 
-        // 2. Если нет — ищем по email (привяжем GitHub к существующему аккаунту)
         if (!user) {
             user = await this.userRepository.findOne({ email });
         }
 
         if (!user) {
-            // 3. Новый пользователь. Проверяем, занят ли username
             let finalUsername = baseUsername;
-
-            const existingByUsername = await this.userRepository.findOne({
-                username: baseUsername,
-            });
+            const existingByUsername = await this.userRepository.findOne({ username: baseUsername });
 
             if (existingByUsername) {
-                // username уже занят — придумываем уникальный
                 const suffix = githubId.toString().slice(-4);
                 finalUsername = `${baseUsername}_${suffix}`;
             }
@@ -310,7 +271,7 @@ class UserService {
             const entity = new UserEntity({
                 id: null,
                 username: finalUsername,
-                password: null,        // для OAuth пароль не нужен (пока)
+                password: null,
                 email,
                 role: 0,
                 refreshToken: null,
@@ -321,12 +282,10 @@ class UserService {
 
             user = await this.userRepository.create(entity);
         } else if (!user.githubId) {
-            // 4. Пользователь найден по email, но ещё без githubId — привязываем
             user.githubId = githubId;
             user = await this.userRepository.update(user);
         }
 
-        // 5. Генерируем токены
         const tokens = tokenService.generateTokens({
             id: user.id,
             email: user.email,
