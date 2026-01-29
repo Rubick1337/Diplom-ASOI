@@ -14,4 +14,13 @@ export const API_ENDPOINTS = {
         GET_USERS: `${API_BASE_URL}/users/getAll`,
         UPDATE_USER: (id: number | string) => `${API_BASE_URL}/users/${id}`,
     },
+    CHALLENGE: {
+        CREATE: `${API_BASE_URL}/challenges/create`,
+        GET_ALL: `${API_BASE_URL}/challenges/getAll`,
+        GET_ONE: (id: number | string) => `${API_BASE_URL}/challenges/${id}`,
+        UPDATE: (id: number | string) => `${API_BASE_URL}/challenges/${id}`,
+        DELETE: (id: number | string) => `${API_BASE_URL}/challenges/${id}`,
+        EXECUTE: (id: number | string) => `${API_BASE_URL}/challenges/${id}/execute`,
+        FORMAT: `${API_BASE_URL}/challenges/format`,
+    },
 };
