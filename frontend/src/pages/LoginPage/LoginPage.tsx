@@ -1,7 +1,7 @@
 'use client';
 
 import './LoginPage.css';
-import LoginForm from '@/widgets/LoginForm/LoginForm';
+import LoginForm from '@/features/LoginForm/LoginForm';
 import BackgroundVideo from '@/shared/components/BackgroundVideo/BackgroundVideo';
 import AuthHeader from '@/widgets/AuthHeader/AuthHeader';
 import ReduxProvider from '@/app/ReduxProvider';

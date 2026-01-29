@@ -1,7 +1,7 @@
 'use client';
 
 import BackgroundVideo from '@/shared/components/BackgroundVideo/BackgroundVideo';
-import RegisterForm from '@/widgets/RegisterForm/RegisterForm';
+import RegisterForm from '@/features/RegisterForm/RegisterForm';
 import './RegisterPage.css';
 import AuthHeader from "@/widgets/AuthHeader/AuthHeader";
 import ReduxProvider from "@/app/ReduxProvider";
