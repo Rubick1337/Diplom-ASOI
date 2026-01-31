@@ -4,7 +4,14 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useParams } from 'next/navigation';
 import './ChallengeWorkspace.css';
 import { useAppDispatch, useAppSelector } from '@/shared/store/hooks';
-import { fetchChallengeById, runChallengeTests, resetTestResults } from '@/shared/store/slice/challengeSlice';
+import {
+    fetchChallengeById,
+    runChallengeTests,
+    resetTestResults,
+    fetchChallengeHistory,
+    fetchCommunitySolutions,
+    fetchReviews
+} from '@/shared/store/slice/challengeSlice';
 import { RootState } from '@/shared/store/store';
 import confetti from 'canvas-confetti';
 
@@ -15,11 +22,13 @@ import LanguageSelect, { LanguageValue } from '@/features/LanguageSelect/Languag
 import CodeIdeWidget from '@/widgets/CodeIdeWidget/CodeIdeWidget';
 import TestsPanel from '@/widgets/TestsPanel/TestsPanel';
 import { AiAssistantChat } from '@/widgets/AiAssistantChat/AiAssistantChat';
+import { CommunitySolutions } from '@/widgets/CommunitySolutions/CommunitySolutions';
+import { ChallengeReviews } from '@/features/ChallengeReviews/ChallengeReviews';
+import LockedOverlay from '@/shared/components/LockedOverlay/LockedOverlay';
 
 const generateStarterCode = (language: string, funcName: string, params: any[]): string => {
     const paramNames = params.map(p => p.name);
     const tsParams = params.map(p => `${p.name}: ${p.type || 'any'}`).join(', ');
-    const cppParams = params.map(p => `${p.type === 'string' ? 'std::string' : (p.type || 'int')} ${p.name}`).join(', ');
 
     switch (language) {
         case 'javascript':
@@ -28,8 +37,6 @@ const generateStarterCode = (language: string, funcName: string, params: any[]):
             return `export function ${funcName}(${tsParams}): any {\n    // ваш код здесь\n    return;\n}`;
         case 'python':
             return `def ${funcName}(${paramNames.join(', ')}):\n    # ваш код здесь\n    pass`;
-        case 'cpp':
-            return `#include <iostream>\n#include <vector>\n#include <string>\n\nclass Solution {\npublic:\n    void ${funcName}(${cppParams}) {\n        // ваш код здесь\n    }\n};`;
         default:
             return `function ${funcName}(${paramNames.join(', ')}) {\n    return;\n}`;
     }
@@ -40,13 +47,15 @@ export default function ChallengeWorkspace() {
     const challengeId = params ? Number(params.id) : 0;
     const dispatch = useAppDispatch();
 
+    const { user } = useAppSelector((state: RootState) => state.auth);
     const {
         currentChallenge,
         isCurrentLoading,
         currentError,
         testResults,
         isExecuting,
-        systemError
+        systemError,
+        reviews
     } = useAppSelector((state: RootState) => state.challenges);
 
     const [language, setLanguage] = useState<LanguageValue>('javascript');
@@ -55,27 +64,31 @@ export default function ChallengeWorkspace() {
     const [attempts, setAttempts] = useState(0);
     const [testCases, setTestCases] = useState<TestCase[]>([]);
 
+    // По умолчанию открыты решения (но они будут под LockedOverlay)
+    const [activeTab, setActiveTab] = useState<'solutions' | 'reviews'>('solutions');
+
+    const isSolved = useMemo(() => {
+        return testResults.length > 0 && testResults.every(r => r.status === 'success');
+    }, [testResults]);
+
     const starterCode = useMemo(() => {
         if (!currentChallenge) return '';
         return generateStarterCode(language, currentChallenge.funcName, currentChallenge.parameters);
     }, [currentChallenge, language]);
 
     useEffect(() => {
-        if (challengeId) dispatch(fetchChallengeById(challengeId));
+        if (challengeId) {
+            dispatch(fetchChallengeById(challengeId));
+            dispatch(fetchReviews(challengeId));
+        }
     }, [dispatch, challengeId]);
 
     const fireVictoryConfetti = () => {
         const count = 200;
         const defaults = { origin: { y: 0.7 }, zIndex: 10000 };
-
         function fire(particleRatio: number, opts: any) {
-            confetti({
-                ...defaults,
-                ...opts,
-                particleCount: Math.floor(count * particleRatio)
-            });
+            confetti({ ...defaults, ...opts, particleCount: Math.floor(count * particleRatio) });
         }
-
         fire(0.25, { spread: 26, startVelocity: 55 });
         fire(0.2, { spread: 60 });
         fire(0.35, { spread: 100, decay: 0.91, scalar: 0.8 });
@@ -111,57 +124,37 @@ export default function ChallengeWorkspace() {
                 status: 'fail',
                 actual: systemError.message || 'Execution Error'
             })));
-
-            newLogs.push({
-                id: `sys-${Date.now()}`,
-                type: 'error',
-                message: `[ОШИБКА]: ${systemError.message}\n${systemError.details || ''}`,
-                timestamp
-            });
+            newLogs.push({ id: `sys-${Date.now()}`, type: 'error', message: `[ОШИБКА]: ${systemError.message}`, timestamp });
         }
         else if (testResults.length > 0) {
             setTestCases(prev => prev.map(t => {
                 const res = testResults.find(r => String(r.id) === t.id);
                 if (!res) return t;
-                const displayActual = (res.actual !== undefined && res.actual !== null)
-                    ? String(res.actual)
-                    : '—';
-
                 return {
                     ...t,
                     status: res.status as any,
-                    actual: displayActual,
+                    actual: (res.actual !== undefined && res.actual !== null) ? String(res.actual) : '—',
                     duration: res.duration
                 };
             }));
 
-            const allPassed = testResults.every(r => r.status === 'success');
-
-            if (allPassed) {
+            if (isSolved) {
                 fireVictoryConfetti();
-            }
-
-            const runtimeErr = testResults.find(r => r.status === 'error');
-            if (runtimeErr) {
-                newLogs.push({ id: `runtime-${Date.now()}`, type: 'error', message: runtimeErr.actual || 'Runtime Error', timestamp });
-            } else {
-                newLogs.push({
-                    id: `res-${Date.now()}`,
-                    type: allPassed ? 'success' : 'warning',
-                    message: allPassed ? `> Все тесты пройдены успешно!` : `> Тесты не пройдены.`,
-                    timestamp
-                });
+                if (user?.id) {
+                    dispatch(fetchChallengeHistory({ challengeId, userId: user.id }));
+                    dispatch(fetchCommunitySolutions({ challengeId, userId: user.id }));
+                }
             }
         }
         if (newLogs.length > 0) setLogs(newLogs);
-    }, [testResults, systemError, isExecuting]);
+    }, [testResults, systemError, isExecuting, user?.id, challengeId, dispatch, isSolved]);
 
     const handleRunTests = () => {
         if (!currentChallenge || isExecuting) return;
         dispatch(resetTestResults());
         setLogs([]);
         setTestCases(prev => prev.map(t => ({ ...t, status: 'running', actual: undefined })));
-        dispatch(runChallengeTests({id: challengeId, code, language}));
+        dispatch(runChallengeTests({ id: challengeId, code, language, userId: user?.id }));
         setAttempts(a => a + 1);
     };
 
@@ -219,7 +212,41 @@ export default function ChallengeWorkspace() {
                     </div>
                 </div>
             </div>
-            <AiAssistantChat isSolved={testResults.length > 0 && testResults.every(r => r.status === 'success')} attemptsCount={attempts}/>
+
+            <AiAssistantChat isSolved={isSolved} attemptsCount={attempts} />
+
+            <div className="workspace-bottom">
+                <div className="workspace-tabs-nav">
+                    <button
+                        className={`tab-btn ${activeTab === 'reviews' ? 'active' : ''}`}
+                        onClick={() => setActiveTab('reviews')}
+                    >
+                        Отзывы {reviews?.length > 0 && <span className="count-badge">{reviews.length}</span>}
+                    </button>
+                    <button
+                        className={`tab-btn ${activeTab === 'solutions' ? 'active' : ''}`}
+                        onClick={() => setActiveTab('solutions')}
+                    >
+                        Решения сообщества
+                        {!isSolved && <span className="lock-inline"></span>}
+                    </button>
+                </div>
+
+                <div className="tab-content">
+                    {activeTab === 'solutions' ? (
+                        isSolved ? (
+                            <CommunitySolutions />
+                        ) : (
+                            <LockedOverlay
+                                title="Решения заблокированы"
+                                description="Решите задачу успешно, чтобы получить доступ к решениям других участников."
+                            />
+                        )
+                    ) : (
+                        <ChallengeReviews />
+                    )}
+                </div>
+            </div>
         </section>
     );
 }

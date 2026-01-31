@@ -22,5 +22,9 @@ export const API_ENDPOINTS = {
         DELETE: (id: number | string) => `${API_BASE_URL}/challenges/${id}`,
         EXECUTE: (id: number | string) => `${API_BASE_URL}/challenges/${id}/execute`,
         FORMAT: `${API_BASE_URL}/challenges/format`,
+        GET_HISTORY: (id: number | string) => `${API_BASE_URL}/challenges/${id}/history`,
+        GET_SOLUTIONS: (id: number | string) => `${API_BASE_URL}/challenges/${id}/solutions`,
+        GET_REVIEWS: (id: number | string) => `${API_BASE_URL}/challenges/${id}/reviews`,
+        CREATE_REVIEW: (id: number | string) => `${API_BASE_URL}/challenges/${id}/reviews`,
     },
 };

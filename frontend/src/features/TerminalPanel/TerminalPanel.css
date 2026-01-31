@@ -103,7 +103,7 @@
 .log-entry.warning .log-message, .stat-row.warning { color: #f1fa8c; }
 .log-entry.success .log-message { color: #50fa7b; }
 
-.empty-state {
+.empty-state-terminal {
     color: #6272a4;
     font-style: italic;
     margin-top: 10px;

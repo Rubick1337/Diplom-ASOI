@@ -109,7 +109,7 @@ export default function TerminalPanel({
                 {activeTab === 'terminal' ? (
                     <div className="logs-list">
                         {logs.length === 0 ? (
-                            <div className="empty-state">Ready to code.</div>
+                            <div className="empty-state-terminal">Ready to code.</div>
                         ) : (
                             logs.map((log) => (
                                 <div key={log.id} className={`log-entry ${log.type}`}>
