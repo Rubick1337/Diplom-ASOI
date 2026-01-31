@@ -12,7 +12,9 @@ const {
     ChallengeTestCase: ChallengeTestCaseModel,
     ChallengeParameter: ChallengeParameterModel,
     TestCaseArgument: TestCaseArgumentModel,
-    User: UserModel
+    User: UserModel,
+    HistoryChallenges: HistoryChallengesModel,
+    ReviewChallenges: ReviewChallengesModel
 } = require('../models');
 
 class ChallengeRepositorySequelize extends IChallengeRepository {
@@ -236,6 +238,122 @@ class ChallengeRepositorySequelize extends IChallengeRepository {
     async delete(id) {
         const deletedCount = await ChallengeModel.destroy({ where: { id } });
         return deletedCount > 0;
+    }
+
+    async createSubmission(submissionData) {
+        const { userId, challengeId, code, status, executionTimeMs } = submissionData;
+
+        const duplicate = await HistoryChallengesModel.findOne({
+            where: { userId, challengeId, code }
+        });
+
+        if (duplicate) {
+            await duplicate.update({
+                executionTimeMs,
+                status,
+                createdAt: new Date()
+            });
+            return duplicate.toJSON();
+        }
+
+        const row = await HistoryChallengesModel.create(submissionData);
+        return row.toJSON();
+    }
+
+    async findUserHistory(userId, challengeId) {
+        const rows = await HistoryChallengesModel.findAll({
+            where: { userId, challengeId },
+            order: [['createdAt', 'DESC']]
+        });
+        return rows.map(r => r.toJSON());
+    }
+
+    async hasUserSolvedChallenge(userId, challengeId) {
+        const solved = await HistoryChallengesModel.findOne({
+            where: {
+                userId,
+                challengeId,
+                status: 'success'
+            }
+        });
+        return !!solved;
+    }
+
+    async findCommunitySolutions(challengeId, options = { page, pageSize}) {
+        const { page, pageSize } = options;
+        const offset = (page - 1) * pageSize;
+        const userGroups = await HistoryChallengesModel.findAll({
+            where: { challengeId, status: 'success' },
+            attributes: [
+                [sequelize.fn('MAX', sequelize.col('id')), 'latestId']
+            ],
+            group: ['userId'],
+            raw: true
+        });
+
+        const allIds = userGroups.map(g => g.latestId);
+        const totalItems = allIds.length;
+
+        if (totalItems === 0) return { items: [], total: 0, totalPages: 0 };
+
+        const rows = await HistoryChallengesModel.findAll({
+            where: { id: allIds },
+            include: [{ model: UserModel, as: 'user', attributes: ['username'] }],
+            order: [['createdAt', 'DESC']],
+            limit: pageSize,
+            offset: offset
+        });
+
+        return {
+            items: rows.map(r => r.toJSON()),
+            total: totalItems,
+            page: Number(page),
+            pageSize: Number(pageSize),
+            totalPages: Math.ceil(totalItems / pageSize)
+        };
+    }
+
+    async createReview(reviewData) {
+        const row = await ReviewChallengesModel.create(reviewData);
+        return row.toJSON();
+    }
+
+    async findReviewsByChallengeId(challengeId) {
+        const rows = await ReviewChallengesModel.findAll({
+            where: { challengeId },
+            include: [{ model: UserModel, as: 'user', attributes: ['id', 'username'] }],
+            order: [['createdAt', 'DESC']]
+        });
+        return rows.map(r => r.toJSON());
+    }
+
+    async getAverageRating(challengeId) {
+        const result = await ReviewChallengesModel.findOne({
+            where: { challengeId },
+            attributes: [
+                [sequelize.fn('AVG', sequelize.col('rating')), 'avgRating']
+            ],
+            raw: true
+        });
+        return parseFloat(result.avgRating) || 0;
+    }
+    async findReviewByIdWithUser(userId, challengeId) {
+        const row = await ReviewChallengesModel.findOne({
+            where: { userId, challengeId },
+            include: [{ model: UserModel, as: 'user', attributes: ['id', 'username'] }]
+        });
+        return row ? row.toJSON() : null;
+    }
+    async upsertReview(reviewData) {
+        const { userId, challengeId, content, rating } = reviewData;
+        await ReviewChallengesModel.upsert({
+            userId,
+            challengeId,
+            content,
+            rating,
+            createdAt: new Date()
+        });
+        return await this.findReviewByIdWithUser(userId, challengeId);
     }
 }
 

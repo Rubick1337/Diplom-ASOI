@@ -12,17 +12,17 @@ class ChallengeService {
     }
 
     async formatCode(code, language) {
+        console.log(code);
+        console.log(language);
         if (language === 'python') {
             try {
-                console.log(`[Formatter] Запуск Ruff NodeJS для Python`);
                 const workspace = new ruff.Workspace({});
                 return workspace.format(code, {});
             } catch (e) {
-                console.warn("[Ruff Info] Код содержит синтаксические ошибки, форматирование пропущено:", e.message);
                 return code;
             }
         }
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve) => {
             let command = '';
             let args = [];
 
@@ -36,34 +36,20 @@ class ChallengeService {
                 }
             }
 
-            console.log(`[Formatter] Запуск: ${command} для языка ${language}`);
             const proc = spawn(command, args, { shell: true });
 
             let output = '';
-            let errorOutput = '';
-
             proc.stdout.on('data', (data) => { output += data.toString(); });
-            proc.stderr.on('data', (data) => { errorOutput += data.toString(); });
-
-            proc.on('error', (err) => {
-                console.error(`[Formatter Error] Не удалось запустить процесс:`, err);
-                resolve(code);
-            });
-
+            proc.on('error', () => resolve(code));
             proc.on('close', (exitCode) => {
-                if (exitCode === 0) {
-                    resolve(output || code);
-                } else {
-                    console.error(`[Formatter Exit] Код: ${exitCode}, Ошибка: ${errorOutput}`);
-                    resolve(code);
-                }
+                if (exitCode === 0) resolve(output || code);
+                else resolve(code);
             });
 
             try {
                 proc.stdin.write(code);
                 proc.stdin.end();
             } catch (e) {
-                console.error("[Formatter Stdin Error]", e);
                 resolve(code);
             }
 
@@ -81,7 +67,7 @@ class ChallengeService {
         } = rawData;
 
         if (!name || !description || !funcName) {
-            throw new Error('Поля name, description и funcName обязательны для заполнения');
+            throw new Error('Required fields missing');
         }
 
         const challengeData = {
@@ -117,7 +103,7 @@ class ChallengeService {
 
     async getChallengeById(id) {
         const challenge = await this.challengeRepository.findByIdWithTestCases(id);
-        if (!challenge) throw new Error('Задача не найдена');
+        if (!challenge) throw new Error('Not found');
         return challenge;
     }
 
@@ -129,56 +115,135 @@ class ChallengeService {
         };
 
         const updated = await this.challengeRepository.updateWithTestCases(id, challengeData, testCases);
-        if (!updated) throw new Error('Задача для обновления не найдена');
+        if (!updated) throw new Error('Not found');
         return updated;
     }
 
     async deleteChallenge(id) {
         const ok = await this.challengeRepository.delete(id);
-        if (!ok) throw new Error('Задача для удаления не найдена');
+        if (!ok) throw new Error('Not found');
         return true;
     }
 
-    async executeChallenge(challengeId, code, language) {
-        const challenge = await this.challengeRepository.findByIdWithTestCases(challengeId);
-        if (!challenge) throw new Error('Challenge not found');
+    async executeChallenge(challengeId, code, language, userId = null) {
+        try {
+            console.log(`[EXECUTE] Start: Challenge ${challengeId}, User ${userId || 'Guest'}`);
 
-        const config = harnessConfigs[language];
-        if (!config) throw new Error(`Language "${language}" is not supported`);
+            // 1. Получаем данные задачи
+            const challenge = await this.challengeRepository.findByIdWithTestCases(challengeId);
+            if (!challenge) {
+                console.error(`[EXECUTE ERROR] Challenge ${challengeId} not found`);
+                throw new Error('Challenge not found');
+            }
 
-        const formattedTests = challenge.testCases.map(tc => ({
-            id: tc.id,
-            title: tc.title,
-            expected: this._safeParse(tc.expectedOutput),
-            args: tc.testArgs
-                ? tc.testArgs.sort((a, b) => a.order - b.order).map(arg => this._safeParse(arg.value))
-                : []
-        }));
+            // 2. Получаем конфиг языка
+            const config = harnessConfigs[language];
+            if (!config) {
+                console.error(`[EXECUTE ERROR] Language "${language}" not supported`);
+                throw new Error(`Language "${language}" not supported`);
+            }
 
-        const harnessCode = config.template(challenge.funcName, formattedTests);
+            // 3. Форматируем тест-кейсы для шаблона
+            const formattedTests = challenge.testCases.map(tc => ({
+                id: tc.id,
+                title: tc.title,
+                expected: this._safeParse(tc.expectedOutput),
+                args: tc.testArgs
+                    ? tc.testArgs.sort((a, b) => a.order - b.order).map(arg => this._safeParse(arg.value))
+                    : []
+            }));
 
-        const executionResult = await this.dockerRunner.run(config, code, harnessCode);
+            // 4. Генерируем код обертки (harness) и запускаем в Docker
+            const harnessCode = config.template(challenge.funcName, formattedTests);
+            console.log(`[DOCKER] Running code for challenge ${challengeId}...`);
 
-        const isTimeLimitExceeded = executionResult.executionTimeMs > challenge.timeLimitMs;
+            const executionResult = await this.dockerRunner.run(config, code, harnessCode);
 
-        let finalResponse = {
-            challengeId: challenge.id,
-            language,
-            timeLimitMs: challenge.timeLimitMs,
-            isTimeLimitExceeded,
-            ...executionResult
-        };
+            // 5. Проверяем лимиты и результаты
+            const isTimeLimitExceeded = executionResult.executionTimeMs > challenge.timeLimitMs;
 
-        if (isTimeLimitExceeded) {
-            finalResponse.success = false;
-            finalResponse.error = {
-                type: 'runtime_error',
-                message: "Time Limit Exceeded",
-                details: `Ваше решение выполнялось ${executionResult.executionTimeMs}ms, что превышает лимит ${challenge.timeLimitMs}ms. Попробуйте оптимизировать алгоритм.`
+            // ВАЖНО: берем testResults, так как DockerRunner возвращает именно этот ключ
+            const results = executionResult.testResults || [];
+
+            let finalResponse = {
+                challengeId: challenge.id,
+                language,
+                timeLimitMs: challenge.timeLimitMs,
+                isTimeLimitExceeded,
+                ...executionResult
             };
+
+            if (isTimeLimitExceeded) {
+                finalResponse.success = false;
+                finalResponse.error = {
+                    type: 'runtime_error',
+                    message: "Time Limit Exceeded",
+                    details: `Execution took ${executionResult.executionTimeMs}ms (limit: ${challenge.timeLimitMs}ms).`
+                };
+            }
+
+            // 6. Сохранение в историю (Submissions / HistoryChallenges)
+            if (userId) {
+                // Исправленная логика проверки: используем 'results'
+                const allTestsPassed = results.length > 0 && results.every(r => r.status === 'success');
+                const status = (allTestsPassed && !isTimeLimitExceeded) ? 'success' : 'fail';
+
+                console.log(`[DB] Saving submission: User ${userId}, Status: ${status}, Time: ${executionResult.executionTimeMs}ms`);
+
+                try {
+                    await this.challengeRepository.createSubmission({
+                        userId: Number(userId),
+                        challengeId: Number(challengeId),
+                        code,
+                        language,
+                        status,
+                        executionTimeMs: executionResult.executionTimeMs
+                    });
+                    console.log(`[DB] Submission saved successfully`);
+                } catch (dbError) {
+                    console.error(`[DB ERROR] Failed to save submission:`, dbError.message);
+                }
+            }
+
+            return finalResponse;
+
+        } catch (error) {
+            console.error(`[EXECUTE CRITICAL ERROR]:`, error.stack);
+            throw error;
         }
-        console.log(finalResponse);
-        return finalResponse;
+    }
+
+    async getCommunitySolutions(challengeId, userId, options = { page: 1, pageSize: 10 }) {
+        const hasSolved = await this.challengeRepository.hasUserSolvedChallenge(userId, challengeId);
+        if (!hasSolved) {
+            throw new Error('Solve the challenge first to view community solutions.');
+        }
+        return await this.challengeRepository.findCommunitySolutions(challengeId, options);
+    }
+
+    async getUserSubmissionHistory(userId, challengeId) {
+        return await this.challengeRepository.findUserHistory(userId, challengeId);
+    }
+
+    async leaveReview(userId, challengeId, content, rating) {
+        return await this.challengeRepository.upsertReview({
+            userId,
+            challengeId,
+            content,
+            rating
+        });
+    }
+
+    async getChallengeReviews(challengeId) {
+        try {
+
+            const reviews = await this.challengeRepository.findReviewsByChallengeId(challengeId);
+            const avgRating = await this.challengeRepository.getAverageRating(challengeId);
+            return { reviews, avgRating };
+        }
+        catch (error) {
+            console.log(`[EXECUTE CRITICAL ERROR]:`, error);
+        }
     }
 
     _safeParse(val) {

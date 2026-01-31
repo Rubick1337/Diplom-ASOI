@@ -13,6 +13,26 @@ export interface TestResult {
     message?: string;
 }
 
+export interface ChallengeHistory {
+    id: number;
+    code: string;
+    language: string;
+    status: string;
+    executionTimeMs: number;
+    createdAt: string;
+}
+
+export interface Review {
+    userId: number;
+    challengeId: number;
+    id?: number;
+    content: string;
+    rating: number;
+    createdAt: string;
+    user?: { username: string };
+}
+
+
 export interface ChallengeListResult {
     items: Challenge[];
     total: number;
@@ -92,10 +112,11 @@ export default class ChallengeService {
         return this.mapDto(data);
     }
 
-    static async executeChallenge(id: number, code: string, language: string): Promise<ExecuteResponse> {
+    static async executeChallenge(id: number, code: string, language: string, userId?: number): Promise<ExecuteResponse> {
+        console.log(userId);
         const { data } = await $api.post<ExecuteResponse>(
             API_ENDPOINTS.CHALLENGE.EXECUTE(id),
-            { code, language }
+            { code, language, userId }
         );
         return data;
     }
@@ -106,5 +127,44 @@ export default class ChallengeService {
             { code, language }
         );
         return data.formattedCode;
+    }
+
+    static async getHistory(challengeId: number, userId: number): Promise<ChallengeHistory[]> {
+        const { data } = await $api.get<ChallengeHistory[]>(
+            API_ENDPOINTS.CHALLENGE.GET_HISTORY(challengeId),
+            { params: { userId } }
+        );
+        return data;
+    }
+
+    static async getSolutions(challengeId: number, userId: number, page: number = 1, pageSize: number = 6
+    ): Promise<{ items: any[], totalPages: number, currentPage: number }> {
+        console.log(page)
+        console.log(pageSize)
+        const { data } = await $api.get<any>(
+            API_ENDPOINTS.CHALLENGE.GET_SOLUTIONS(challengeId),
+            { params: { userId, page, pageSize } }
+        );
+        return {
+            items: data.items,
+            totalPages: data.totalPages,
+            currentPage: data.page
+        };
+    }
+
+    static async getReviews(challengeId: number): Promise<{ reviews: Review[], avgRating: number }> {
+        const { data } = await $api.get<{ reviews: Review[], avgRating: number }>(
+            API_ENDPOINTS.CHALLENGE.GET_REVIEWS(challengeId)
+        );
+        console.log(data)
+        return data;
+    }
+
+    static async createReview(challengeId: number, userId: number, content: string, rating: number): Promise<Review> {
+        const { data } = await $api.post<Review>(
+            API_ENDPOINTS.CHALLENGE.CREATE_REVIEW(challengeId),
+            { userId, content, rating }
+        );
+        return data;
     }
 }
