@@ -14,7 +14,7 @@ const ReviewChallengesModel = sequelize.define(
             primaryKey: true,
             allowNull: false
         },
-        content: { type: DataTypes.TEXT, allowNull: false },
+        content: { type: DataTypes.TEXT, allowNull: true },
         rating: {
             type: DataTypes.INTEGER,
             allowNull: false,

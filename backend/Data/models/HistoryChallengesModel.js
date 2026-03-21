@@ -15,6 +15,8 @@ const HistoryChallengesModel = sequelize.define(
             defaultValue: 'Pending'
         },
         executionTimeMs: { type: DataTypes.INTEGER, allowNull: true },
+        testsPassed: { type: DataTypes.INTEGER, allowNull: true },
+        testsTotal:  { type: DataTypes.INTEGER, allowNull: true },
         createdAt: {
             type: DataTypes.DATE,
             defaultValue: DataTypes.NOW

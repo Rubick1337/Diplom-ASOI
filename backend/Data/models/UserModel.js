@@ -1,4 +1,3 @@
-
 const sequelize = require('../config/dbConfig');
 const { DataTypes } = require('sequelize');
 
@@ -7,15 +6,12 @@ const UserModel = sequelize.define('User', {
     username: { type: DataTypes.STRING, allowNull: false, unique: false },
     password: { type: DataTypes.STRING, allowNull: true },
     email: { type: DataTypes.STRING, allowNull: false, unique: true },
-    role: { type: DataTypes.INTEGER, allowNull: false },
+    roleId: { type: DataTypes.INTEGER, allowNull: false, defaultValue: 3 },
     refreshToken: { type: DataTypes.STRING, allowNull: true },
-    googleId:  { type: DataTypes.STRING, allowNull: true, unique: true },
-    githubId:  { type: DataTypes.STRING, allowNull: true, unique: true },
-    experience: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        defaultValue: 0,
-    },
+    googleId: { type: DataTypes.STRING, allowNull: true, unique: true },
+    githubId: { type: DataTypes.STRING, allowNull: true, unique: true },
+    experience: { type: DataTypes.INTEGER, allowNull: false, defaultValue: 0 },
+    rating: { type: DataTypes.INTEGER, allowNull: false, defaultValue: 0 },
 }, {
     tableName: 'Users',
     timestamps: false,
