@@ -1,0 +1,155 @@
+.admin-topbar {
+    background: #111;
+    border-bottom: 1px solid #2a2a2a;
+    padding: 0 20px 0 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 52px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    gap: 10px;
+    flex-wrap: wrap;
+    padding-top: 6px;
+    padding-bottom: 6px;
+}
+
+.admin-topbar__title {
+    font-size: 12px;
+    font-weight: 800;
+    color: #fff;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.admin-topbar__controls {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    flex-wrap: wrap;
+    flex: 1;
+    justify-content: flex-end;
+}
+
+.admin-topbar__periods {
+    display: flex;
+    background: #0a0a0a;
+    border: 1px solid #2a2a2a;
+    border-radius: 8px;
+    padding: 3px;
+    gap: 2px;
+}
+
+.admin-topbar__period-btn {
+    padding: 4px 10px;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    font-family: inherit;
+    background: transparent;
+    color: #555;
+    transition: all 0.15s;
+    white-space: nowrap;
+}
+
+.admin-topbar__period-btn--active {
+    background: linear-gradient(135deg, #FF6B35, #F04949);
+    color: #fff;
+}
+
+.admin-topbar__btn {
+    border-radius: 6px;
+    padding: 6px 10px;
+    cursor: pointer;
+    font-size: 10px;
+    font-weight: 700;
+    font-family: inherit;
+    letter-spacing: 0.5px;
+    transition: opacity 0.15s;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.admin-topbar__btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.admin-topbar__btn--ghost {
+    background: #0a0a0a;
+    border: 1px solid #2a2a2a;
+    color: #555;
+}
+
+.admin-topbar__btn--dark {
+    background: #1a1a1a;
+    border: 1px solid #2a2a2a;
+    color: #e0e0e0;
+}
+
+.admin-topbar__btn--primary {
+    background: linear-gradient(135deg, #FF6B35, #F04949);
+    border: none;
+    color: #fff;
+    font-weight: 800;
+}
+
+@media (max-width: 768px) {
+    .admin-topbar {
+        padding: 6px 12px;
+        position: sticky;
+        top: 0;
+    }
+
+    .admin-topbar__btn--dark .btn-text,
+    .admin-topbar__btn--primary .btn-text {
+        display: none;
+    }
+
+    .admin-topbar__btn--primary {
+        padding: 6px 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    .admin-topbar__title { font-size: 10px; }
+    .admin-topbar__period-btn { padding: 3px 7px; font-size: 9px; }
+}
+
+@media (max-width: 360px) {
+    .admin-topbar {
+        padding: 4px 8px;
+        gap: 4px;
+        min-height: 44px;
+    }
+
+    .admin-topbar__title {
+        font-size: 9px;
+        letter-spacing: 0;
+    }
+
+    .admin-topbar__controls {
+        gap: 4px;
+    }
+
+    .admin-topbar__periods {
+        padding: 2px;
+        gap: 1px;
+    }
+
+    .admin-topbar__period-btn {
+        padding: 3px 5px;
+        font-size: 9px;
+    }
+
+    .admin-topbar__btn {
+        padding: 5px 7px;
+        font-size: 9px;
+    }
+
+    .admin-topbar__btn--dark {
+        display: none;
+    }
+}

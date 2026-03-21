@@ -1,0 +1,58 @@
+
+.admin-header-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.admin-header-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, rgba(255,107,53,0.15), rgba(240,73,73,0.15));
+    border: 1px solid rgba(255,107,53,0.3);
+    display: grid;
+    place-items: center;
+    color: #FF6B35;
+    flex-shrink: 0;
+}
+
+.admin-header-title {
+    font-size: 1rem;
+    font-weight: 800;
+    background: linear-gradient(90deg, #FF6B35, #F04949);
+    background-clip: text;
+    color: transparent;
+    white-space: nowrap;
+}
+
+.admin-header-divider {
+    width: 1px;
+    height: 18px;
+    background: rgba(255,255,255,0.12);
+    flex-shrink: 0;
+}
+
+.admin-header-sub {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: rgba(255,255,255,0.45);
+    white-space: nowrap;
+}
+
+.admin-role-badge {
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: #FF6B35;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    text-align: right;
+}
+
+@media (max-width: 550px) {
+    .admin-header-title,
+    .admin-header-divider,
+    .admin-header-sub {
+        display: none;
+    }
+}
