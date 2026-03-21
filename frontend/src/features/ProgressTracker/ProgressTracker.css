@@ -1,0 +1,135 @@
+.progress-tracker {
+    background: #111;
+    border: 1px solid #222;
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 12px;
+}
+
+.tracker-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 16px;
+    background: #0a0a0a;
+    border-bottom: 1px solid #222;
+}
+
+.tracker-player {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.tracker-player-right {
+    align-items: flex-end;
+}
+
+.tracker-player-label {
+    font-size: 12px;
+    color: #888;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.tracker-player-score {
+    font-size: 20px;
+    font-weight: 800;
+    color: #fff;
+}
+
+.tracker-vs {
+    font-size: 12px;
+    font-weight: 800;
+    color: #333;
+    letter-spacing: 2px;
+}
+
+.tracker-challenges {
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.tracker-challenge-block {
+    background: #0d0d0d;
+    border: 1px solid #1e1e1e;
+    border-radius: 8px;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.tracker-challenge-name {
+    font-size: 12px;
+    font-weight: 700;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 2px;
+}
+
+.tracker-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.tracker-label {
+    font-size: 11px;
+    color: #666;
+    width: 60px;
+    flex-shrink: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.tracker-bar-wrap {
+    flex: 1;
+    height: 6px;
+    background: #1e1e1e;
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.tracker-bar-fill {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.4s ease;
+}
+
+.my-fill {
+    background: linear-gradient(90deg, #FF6B35, #F04949);
+}
+
+.my-fill.solved {
+    background: linear-gradient(90deg, #22c55e, #16a34a);
+}
+
+.opp-fill {
+    background: #3a3a3a;
+}
+
+.opp-fill.solved {
+    background: #555;
+}
+
+.tracker-val {
+    font-size: 11px;
+    color: #666;
+    width: 28px;
+    text-align: right;
+    flex-shrink: 0;
+}
+.tracker-bar-fill.error {
+    background-color: #ff4d4f !important;
+    box-shadow: 0 0 8px rgba(255, 77, 79, 0.4);
+}
+
+.tracker-bar-fill.solved {
+    background-color: #52c41a !important;
+}

@@ -1,3 +1,42 @@
+.xp-toast {
+    position: fixed;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(135deg, #FF6B35, #f59e0b);
+    color: #fff;
+    font-family: 'Fira Code', monospace;
+    font-size: 22px;
+    font-weight: 700;
+    padding: 14px 32px;
+    border-radius: 50px;
+    z-index: 9999;
+    box-shadow: 0 0 30px rgba(255, 107, 53, 0.6);
+    animation: xp-pop 3s ease forwards;
+    pointer-events: none;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.xp-toast-star {
+    font-size: 20px;
+    animation: xp-spin 1s linear infinite;
+}
+
+@keyframes xp-pop {
+    0%   { opacity: 0; transform: translateX(-50%) translateY(20px) scale(0.8); }
+    15%  { opacity: 1; transform: translateX(-50%) translateY(0)    scale(1.1); }
+    25%  { transform: translateX(-50%) translateY(0) scale(1); }
+    75%  { opacity: 1; transform: translateX(-50%) translateY(0); }
+    100% { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+}
+
+@keyframes xp-spin {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+}
+
 .challenge-workspace,
 .column-left,
 .column-right {
@@ -9,6 +48,7 @@
     min-height: 100vh;
     background-color: #0a0a0a;
     color: #fff;
+    margin-left: 52px;
 }
 
 .workspace-header {
@@ -193,15 +233,16 @@
     }
 }
 
+@media (max-width: 768px) {
+    .challenge-workspace {
+        margin-left: 0;
+    }
+}
+
 @media (max-width: 340px) {
     .column-left {
         width: 93%;
     }
-}
-
-.workspace-bottom {
-    border-top: 1px solid #333;
-    margin: 30px;
 }
 
 .workspace-tabs-nav {
@@ -260,6 +301,11 @@
     min-height: 300px;
 }
 .workspace-bottom {
+    border-top: 1px solid #333;
+    margin: 30px;
+}
+
+.workspace-bottom {
     border-top: 1px solid #222;
     margin: 40px;
     padding-top: 10px;
@@ -267,7 +313,7 @@
 
 .workspace-tabs-nav {
     display: flex;
-    gap: 30px;
+    gap: 15px;
     margin-bottom: 30px;
     border-bottom: 1px solid #222;
 }
@@ -293,7 +339,6 @@
     color: #ccc;
 }
 
-/* Оранжевая подсветка (как у rank-badge) */
 .tab-btn.active {
     color: #FF6B35;
 }
@@ -331,6 +376,23 @@
 }
 
 .tab-content {
-    min-height: 400px;
+    min-height: 450px;
     position: relative;
+}
+
+.report-challenge-btn {
+    background: none;
+    border: 1px solid #333;
+    border-radius: 6px;
+    color: #888;
+    font-size: 12px;
+    padding: 4px 10px;
+    cursor: pointer;
+    margin-top: 6px;
+    transition: all 0.2s;
+}
+
+.report-challenge-btn:hover {
+    border-color: #ff5555;
+    color: #ff5555;
 }
