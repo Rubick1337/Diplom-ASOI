@@ -1,0 +1,111 @@
+.language-filter-wrapper {
+    position: relative;
+    width: 190px;
+    font-family: 'Inter', sans-serif;
+}
+
+.lf-trigger {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    user-select: none;
+    padding: 10px 14px;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0) 60%), #141414;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #fff;
+    transition: all 0.2s ease;
+}
+
+.lf-trigger:hover {
+    border-color: rgba(240, 73, 73, 0.45);
+}
+
+.lf-trigger.open {
+    border-color: rgba(240, 73, 73, 0.75);
+    box-shadow: 0 0 0 2px rgba(240, 73, 73, 0.25);
+}
+
+.lf-value, .lf-option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.lf-icon {
+    flex-shrink: 0;
+    object-fit: contain;
+}
+
+.lf-arrow {
+    color: #888;
+    transition: transform 0.2s ease;
+}
+
+.lf-trigger.open .lf-arrow {
+    transform: rotate(180deg);
+    color: #F04949;
+}
+
+.lf-options {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    margin-top: 6px;
+    background-color: #1a1a1a;
+    border: 1px solid #333;
+    border-radius: 10px;
+    padding: 6px;
+    list-style: none;
+    z-index: 100;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    animation: slideDownFilter 0.2s ease-out;
+    max-height: 180px;
+    overflow-y: auto;
+}
+
+.lf-option {
+    display: flex;
+    padding: 8px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    color: #ccc;
+    transition: all 0.2s;
+}
+
+.lf-option:hover {
+    background-color: rgba(255, 255, 255, 0.08);
+    color: #fff;
+}
+
+.lf-option.selected {
+    background-color: rgba(240, 73, 73, 0.15);
+    color: #F04949;
+    font-weight: 700;
+}
+
+@keyframes slideDownFilter {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+.lf-options::-webkit-scrollbar {
+    width: 6px;
+}
+
+.lf-options::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.lf-options::-webkit-scrollbar-thumb {
+    background: #333;
+    border-radius: 10px;
+}
+
+.lf-options::-webkit-scrollbar-thumb:hover {
+    background: #444;
+}

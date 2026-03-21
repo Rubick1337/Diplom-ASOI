@@ -12,20 +12,18 @@ export default function TestsPanel({ tests }: { tests: TestCase[] }) {
     const failed = tests.filter(t => t.status === 'fail').length;
     const isRunning = tests.some(t => t.status === 'running');
 
-    // ЭФФЕКТ: Раскрываем первый тест автоматически при запуске
     useEffect(() => {
         if (isRunning && tests.length > 0 && !expandedTestId) {
             setExpandedTestId(tests[0].id);
         }
     }, [isRunning, tests, expandedTestId]);
 
-    // Если нужно, чтобы при ошибке раскрывался именно ПЕРВЫЙ проваленный тест:
     useEffect(() => {
         const firstFailed = tests.find(t => t.status === 'fail');
         if (firstFailed) {
             setExpandedTestId(firstFailed.id);
         }
-    }, [failed]); // Следим за количеством ошибок
+    }, [failed]);
 
     const progressPercent = total > 0 ? (passed / total) * 100 : 0;
 

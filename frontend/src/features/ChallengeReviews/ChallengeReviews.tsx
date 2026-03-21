@@ -5,7 +5,17 @@ import { useParams } from 'next/navigation';
 import { useAppDispatch, useAppSelector } from '@/shared/store/hooks';
 import { RootState } from '@/shared/store/store';
 import { fetchReviews, addReview } from '@/shared/store/slice/challengeSlice';
+import ChallengePagination from '@/shared/components/Pagination/Pagination';
+import { SortSelect, SortValue } from '../SortSelect/SortSelect';
+import { ConfirmationModal } from '@/shared/components/ConfirmationModal/ConfirmationModal';
 import './ChallengeReviews.css';
+
+const sortOptions: Record<SortValue, string> = {
+    newest: 'Сначала новые',
+    oldest: 'Сначала старые',
+    highest: 'Высокий рейтинг',
+    lowest: 'Низкий рейтинг'
+};
 
 export const ChallengeReviews: React.FC = () => {
     const dispatch = useAppDispatch();
@@ -13,149 +23,175 @@ export const ChallengeReviews: React.FC = () => {
     const challengeId = params ? Number(params.id) : 0;
 
     const { user } = useAppSelector((state: RootState) => state.auth);
-    const { reviews, avgRating, isReviewsLoading } = useAppSelector((state: RootState) => state.challenges);
+    const { reviews, avgRating, isReviewsLoading, reviewsTotalPages, reviewsCurrentPage } = useAppSelector((state: RootState) => state.challenges);
 
     const [content, setContent] = useState('');
     const [rating, setRating] = useState(0);
     const [hover, setHover] = useState(0);
+    const [sort, setSort] = useState<SortValue>('newest');
+    const [pageSize] = useState(5);
 
-    const existingReview = useMemo(() => {
-        return reviews.find(r => r.userId === user?.id);
-    }, [reviews, user]);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [modalConfig, setModalConfig] = useState({ title: '', message: '', type: 'success' as 'success' | 'warning' });
 
-    const sortedReviews = useMemo(() => {
-        if (!reviews) return [];
-        return [...reviews].sort((a, b) => {
-            if (a.userId === user?.id) return -1;
-            if (b.userId === user?.id) return 1;
-            return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-        });
-    }, [reviews, user]);
+    const myReview = useMemo(() => reviews.find(r => r.userId === user?.id), [reviews, user]);
 
     useEffect(() => {
-        if (existingReview) {
-            setContent(existingReview.content);
-            setRating(existingReview.rating);
+        if (myReview) {
+            setContent(myReview.content);
+            setRating(myReview.rating);
         }
-    }, [existingReview]);
+    }, [myReview]);
 
     useEffect(() => {
         if (challengeId) {
-            dispatch(fetchReviews(challengeId));
+            dispatch(fetchReviews({ challengeId, params: { page: 1, pageSize, sort } }));
         }
-    }, [challengeId, dispatch]);
+    }, [challengeId, sort, pageSize, dispatch]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!user) return alert('Войдите, чтобы оставить отзыв');
-        if (rating === 0) return alert('Пожалуйста, выставите оценку');
-        if (!content.trim()) return alert('Напишите текст отзыва');
+        if (!user) return;
 
-        await dispatch(addReview({
-            challengeId,
-            userId: user.id,
-            content,
-            rating
-        }));
+        const isUpdating = !!myReview;
 
-        alert(existingReview ? 'Отзыв обновлен' : 'Отзыв опубликован');
+        if (!isUpdating) {
+
+            if (rating === 0 || !content.trim()) {
+                setModalConfig({
+                    title: 'Внимание',
+                    message: 'Пожалуйста, поставьте оценку и напишите текст отзыва.',
+                    type: 'warning'
+                });
+                setIsModalOpen(true);
+                return;
+            }
+        } else {
+
+            if (rating === 0 && !content.trim()) {
+                setModalConfig({
+                    title: 'Внимание',
+                    message: 'Отзыв не может быть пустым.',
+                    type: 'warning'
+                });
+                setIsModalOpen(true);
+                return;
+            }
+        }
+
+        try {
+            await dispatch(addReview({ challengeId, userId: user.id, content, rating }));
+
+            setModalConfig({
+                title: isUpdating ? 'Обновлено!' : 'Опубликовано!',
+                message: isUpdating
+                    ? 'Ваш отзыв успешно изменен.'
+                    : 'Спасибо! Ваш отзыв добавлен в общую ленту.',
+                type: 'success'
+            });
+            setIsModalOpen(true);
+
+            if (!isUpdating) {
+                setContent('');
+                setRating(0);
+            }
+            dispatch(fetchReviews({ challengeId, params: { page: 1, pageSize, sort } }));
+        } catch (err) {
+            console.error(err);
+        }
     };
 
-    const getAvatarLetter = (name: string) => name ? name.charAt(0).toUpperCase() : '?';
+    const renderReviewCard = (review: any, isMyOwn = false) => (
+        <div key={`${review.userId}-${review.challengeId}`} className={`review-card ${isMyOwn ? 'my-review' : ''}`}>
+            <div className="review-header">
+                <div className="user-avatar">{review.user?.username?.charAt(0).toUpperCase() || '?'}</div>
+                <div className="user-info">
+                    <span className="username">
+                        {review.user?.username || 'Аноним'}
+                        {isMyOwn && <span className="own-tag"> (Вы)</span>}
+                    </span>
+                    <span className="date">{new Date(review.createdAt).toLocaleDateString('ru-RU')}</span>
+                </div>
+                <div className="review-rating-static">
+                    {[1, 2, 3, 4, 5].map((s) => (
+                        <span key={s} className={s <= review.rating ? 'star filled' : 'star empty'}>★</span>
+                    ))}
+                </div>
+            </div>
+            <div className="review-body"><p>{review.content}</p></div>
+        </div>
+    );
 
     return (
         <div className="reviews-section">
             <div className="reviews-header">
                 <div className="header-info">
                     <h2>Отзывы сообщества</h2>
-                    <span className="reviews-count">{reviews.length} отзывов</span>
-                </div>
-                {avgRating > 0 && (
-                    <div className="rating-badge">
-                        <span className="rating-star">★</span>
-                        <span className="rating-value">{Number(avgRating).toFixed(1)}</span>
+                    <div className="avg-stats">
+                        <span className="rating-val">{Number(avgRating).toFixed(1)} ★</span>
                     </div>
-                )}
+                </div>
+                <SortSelect value={sort} onChange={(s) => setSort(s)} options={sortOptions} />
             </div>
 
             <div className="reviews-layout">
                 <div className="reviews-sidebar">
                     {user ? (
                         <form className="review-card-form" onSubmit={handleSubmit}>
-                            <h3>{existingReview ? 'Редактировать мой отзыв' : 'Написать отзыв'}</h3>
-                            <div className="rating-input-wrapper">
-                                <label>Ваша оценка:</label>
-                                <div className="star-rating interactive">
-                                    {[1, 2, 3, 4, 5].map((star) => (
-                                        <button
-                                            type="button"
-                                            key={star}
-                                            className={star <= (hover || rating) ? 'star filled' : 'star'}
-                                            onClick={() => setRating(star)}
-                                            onMouseEnter={() => setHover(star)}
-                                            onMouseLeave={() => setHover(0)}
-                                        >
-                                            ★
-                                        </button>
-                                    ))}
-                                </div>
+                            <h3>{myReview ? 'Редактировать отзыв' : 'Написать отзыв'}</h3>
+                            <div className="star-rating interactive">
+                                {[1, 2, 3, 4, 5].map((star) => (
+                                    <button
+                                        type="button" key={star}
+                                        className={star <= (hover || rating) ? 'star filled' : 'star'}
+                                        onClick={() => setRating(star)}
+                                        onMouseEnter={() => setHover(star)}
+                                        onMouseLeave={() => setHover(0)}
+                                    >★</button>
+                                ))}
                             </div>
                             <textarea
                                 className="review-textarea"
-                                placeholder="Поделитесь впечатлениями..."
                                 value={content}
                                 onChange={(e) => setContent(e.target.value)}
-                                rows={5}
+                                placeholder="Ваши впечатления от задачи..."
+                                rows={4}
                             />
                             <button type="submit" className="submit-btn">
-                                {existingReview ? 'Сохранить изменения' : 'Опубликовать'}
+                                {myReview ? 'Сохранить изменения' : 'Опубликовать'}
                             </button>
                         </form>
                     ) : (
-                        <div className="login-prompt-card">
-                            <p>Войдите, чтобы оставить отзыв.</p>
-                        </div>
+                        <div className="login-prompt-card">Войдите, чтобы оставить отзыв.</div>
                     )}
                 </div>
 
                 <div className="reviews-feed">
-                    {isReviewsLoading && <div className="loading-state">Загрузка...</div>}
-                    <div className="reviews-list">
-                        {sortedReviews.map((review) => {
-                            const isMyReview = review.userId === user?.id;
-                            return (
-                                <div
-                                    key={`${review.userId}-${review.challengeId}`}
-                                    className={`review-card ${isMyReview ? 'my-review' : ''}`}
-                                >
-                                    <div className="review-header">
-                                        <div className="user-avatar">
-                                            {getAvatarLetter(review.user?.username || 'A')}
-                                        </div>
-                                        <div className="user-info">
-                                            <span className="username">
-                                                {review.user?.username || 'Аноним'}
-                                                {isMyReview && <span className="own-tag">(Ваш отзыв)</span>}
-                                            </span>
-                                            <span className="date">
-                                                {new Date(review.createdAt).toLocaleDateString('ru-RU')}
-                                            </span>
-                                        </div>
-                                        <div className="review-rating-static">
-                                            {[1, 2, 3, 4, 5].map((s) => (
-                                                <span key={s} className={s <= review.rating ? 'star filled' : 'star empty'}>★</span>
-                                            ))}
-                                        </div>
-                                    </div>
-                                    <div className="review-body">
-                                        <p>{review.content}</p>
-                                    </div>
-                                </div>
-                            );
-                        })}
+                    <div key={reviewsCurrentPage} className="reviews-list">
+                        {myReview && reviewsCurrentPage === 1 && renderReviewCard(myReview, true)}
+                        {reviews.filter(r => r.userId !== user?.id).map(review => renderReviewCard(review))}
                     </div>
+                    {reviewsTotalPages > 1 && (
+                        <ChallengePagination
+                            currentPage={reviewsCurrentPage}
+                            totalPages={reviewsTotalPages}
+                            onPageChange={(p) => dispatch(fetchReviews({ challengeId, params: { page: p, pageSize, sort } }))}
+                        />
+                    )}
                 </div>
             </div>
+
+            {}
+            <ConfirmationModal
+                isOpen={isModalOpen}
+                title={modalConfig.title}
+                message={modalConfig.message}
+                type={modalConfig.type}
+                confirmText="Ок"
+                cancelText="Закрыть"
+                onConfirm={() => setIsModalOpen(false)}
+                onClose={() => setIsModalOpen(false)}
+            />
         </div>
     );
 };

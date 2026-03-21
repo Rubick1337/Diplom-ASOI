@@ -56,7 +56,7 @@ export default function LoginForm() {
         }
 
         try {
-            await dispatch(
+            const result = await dispatch(
                 login({ login: loginValue, password: pwd })
             ).unwrap();
 
@@ -65,7 +65,10 @@ export default function LoginForm() {
                 message: 'Вы успешно вошли!',
             });
 
-            setTimeout(() => router.push('/'), 800);
+            const roleName = result.user?.roleName;
+            const redirect = roleName === 'admin' ? '/admin' : roleName === 'owner' ? '/owner' : '/challenges';
+            setTimeout(() => router.replace(redirect), 800);
+
         } catch (err: unknown) {
             const message =
                 err instanceof Error

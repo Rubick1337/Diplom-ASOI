@@ -45,6 +45,17 @@ export default function CodeIdeWidget({
 
     const { isFormatting, executionTimeMs, isTimeLimitExceeded, isExecuting } = useAppSelector((state: RootState) => state.challenges);
 
+    const errorLine = (() => {
+        const details = executionResults?.systemError?.details || '';
+        if (!details) return undefined;
+        const m = details.match(/code:(\d+):\d+:\s*(?:error|warning)/i)
+            || details.match(/on line (\d+)/i)
+            || details.match(/\[stdin\]:(\d+)/i)
+            || details.match(/line (\d+)/i);
+        const n = m ? parseInt(m[1]) : 0;
+        return (n > 0 && n < 1000) ? n : undefined;
+    })();
+
     const [validationStats, setValidationStats] = useState<EditorValidation>({
         errors: 0, warnings: 0, problems: []
     });
@@ -141,6 +152,7 @@ export default function CodeIdeWidget({
                         >
                             <Image src="/images/ide/reset.png" alt="reset" width={20} height={20} />
                         </button>
+
                     </div>
                 </div>
 
@@ -183,6 +195,7 @@ export default function CodeIdeWidget({
                     code={code}
                     originalCode={starterCode}
                     isDiffMode={isDiffMode}
+                    errorLine={errorLine}
                     onChange={(val: string | undefined) => onCodeChange(val || '')}
                     onValidate={setValidationStats}
                     editorRef={editorRef}

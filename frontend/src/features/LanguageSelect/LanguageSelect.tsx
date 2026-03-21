@@ -4,7 +4,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
 import './LanguageSelect.css';
 
-export type LanguageValue = 'javascript' | 'typescript' | 'python' | 'cpp' | 'coffeescript';
+export type LanguageValue = 'javascript' | 'typescript' | 'python' | 'cpp' | 'coffeescript' | 'php' | 'csharp' | 'java';
 
 interface LanguageOption {
     value: LanguageValue;
@@ -14,11 +14,14 @@ interface LanguageOption {
 }
 
 export const languages: LanguageOption[] = [
-    { value: 'javascript', label: 'JavaScript', iconPath: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg', extension: '.js' },
-    { value: 'typescript', label: 'TypeScript', iconPath: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/typescript/typescript-original.svg', extension: '.ts' },
-    { value: 'python', label: 'Python', iconPath: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg', extension: '.py' },
-    { value: 'cpp', label: 'C++', iconPath: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/cplusplus/cplusplus-original.svg', extension: '.cpp' },
-    { value: 'coffeescript', label: 'CoffeeScript', iconPath: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/coffeescript/coffeescript-original.svg', extension: '.coffee' },
+    { value: 'javascript',  label: 'JavaScript',  iconPath: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg',   extension: '.js' },
+    { value: 'typescript',  label: 'TypeScript',  iconPath: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/typescript/typescript-original.svg',     extension: '.ts' },
+    { value: 'python',      label: 'Python',      iconPath: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg',             extension: '.py' },
+    { value: 'cpp',         label: 'C++',         iconPath: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/cplusplus/cplusplus-original.svg',       extension: '.cpp' },
+    { value: 'csharp',      label: 'C#',          iconPath: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/csharp/csharp-original.svg',             extension: '.cs' },
+    { value: 'php',         label: 'PHP',         iconPath: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/php/php-original.svg',                   extension: '.php' },
+    { value: 'coffeescript',label: 'CoffeeScript',iconPath: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/coffeescript/coffeescript-original.svg', extension: '.coffee' },
+    { value: 'java',        label: 'Java',        iconPath: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/java/java-original.svg',                 extension: '.java' },
 ];
 
 interface LanguageSelectProps {

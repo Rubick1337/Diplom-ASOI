@@ -9,7 +9,6 @@ export default function Footer() {
 
                 <div className="footer-brand">
 
-
                     <div className="footer-info">
                         <div className="logo_footer_name">
                             <div className="footer-logo">

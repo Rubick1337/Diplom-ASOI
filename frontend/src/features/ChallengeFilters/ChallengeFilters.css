@@ -1,0 +1,298 @@
+.challenges-sidebar {
+    flex-shrink: 0;
+}
+
+.sidebar-filter-card {
+    background: #121212;
+    border: 1px solid #2a2a2a;
+    border-radius: 12px;
+    padding: 20px;
+}
+
+.sidebar-filter-card h3 {
+    margin-bottom: 20px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #fff;
+    letter-spacing: 0.5px;
+}
+
+.filter-group {
+    margin-bottom: 20px;
+}
+
+.filter-label {
+    display: block;
+    margin-bottom: 10px;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #666;
+}
+
+.filter-select, .filter-input-text {
+    width: 100%;
+    padding: 11px 12px;
+    background: #1a1a1a;
+    border: 1px solid #333;
+    border-radius: 8px;
+    color: white;
+    font-size: 0.9rem;
+    outline: none;
+    transition: all 0.2s;
+}
+
+.filter-select:focus, .filter-input-text:focus {
+    border-color: #f04949;
+    background: #222;
+}
+
+.difficulty-steps {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
+}
+
+.step-btn {
+    height: 36px;
+    background: #1a1a1a;
+    border: 1px solid #333;
+    border-radius: 6px;
+    color: #888;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.all-step {
+    grid-column: span 2;
+}
+
+.step-btn:hover {
+    border-color: #555;
+    color: #fff;
+}
+
+.step-btn.active {
+    background: linear-gradient(135deg, #ff6b35, #f04949);
+    border-color: transparent;
+    color: #fff;
+    font-weight: 700;
+    box-shadow: 0 4px 15px rgba(240, 73, 73, 0.25);
+}
+
+.step-btn:active {
+    transform: scale(0.95);
+}
+
+.filter-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    margin-top: 25px;
+    padding-top: 20px;
+    border-top: 1px solid #2a2a2a;
+}
+
+.btn-apply {
+    justify-content: center;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    max-width: 220px;
+    height: 44px;
+    background: linear-gradient(rgba(255, 255, 255, .1), rgba(255, 255, 255, 0) 60%),
+    linear-gradient(135deg, #ff6b35, #f04949);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: all 0.2s;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.btn-reset {
+
+    width: 100%;
+    max-width: 220px;
+    height: 44px;
+    background: transparent;
+    color: #666;
+    border: 1px solid #333;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: all 0.2s;
+}
+
+.btn-apply:hover {
+    opacity: 0.95;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 15px rgba(240, 73, 73, 0.3);
+}
+
+.btn-reset:hover {
+    background: #1a1a1a;
+    color: #fff;
+    border-color: #555;
+}
+
+.btn-apply:active, .btn-reset:active {
+    transform: scale(0.98);
+}
+
+.custom-select {
+    position: relative;
+    user-select: none;
+    cursor: pointer;
+}
+
+.select-trigger {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 12px;
+    background: #1a1a1a;
+    border: 1px solid #333;
+    border-radius: 8px;
+    color: #fff;
+    font-size: 0.9rem;
+    min-height: 44px;
+}
+
+.custom-select.open .select-trigger {
+    border-color: #f04949;
+}
+
+.arrow {
+    font-size: 0.7rem;
+    color: #555;
+    transition: transform 0.2s;
+}
+
+.open .arrow {
+    transform: rotate(180deg);
+}
+
+.select-options {
+    position: absolute;
+    top: calc(100% + 5px);
+    left: 0;
+    right: 0;
+    background: #1a1a1a;
+    border: 1px solid #333;
+    border-radius: 8px;
+    z-index: 100;
+    max-height: 250px;
+    overflow-y: auto;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+}
+
+.option {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 12px;
+    transition: background 0.2s;
+    color: #aaa;
+}
+
+.option:hover {
+    background: #252525;
+    color: #fff;
+}
+
+.difficulty-card-box.small {
+    width: 24px;
+    height: 24px;
+    background: #000;
+    border: 1px solid #2a2a2a;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: bold;
+    color: #fff;
+    flex-shrink: 0;
+}
+
+.diff-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.select-options::-webkit-scrollbar {
+    width: 6px;
+}
+.select-options::-webkit-scrollbar-thumb {
+    background: #333;
+    border-radius: 10px;
+}
+.difficulty-card-box.small {
+    width: 26px;
+    height: 26px;
+    background: #000;
+    border: 2px solid #2a2a2a;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    font-weight: 800;
+    color: #fff;
+    flex-shrink: 0;
+    transition: all 0.2s ease;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+}
+
+.option:hover .difficulty-card-box.small {
+    transform: scale(1.1);
+}
+
+.option:nth-child(n+2):nth-child(-n+4):hover { border-left: 2px solid #4ade80; }
+.option:nth-child(n+5):nth-child(-n+8):hover { border-left: 2px solid #fbbf24; }
+.option:nth-child(n+9):hover { border-left: 2px solid #f87171; }
+
+.sort-trigger {
+    border-right: 3px solid #f04949;
+}
+
+.sort-option {
+    justify-content: space-between;
+    position: relative;
+    border-right: 3px solid transparent;
+    transition: all 0.2s ease;
+}
+
+.sort-option:hover {
+    border-right: 3px solid #f04949;
+    background: #252525;
+}
+
+.sort-option.active {
+    color: #fff;
+    background: #222;
+    border-right: 3px solid #f04949;
+    font-weight: 600;
+}
+
+.custom-select.open .select-trigger.sort-trigger {
+    border-color: #f04949;
+}
+
+.select-options {
+    animation: fadeInDropdown 0.2s ease-out;
+}
+
+@keyframes fadeInDropdown {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}

@@ -1,0 +1,49 @@
+.filter-pills {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.filter-pills__label {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    color: #3d5470;
+    text-transform: uppercase;
+    margin-right: 2px;
+}
+
+.filter-pills__btn {
+    padding: 3px 10px;
+    border-radius: 20px;
+    border: 1px solid #1a2b42;
+    background: transparent;
+    color: #3d5470;
+    font-size: 10px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.15s;
+}
+
+.filter-pills__btn--active-all {
+    background: #00e5b0;
+    color: #000;
+    border-color: #00e5b0;
+}
+
+@media (max-width: 360px) {
+    .filter-pills {
+        gap: 4px;
+    }
+
+    .filter-pills__btn {
+        padding: 2px 7px;
+        font-size: 9px;
+    }
+
+    .filter-pills__label {
+        font-size: 8px;
+    }
+}

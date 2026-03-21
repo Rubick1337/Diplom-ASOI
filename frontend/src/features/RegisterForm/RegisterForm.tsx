@@ -2,6 +2,7 @@
 
 import type { FormEvent } from 'react';
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import './RegisterForm.css';
 import Image from 'next/image';
 import { useAppDispatch, useAppSelector } from '@/shared/store/hooks';
@@ -10,6 +11,7 @@ import Alert from '@/shared/components/Alert/Alert';
 
 export default function RegisterForm() {
     const dispatch = useAppDispatch();
+    const router   = useRouter();
     const { isLoading } = useAppSelector((s) => s.auth);
 
     const [username, setUsername] = useState('');
@@ -29,7 +31,6 @@ export default function RegisterForm() {
     const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        // ===== клиентская валидация =====
         if (!username.trim()) {
             setAlert({ type: 'error', message: 'Введите имя пользователя' });
             return;
@@ -75,7 +76,6 @@ export default function RegisterForm() {
             return;
         }
 
-        // ===== запрос регистрации =====
         try {
             await dispatch(
                 registration({
@@ -90,6 +90,7 @@ export default function RegisterForm() {
                 type: 'success',
                 message: 'Аккаунт успешно создан!',
             });
+            setTimeout(() => router.push('/challenges'), 800);
         } catch (err: unknown) {
             const message =
                 err instanceof Error
@@ -116,7 +117,7 @@ export default function RegisterForm() {
             <form className="register-form" onSubmit={onSubmit}>
                 <h1 className="register-title">Создать аккаунт</h1>
 
-                {/* USERNAME */}
+                {}
                 <div className="reg-field">
                     <label htmlFor="reg-username">Имя пользователя</label>
                     <input
@@ -129,7 +130,7 @@ export default function RegisterForm() {
                     />
                 </div>
 
-                {/* EMAIL */}
+                {}
                 <div className="reg-field">
                     <label htmlFor="reg-email">Email</label>
                     <input
@@ -142,7 +143,7 @@ export default function RegisterForm() {
                     />
                 </div>
 
-                {/* PASSWORD */}
+                {}
                 <div className="reg-field">
                     <label htmlFor="reg-pass">Пароль</label>
                     <div className="reg-pass-wrap">
@@ -166,7 +167,7 @@ export default function RegisterForm() {
                     </div>
                 </div>
 
-                {/* REPEAT PASSWORD */}
+                {}
                 <div className="reg-field">
                     <label htmlFor="reg-pass2">Повторите пароль</label>
                     <div className="reg-pass-wrap">

@@ -24,10 +24,33 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+.editor-error-line {
+    background: rgba(248, 81, 73, 0.08) !important;
+    border-left: 2px solid #f85149 !important;
+}
+.editor-error-glyph {
+    background: #f85149;
+    border-radius: 50%;
+    width: 8px !important;
+    height: 8px !important;
+    margin-top: 6px;
+    margin-left: 4px;
+}
+
 .app-main-page {
   background-color: #000000;
   background-image:
           url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.15'/%3E%3C/svg%3E");
   background-size: auto, cover, cover;
-  overflow: hidden;
+}
+
+.app-main-page--sidebar {
+  padding-left: 52px;
+}
+
+@media (max-width: 768px) {
+  .app-main-page--sidebar {
+    padding-left: 0;
+  }
 }

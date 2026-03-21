@@ -4,11 +4,10 @@ import './LoginPage.css';
 import LoginForm from '@/features/LoginForm/LoginForm';
 import BackgroundVideo from '@/shared/components/BackgroundVideo/BackgroundVideo';
 import AuthHeader from '@/widgets/AuthHeader/AuthHeader';
-import ReduxProvider from '@/app/ReduxProvider';
 
 export default function LoginPage() {
     return (
-        <ReduxProvider>
+        <>
             <AuthHeader />
             <main className="login-main">
                 <BackgroundVideo
@@ -20,6 +19,6 @@ export default function LoginPage() {
                     <LoginForm />
                 </div>
             </main>
-        </ReduxProvider>
+        </>
     );
 }

@@ -1,6 +1,13 @@
 .site-footer {
     padding: 28px 20px 26px;
     border-top: 1px solid rgba(255,255,255,0.08);
+    margin-left: 52px;
+}
+
+@media (max-width: 768px) {
+    .site-footer {
+        margin-left: 0;
+    }
 }
 
 .footer-inner {

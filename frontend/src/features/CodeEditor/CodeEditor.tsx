@@ -1,15 +1,15 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import Editor, { DiffEditor, OnMount, OnValidate } from '@monaco-editor/react';
 import { EditorValidation, EditorProblem } from '@/shared/types/ide';
 
 interface CodeEditorProps {
     language: string;
     code: string;
-    // Новые пропсы
     originalCode: string;
     isDiffMode: boolean;
+    errorLine?: number;
 
     onChange: (value: string | undefined) => void;
     onValidate: (stats: EditorValidation) => void;
@@ -21,10 +21,13 @@ export default function CodeEditor({
                                        code,
                                        originalCode,
                                        isDiffMode,
+                                       errorLine,
                                        onChange,
                                        onValidate,
                                        editorRef
                                    }: CodeEditorProps) {
+    const monacoRef = useRef<any>(null);
+    const decorationsRef = useRef<string[]>([]);
 
     const registerSnippets = (monaco: any, lang: string) => {
         if (lang === 'python') {
@@ -123,8 +126,29 @@ export default function CodeEditor({
         }
     };
 
+    useEffect(() => {
+        const editor = editorRef.current;
+        const monaco = monacoRef.current;
+        if (!editor || !monaco) return;
+
+        decorationsRef.current = editor.deltaDecorations(decorationsRef.current, []);
+
+        if (errorLine && errorLine > 0) {
+            decorationsRef.current = editor.deltaDecorations([], [{
+                range: new monaco.Range(errorLine, 1, errorLine, 1),
+                options: {
+                    isWholeLine: true,
+                    className: 'editor-error-line',
+                    glyphMarginClassName: 'editor-error-glyph',
+                    overviewRuler: { color: '#f85149', position: 1 },
+                }
+            }]);
+        }
+    }, [errorLine]);
+
     const handleEditorDidMount: OnMount = (editor, monaco) => {
         editorRef.current = editor;
+        monacoRef.current = monaco;
 
         monaco.editor.defineTheme('cyber-dark', {
             base: 'vs-dark',
@@ -137,10 +161,29 @@ export default function CodeEditor({
         });
         monaco.editor.setTheme('cyber-dark');
 
+        if (language === 'coffeescript') {
+            monaco.languages.typescript.javascriptDefaults.setDiagnosticsOptions({
+                noSemanticValidation: true,
+                noSyntaxValidation: true,
+            });
+        } else {
+
+            monaco.languages.typescript.javascriptDefaults.setDiagnosticsOptions({
+                noSemanticValidation: false,
+                noSyntaxValidation: false,
+            });
+        }
+
         registerSnippets(monaco, language);
     };
 
     const handleValidate: OnValidate = (markers) => {
+
+        if (language === 'coffeescript') {
+            onValidate({ errors: 0, warnings: 0, problems: [] });
+            return;
+        }
+
         const problems: EditorProblem[] = markers.map((m, i) => ({
             id: `err-${i}`,
             message: m.message,
@@ -158,12 +201,20 @@ export default function CodeEditor({
 
     const getExtension = (lang: string) => {
         switch (lang) {
-            case 'cpp': return 'cpp';
-            case 'python': return 'py';
-            case 'typescript': return 'ts';
+            case 'cpp':          return 'cpp';
+            case 'python':       return 'py';
+            case 'typescript':   return 'ts';
             case 'coffeescript': return 'coffee';
-            default: return 'js';
+            case 'csharp':       return 'cs';
+            case 'php':          return 'php';
+            case 'java':         return 'java';
+            default:             return 'js';
         }
+    };
+
+    const getMonacoLanguage = (lang: string) => {
+        if (lang === 'coffeescript') return 'javascript';
+        return lang;
     };
 
     const commonOptions = {
@@ -200,7 +251,7 @@ export default function CodeEditor({
     return (
         <Editor
             height="100%"
-            language={language}
+            language={getMonacoLanguage(language)}
             path={`solution.${getExtension(language)}`}
             value={code}
             theme="vs-dark"

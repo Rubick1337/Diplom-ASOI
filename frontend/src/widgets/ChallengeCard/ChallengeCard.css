@@ -165,3 +165,125 @@
     transform: translateY(-2px);
     box-shadow: 0 0 26px rgba(240, 73, 73, .35);
 }
+
+.challenge-card-title-area {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.challenge-card-topics {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: 4px;
+}
+
+.challenge-card-topic {
+    font-size: 0.68rem;
+    color: #FF6B35;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 700;
+    background: rgba(255, 107, 53, 0.08);
+    border: 1px solid rgba(255, 107, 53, 0.22);
+    border-radius: 4px;
+    padding: 1px 6px;
+}
+
+.challenge-card-stats {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 14px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.stat-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.stat-icon {
+    font-size: 0.9rem;
+}
+
+.stat-item.rating {
+    color: #ffca28;
+}
+
+.stat-item.solved {
+    color: #4caf50;
+}
+
+.stat-item.author {
+    color: rgba(255, 255, 255, 0.5);
+    margin-left: auto;
+}
+
+.challenge-card-title {
+    line-height: 1.2;
+}
+
+.challenge-card-desc {
+    margin: 4px 0 14px;
+}
+
+.challenge-card-stats {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 14px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    align-items: center;
+}
+
+.stat-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.stat-item.solved {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.stat-image-icon {
+    width: 16px;
+    height: 14px;
+    object-fit: contain;
+    opacity: 0.9;
+}
+
+.stat-text {
+    font-weight: 500;
+}
+
+.stat-item.rating {
+    color: #ffca28;
+}
+
+.stat-item.author {
+    color: rgba(255, 255, 255, 0.5);
+    margin-left: auto;
+}
+.challenge-card.selected-me {
+    border: 2px solid #00ff88;
+    background: rgba(0, 255, 136, 0.05);
+}
+
+.challenge-card.selected-opp {
+    border: 2px solid #ff4444;
+    opacity: 0.7;
+}
+
+.challenge-card-btn.locked {
+    background: #333 !important;
+    color: #888;
+    cursor: not-allowed;
+}

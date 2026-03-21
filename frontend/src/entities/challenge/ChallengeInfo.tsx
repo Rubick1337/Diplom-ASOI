@@ -6,7 +6,7 @@ import './ChallengeInfo.css';
 interface ChallengeInfoProps {
     name: string;
     description: string;
-    topic: string;
+    topics?: { id: number; name: string }[];
     sampleInput: string;
     sampleOutput: string;
     author?: {
@@ -17,18 +17,20 @@ interface ChallengeInfoProps {
 export default function ChallengeInfo({
                                           name,
                                           description,
-                                          topic,
+                                          topics = [],
                                           sampleInput,
                                           sampleOutput
                                       }: ChallengeInfoProps) {
     return (
         <div className="challenge-info-container">
-            <div className="challenge-topic-row">
-                {topic && <span className="topic-badge">Тема: {topic}</span>}
-            </div>
-            <div className="challenge-topic-row">
-                <span className="topic-badge">Описание задачи:</span>
-            </div>
+            {topics.length > 0 && (
+                <div className="challenge-topic-row">
+                    {topics.map(t => (
+                        <span key={t.id} className="topic-badge">{t.name}</span>
+                    ))}
+                </div>
+            )}
+            <p className="challenge-section-label">Описание задачи:</p>
             <div className="info-text">
                 {description}
             </div>

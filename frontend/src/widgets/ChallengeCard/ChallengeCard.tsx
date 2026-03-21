@@ -1,5 +1,8 @@
+'use client';
+
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import './ChallengeCard.css';
 
 interface ChallengeCardProps {
@@ -8,9 +11,18 @@ interface ChallengeCardProps {
     description: string;
     difficulty?: number | null;
     timeLimitMs?: number | null;
+    topics?: { id: number; name: string }[];
+    solvedCount?: number;
+    averageRating?: number;
+    author?: { username: string };
+
+    isPickingMode?: boolean;
+    onSelect?: (id: number) => void;
+    isSelectedByMe?: boolean;
+    isSelectedByOpponent?: boolean;
 }
 
-const MAX_DESC_LENGTH = 180;
+const MAX_DESC_LENGTH = 140;
 
 const ChallengeCard: React.FC<ChallengeCardProps> = ({
                                                          id,
@@ -18,6 +30,14 @@ const ChallengeCard: React.FC<ChallengeCardProps> = ({
                                                          description,
                                                          difficulty,
                                                          timeLimitMs,
+                                                         topics,
+                                                         solvedCount,
+                                                         averageRating,
+                                                         author,
+                                                         isPickingMode,
+                                                         onSelect,
+                                                         isSelectedByMe,
+                                                         isSelectedByOpponent
                                                      }) => {
     const shortDescription =
         description.length > MAX_DESC_LENGTH
@@ -29,18 +49,65 @@ const ChallengeCard: React.FC<ChallengeCardProps> = ({
 
     const badgeText = name.slice(0, 2).toUpperCase();
 
+    const isLocked = isSelectedByMe || isSelectedByOpponent;
+
     return (
-        <article className="challenge-card">
+        <article className={`challenge-card ${isSelectedByMe ? 'selected-me' : ''} ${isSelectedByOpponent ? 'selected-opp' : ''}`}>
             <header className="challenge-card-head">
                 <div className="challenge-card-badge">
                     {badgeText}
                 </div>
-                <h2 className="challenge-card-title">{name}</h2>
+                <div className="challenge-card-title-area">
+                    <h2 className="challenge-card-title">{name}</h2>
+                    {topics && topics.length > 0 && (
+                        <div className="challenge-card-topics">
+                            {topics.map(t => (
+                                <span key={t.id} className="challenge-card-topic">{t.name}</span>
+                            ))}
+                        </div>
+                    )}
+                </div>
             </header>
 
             <p className="challenge-card-desc">
                 {shortDescription}
             </p>
+
+            <div className="challenge-card-stats">
+                {}
+                {(averageRating !== undefined && averageRating !== null) && (
+                    <div className="stat-item rating">
+                        <span className="stat-icon">★</span>
+                        <span className="stat-text">{Number(averageRating).toFixed(1)}</span>
+                    </div>
+                )}
+
+                {(solvedCount !== undefined && solvedCount !== null) && (
+                    <div className="stat-item solved">
+                        <Image
+                            src="/images/Challenge/users.png"
+                            alt="users"
+                            width={28}
+                            height={28}
+                            className="stat-image-icon"
+                        />
+                        <span className="stat-text">решили: {Number(solvedCount)}</span>
+                    </div>
+                )}
+
+                {author?.username && (
+                    <div className="stat-item author">
+                        <Image
+                            src="/images/Challenge/автор.png"
+                            alt="author"
+                            width={24}
+                            height={24}
+                            className="stat-image-icon"
+                        />
+                        <span className="stat-text">{author.username}</span>
+                    </div>
+                )}
+            </div>
 
             <div className="challenge-card-meta">
                 <div className="challenge-card-meta-row">
@@ -57,17 +124,27 @@ const ChallengeCard: React.FC<ChallengeCardProps> = ({
                     <span className="challenge-card-meta-value">
                         {typeof timeLimitMs === 'number'
                             ? `${timeLimitMs} мс`
-                            : 'по умолчанию'}
+                            : 'без лимита'}
                     </span>
                 </div>
             </div>
 
             <div className="challenge-card-footer">
-                <Link href={`/challenges/${id}`} className="challenge-card-link">
-                    <button className="challenge-card-btn">
-                        Перейти к задаче
+                {isPickingMode ? (
+                    <button
+                        className={`challenge-card-btn ${isLocked ? 'locked' : ''}`}
+                        onClick={() => !isLocked && onSelect?.(id)}
+                        disabled={isLocked}
+                    >
+                        {isSelectedByMe ? 'Вы выбрали' : isSelectedByOpponent ? 'Выбрал оппонент' : 'Выбрать'}
                     </button>
-                </Link>
+                ) : (
+                    <Link href={`/challenges/${id}`} className="challenge-card-link">
+                        <button className="challenge-card-btn">
+                            Перейти к задаче
+                        </button>
+                    </Link>
+                )}
             </div>
         </article>
     );

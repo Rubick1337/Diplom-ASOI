@@ -109,6 +109,12 @@
     margin-top: 10px;
 }
 
+.empty-state.success {
+    color: #50fa7b;
+    font-style: italic;
+    margin-top: 10px;
+}
+
 .problems-summary {
     gap: 8px;
     margin-top: 8px;
@@ -144,6 +150,13 @@
 .problem-item.error { color: #f87171; }
 .problem-item.warning { color: #fbbf24; }
 
+.prob-icon-wrapper {
+    flex-shrink: 0;
+    display: flex;
+    align-items: flex-start;
+    padding-top: 2px;
+}
+
 .prob-icon {
     font-size: 14px;
     font-weight: bold;
@@ -151,15 +164,34 @@
 }
 
 .prob-msg {
-    flex-grow: 1;
     word-break: break-word;
+    line-height: 1.4;
+}
+
+.prob-content {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex-grow: 1;
+    min-width: 0;
 }
 
 .prob-location {
     flex-shrink: 0;
     color: #4b5563;
     font-size: 11px;
-    margin-left: 10px;
+}
+
+.prob-details {
+    font-size: 11px;
+    color: #8b949e;
+    white-space: pre-wrap;
+    background: #161b22;
+    padding: 5px 8px;
+    border-radius: 4px;
+    margin: 2px 0 0 0;
+    word-break: break-word;
+    border-left: 2px solid #2a2e35;
 }
 
 .problem-item.error .prob-icon {

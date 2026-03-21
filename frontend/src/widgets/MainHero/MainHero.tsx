@@ -16,15 +16,14 @@ type CodeLine = {
     text: string;
     x: number;
     y: number;
-    progress: number;   // сколько уже «напечатано»
-    delay: number;      // задержка перед стартом
+    progress: number;
+    delay: number;
 };
 
 export default function MainHero() {
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
     const mouseRef = useRef<{ x: number; y: number } | null>(null);
 
-    // ====== typing заголовка ======
     const [displayText, setDisplayText] = useState('');
     const [isDeleting, setIsDeleting] = useState(false);
     const [loopNum, setLoopNum] = useState(0);
@@ -60,7 +59,6 @@ export default function MainHero() {
         return () => clearTimeout(t);
     }, [displayText, isDeleting, currentText]);
 
-    // ====== canvas: частицы + вспышки + печатающийся код ======
     useEffect(() => {
         const canvasEl = canvasRef.current;
         if (!canvasEl) return;
@@ -121,7 +119,6 @@ export default function MainHero() {
                     Math.floor(Math.random() * CODE_LINES_SOURCE.length)
                     ];
 
-            // 🔥 ТЕПЕРЬ — ПО ВСЕЙ СЕКЦИИ
             const regionLeft = w * 0.05;
             const regionRight = w * 0.95;
             const regionTop = h * 0.08;
@@ -140,7 +137,7 @@ export default function MainHero() {
                 x,
                 y,
                 progress: 0,
-                // базовая задержка побольше, чтобы всё было неторопливо
+
                 delay: 120 + Math.random() * 80,
             };
         }
@@ -149,7 +146,7 @@ export default function MainHero() {
             codeLines = [];
             for (let i = 0; i < MAX_CODE_LINES; i++) {
                 const line = randomCodeLine();
-                // чтобы не все стартовали одновременно
+
                 line.delay += i * 8;
                 codeLines.push(line);
             }
@@ -201,7 +198,6 @@ export default function MainHero() {
             ctx.fillStyle = bgGradient;
             ctx.fillRect(0, 0, w, h);
 
-            // ===== печатающийся код по всей секции =====
             ctx.save();
             ctx.textBaseline = 'top';
 
@@ -213,7 +209,6 @@ export default function MainHero() {
                     continue;
                 }
 
-                // 🐢 замедлили набор: было 0.25, стало 0.07
                 if (line.progress < line.text.length + 4) {
                     line.progress += 0.07;
                 } else {
@@ -243,13 +238,11 @@ export default function MainHero() {
 
             ctx.restore();
 
-            // редкие «вспышки» частиц
             if (particles.length && Math.random() < 0.02) {
                 const p = particles[Math.floor(Math.random() * particles.length)];
                 p.flash = 1;
             }
 
-            // частицы
             for (const p of particles) {
                 p.x += p.vx;
                 p.y += p.vy;
@@ -282,7 +275,6 @@ export default function MainHero() {
                 }
             }
 
-            // линии между частицами
             ctx.lineWidth = 1;
             for (let i = 0; i < particles.length; i++) {
                 for (let j = i + 1; j < particles.length; j++) {
@@ -302,7 +294,6 @@ export default function MainHero() {
                 }
             }
 
-            // точки + вспышки
             for (const p of particles) {
                 const flashRadius = p.r * (1 + 2.8 * p.flash);
 

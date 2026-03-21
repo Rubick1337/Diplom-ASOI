@@ -86,7 +86,7 @@
 .reveal-btn:hover {
     background: rgba(255, 255, 255, 0.12);
 }
-/* разделитель */
+
 .login-divider {
     margin: 22px 0;
     text-align: center;
@@ -113,14 +113,12 @@
     right: 0;
 }
 
-/* контейнер соц кнопок */
 .social-login {
     display: flex;
     flex-direction: column;
     gap: 12px;
 }
 
-/* кнопка */
 .social-btn {
     width: 100%;
     border-radius: 12px;

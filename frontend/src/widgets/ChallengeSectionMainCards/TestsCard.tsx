@@ -4,7 +4,7 @@ import Subcard from '@/shared/components/Subcard/Subcard';
 export default function TestsCard() {
     return (
         <Subcard
-            iconSrc="/images/SectionMainCards/Test.png"   // ← подставь свой файл
+            iconSrc="/images/SectionMainCards/Test.png"
             iconAlt="Unit tests"
             title="Get instant feedback"
         >

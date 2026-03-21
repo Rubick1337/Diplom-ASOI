@@ -5,6 +5,24 @@ import Image from 'next/image';
 import './TestCaseItem.css';
 import { TestCase } from '@/shared/types/ide';
 
+function renderDiff(expected: string, actual: string) {
+
+    const tokenize = (s: string) => s.match(/\[|\]|\{|\}|"[^"]*"|[^,\[\]{}\s]+|,|\s+/g) || [s];
+    const expTokens = tokenize(expected);
+    const actTokens = tokenize(actual);
+    const maxLen = Math.max(expTokens.length, actTokens.length);
+    return Array.from({ length: maxLen }, (_, i) => {
+        const e = expTokens[i] ?? '';
+        const a = actTokens[i] ?? '';
+        const same = e === a;
+        return (
+            <span key={i} className={same ? 'diff-same' : 'diff-wrong'}>
+                {a || <span className="diff-missing">∅</span>}
+            </span>
+        );
+    });
+}
+
 interface TestCaseItemProps {
     test: TestCase;
     isExpanded: boolean;
@@ -13,6 +31,8 @@ interface TestCaseItemProps {
 const statusAssets = {
     success: '/images/tests/succes.png',
     fail: '/images/tests/fail.png',
+    error: '/images/tests/fail.png',
+    tle: '/images/tests/fail.png',
     idle: '/images/tests/idle.png',
 };
 
@@ -60,11 +80,34 @@ export const TestCaseItem = ({ test, isExpanded }: TestCaseItemProps) => {
                         <code className="value-box">{String(test.expected)}</code>
                     </div>
 
-                    {hasResult && (
+                    {test.status === 'tle' && (
+                        <div className="detail-row">
+                            <span className="label">Result:</span>
+                            <code className="value-box tle-text">⏱ Time Limit Exceeded</code>
+                        </div>
+                    )}
+
+                    {test.status === 'error' && (
+                        <div className="detail-row">
+                            <span className="label">Error:</span>
+                            <code className="value-box runtime-error-text">{String(test.actual)}</code>
+                        </div>
+                    )}
+
+                    {(test.status === 'success' || test.status === 'fail') && hasResult && (
                         <div className="detail-row">
                             <span className="label">Actual:</span>
                             <code className={`value-box ${test.status === 'fail' ? 'error-text' : 'success-text'}`}>
                                 {String(test.actual)}
+                            </code>
+                        </div>
+                    )}
+
+                    {test.status === 'fail' && test.actual !== undefined && test.actual !== test.expected && (
+                        <div className="detail-row">
+                            <span className="label">Diff:</span>
+                            <code className="value-box diff-box">
+                                {renderDiff(String(test.expected), String(test.actual))}
                             </code>
                         </div>
                     )}
