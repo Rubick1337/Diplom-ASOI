@@ -14,14 +14,19 @@
   "type": "commonjs",
   "dependencies": {
     "@astral-sh/ruff-wasm-nodejs": "^0.14.14",
+    "@google/genai": "^1.45.0",
+    "@google/generative-ai": "^0.24.1",
+    "@prettier/plugin-php": "^0.24.0",
     "@prettier/plugin-python": "^0.0.0-development",
     "bcryptjs": "^3.0.2",
     "clang-format": "^1.8.0",
+    "coffeescript": "^2.7.0",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dotenv": "^17.2.2",
     "express": "^5.1.0",
     "express-validator": "^7.2.1",
+    "ioredis": "^5.9.3",
     "jsonwebtoken": "^9.0.2",
     "nodemon": "^3.1.10",
     "passport": "^0.7.0",
@@ -32,6 +37,9 @@
     "redis": "^5.8.2",
     "sequelize": "^6.37.7",
     "sequelize-cli": "^6.6.3",
-    "uuid": "^13.0.0"
+    "socket.io": "^4.8.3",
+    "typescript": "^5.9.3",
+    "uuid": "^13.0.0",
+    "y-socket.io": "^1.1.3"
   }
 }

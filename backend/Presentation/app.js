@@ -10,6 +10,11 @@ const { connectRedis, checkRedisConnection, client } = require("../Data/config/r
 const passport = require('./Auth/passport');
 const cookieParser = require('cookie-parser');
 
+const http = require('http');
+const server = http.createServer(app);
+const initSocket = require('./socket/socket');
+initSocket(server);
+
 app.use(cors({ origin: process.env.CLIENT_URL, credentials: true }));
 app.use(cookieParser());
 app.use(passport.initialize());
@@ -25,14 +30,13 @@ const PORT = process.env.PORT || 8500;
 
 const start = async () => {
     try {
-        // await connectRedis();
-        //
-        // await checkRedisConnection();
+        await connectRedis();
+        await checkRedisConnection();
 
         await sequelize.authenticate();
         await sequelize.sync();
 
-        app.listen(PORT, () => {
+        server.listen(PORT, () => {
             console.log("Server started on port " + PORT);
             console.log("Redis connected: " + (client.isReady ? 'yes' : 'no'));
         });
