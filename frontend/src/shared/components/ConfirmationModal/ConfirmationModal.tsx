@@ -1,6 +1,7 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import Image from 'next/image';
 import './ConfirmationModal.css';
 
@@ -25,28 +26,35 @@ export const ConfirmationModal = ({
                                       onClose,
                                       type = 'warning'
                                   }: ConfirmationModalProps) => {
+
+    useEffect(() => {
+        if (isOpen) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = 'unset';
+        }
+        return () => { document.body.style.overflow = 'unset'; };
+    }, [isOpen]);
+
     if (!isOpen) return null;
 
     const getIconPath = () => {
         switch (type) {
-            case 'warning':
-                return '/images/modal/attention.png';
-            case 'success':
-                return '/images/modal/great.png';
-            default:
-                return '/images/modal/attention.png';
+            case 'warning': return '/images/modal/attention.png';
+            case 'success': return '/images/modal/great.png';
+            default: return '/images/modal/attention.png';
         }
     };
 
-    return (
+    const modalContent = (
         <div className="modal-overlay" onClick={onClose}>
             <div className="modal-card" onClick={e => e.stopPropagation()}>
                 <div className="modal-icon-container">
                     <Image
                         src={getIconPath()}
                         alt={type}
-                        width={64}
-                        height={64}
+                        width={54}
+                        height={54}
                         priority
                     />
                 </div>
@@ -63,4 +71,6 @@ export const ConfirmationModal = ({
             </div>
         </div>
     );
+
+    return createPortal(modalContent, document.body);
 };

@@ -10,7 +10,7 @@ export interface TerminalLog {
 export interface TestCase {
     id: string;
     title: string;
-    status: 'idle' | 'running' | 'success' | 'fail';
+    status: 'idle' | 'running' | 'success' | 'fail' | 'error' | 'tle';
     expected: string;
     actual?: string;
     duration?: number;

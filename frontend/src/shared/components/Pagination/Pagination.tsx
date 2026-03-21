@@ -1,3 +1,5 @@
+'use client';
+
 import React from 'react';
 import './Pagination.css';
 
@@ -7,64 +9,71 @@ interface ChallengePaginationProps {
     onPageChange: (page: number) => void;
 }
 
-const ChallengePagination: React.FC<ChallengePaginationProps> = ({
-                                                                     currentPage,
-                                                                     totalPages,
-                                                                     onPageChange,
-                                                                 }) => {
+export default function ChallengePagination({
+                                                currentPage,
+                                                totalPages,
+                                                onPageChange,
+                                            }: ChallengePaginationProps) {
     if (totalPages <= 1) return null;
 
-    const pages: number[] = [];
-    for (let p = 1; p <= totalPages; p++) {
-        pages.push(p);
-    }
+    const getVisiblePages = () => {
+        const pages: (number | string)[] = [];
+        const range = 2;
 
-    const handlePrev = () => {
-        if (currentPage > 1) {
-            onPageChange(currentPage - 1);
+        for (let i = 1; i <= totalPages; i++) {
+            if (
+                i === 1 ||
+                i === totalPages ||
+                (i >= currentPage - range && i <= currentPage + range)
+            ) {
+                pages.push(i);
+            } else if (
+                i === currentPage - range - 1 ||
+                i === currentPage + range + 1
+            ) {
+                pages.push('...');
+            }
         }
-    };
 
-    const handleNext = () => {
-        if (currentPage < totalPages) {
-            onPageChange(currentPage + 1);
-        }
+        return pages.filter((item, index) => pages.indexOf(item) === index);
     };
 
     return (
         <div className="challenge-pagination">
             <button
                 className="pagination-btn pagination-btn-nav"
-                onClick={handlePrev}
+                onClick={() => onPageChange(currentPage - 1)}
                 disabled={currentPage === 1}
             >
                 ‹
             </button>
 
             <div className="pagination-pages">
-                {pages.map((pageNum) => (
-                    <button
-                        key={pageNum}
-                        className={
-                            'pagination-btn pagination-page' +
-                            (pageNum === currentPage ? ' pagination-page-active' : '')
-                        }
-                        onClick={() => onPageChange(pageNum)}
-                    >
-                        {pageNum}
-                    </button>
+                {getVisiblePages().map((page, index) => (
+                    <React.Fragment key={index}>
+                        {page === '...' ? (
+                            <span className="pagination-ellipsis">...</span>
+                        ) : (
+                            <button
+                                className={`pagination-btn pagination-page ${
+                                    page === currentPage ? 'pagination-page-active' : ''
+                                }`}
+                                onClick={() => onPageChange(page as number)}
+                            >
+                                {page}
+                            </button>
+                        )}
+                    </React.Fragment>
                 ))}
             </div>
 
             <button
                 className="pagination-btn pagination-btn-nav"
-                onClick={handleNext}
+                onClick={() => onPageChange(currentPage + 1)}
                 disabled={currentPage === totalPages}
             >
                 ›
             </button>
         </div>
     );
-};
-
-export default ChallengePagination;
+}

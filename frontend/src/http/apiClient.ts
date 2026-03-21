@@ -21,15 +21,20 @@ $api.interceptors.request.use((config) => {
     return config;
 });
 
+const SKIP_REFRESH_PATHS = ['refresh', 'logout', 'login'];
+
 $api.interceptors.response.use(
     (response) => response,
     async (error) => {
         const originalRequest = error.config;
 
+        const requestUrl: string = originalRequest?.url ?? '';
+        const isSkipped = SKIP_REFRESH_PATHS.some(p => requestUrl.includes(p));
+
         if (
-            error.response &&
-            error.response.status === 401 &&
-            !originalRequest._isRetry
+            error.response?.status === 401 &&
+            !originalRequest._isRetry &&
+            !isSkipped
         ) {
             originalRequest._isRetry = true;
             try {
@@ -44,8 +49,12 @@ $api.interceptors.response.use(
                 }
 
                 return $api.request(originalRequest);
-            } catch (refreshError) {
-                console.error('Не авторизован (refresh не прошёл)', refreshError);
+            } catch {
+
+                if (typeof window !== 'undefined') {
+                    localStorage.removeItem('token');
+                    window.location.href = '/auth/login';
+                }
             }
         }
 

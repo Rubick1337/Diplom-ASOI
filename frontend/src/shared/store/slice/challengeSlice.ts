@@ -6,7 +6,10 @@ import ChallengeService, {
     TestResult,
     SystemError,
     ChallengeHistory,
-    Review
+    Review,
+    GetReviewsParams,
+    GetSolutionsParams,
+    GetChallengesParams, Topic,
 } from '@/shared/services/ChallengeService';
 import { Challenge } from '@/shared/types/challenge';
 
@@ -18,32 +21,34 @@ interface ChallengeState {
     totalPages: number;
     isLoading: boolean;
     error: string | null;
-
     currentChallenge: Challenge | null;
     isCurrentLoading: boolean;
     currentError: string | null;
-
     testResults: TestResult[];
     systemError: SystemError | null;
     isExecuting: boolean;
     executionError: string | null;
     executionTimeMs: number | null;
     isTimeLimitExceeded: boolean;
-
     history: ChallengeHistory[];
     isHistoryLoading: boolean;
-
-    // ОБНОВЛЕННЫЕ ПОЛЯ ДЛЯ РЕШЕНИЙ
     solutions: any[];
     solutionsTotalPages: number;
     solutionsCurrentPage: number;
     isSolutionsLoading: boolean;
-
     reviews: Review[];
     avgRating: number;
+    reviewsTotalPages: number;
+    reviewsCurrentPage: number;
+    reviewsTotalCount: number;
     isReviewsLoading: boolean;
-
     isFormatting: boolean;
+    competitiveTestResults: TestResult[];
+    competitiveSystemError: SystemError | null;
+    competitiveIsExecuting: boolean;
+    topics: Topic[];
+    isTopicsLoading: boolean;
+    xpGained: number | null;
 }
 
 const initialState: ChallengeState = {
@@ -54,37 +59,39 @@ const initialState: ChallengeState = {
     totalPages: 1,
     isLoading: false,
     error: null,
-
     currentChallenge: null,
     isCurrentLoading: false,
     currentError: null,
-
     testResults: [],
     systemError: null,
     isExecuting: false,
     executionError: null,
     executionTimeMs: null,
     isTimeLimitExceeded: false,
-
     history: [],
     isHistoryLoading: false,
-
-    // Инициализация новых полей
     solutions: [],
     solutionsTotalPages: 1,
     solutionsCurrentPage: 1,
     isSolutionsLoading: false,
-
     reviews: [],
     avgRating: 0,
+    reviewsTotalPages: 1,
+    reviewsCurrentPage: 1,
+    reviewsTotalCount: 0,
     isReviewsLoading: false,
-
     isFormatting: false,
+    competitiveTestResults: [],
+    competitiveSystemError: null,
+    competitiveIsExecuting: false,
+    topics: [],
+    isTopicsLoading: false,
+    xpGained: null,
 };
 
 export const fetchChallenges = createAsyncThunk<
     { items: Challenge[]; total: number; page: number; pageSize: number; totalPages: number },
-    { page?: number; pageSize?: number; search?: string },
+    GetChallengesParams,
     { rejectValue: string }
 >('challenges/fetchAll', async (payload, { rejectWithValue }) => {
     try {
@@ -94,17 +101,16 @@ export const fetchChallenges = createAsyncThunk<
     }
 });
 
-export const fetchChallengeById = createAsyncThunk<
-    Challenge,
-    number,
-    { rejectValue: string }
->('challenges/fetchOne', async (id, { rejectWithValue }) => {
-    try {
-        return await ChallengeService.getChallengeById(id);
-    } catch (error: any) {
-        return rejectWithValue(error.message || 'Ошибка загрузки задачи');
+export const fetchChallengeById = createAsyncThunk<Challenge, number, { rejectValue: string }>(
+    'challenges/fetchOne',
+    async (id, { rejectWithValue }) => {
+        try {
+            return await ChallengeService.getChallengeById(id);
+        } catch (error: any) {
+            return rejectWithValue(error.message || 'Ошибка загрузки задачи');
+        }
     }
-});
+);
 
 export const runChallengeTests = createAsyncThunk<
     ExecuteResponse,
@@ -114,8 +120,19 @@ export const runChallengeTests = createAsyncThunk<
     try {
         return await ChallengeService.executeChallenge(payload.id, payload.code, payload.language, payload.userId);
     } catch (error: any) {
-        const message = error.response?.data?.message || 'Сервер не смог обработать запрос';
-        return rejectWithValue(message);
+        return rejectWithValue(error.response?.data?.message || 'Сервер не смог обработать запрос');
+    }
+});
+
+export const runCompetitiveTests = createAsyncThunk<
+    ExecuteResponse,
+    { id: number; code: string; language: string; userId?: number },
+    { rejectValue: string }
+>('challenges/executeCompetitive', async (payload, { rejectWithValue }) => {
+    try {
+        return await ChallengeService.executeChallenge(payload.id, payload.code, payload.language, payload.userId);
+    } catch (error: any) {
+        return rejectWithValue(error.response?.data?.message || 'Ошибка выполнения');
     }
 });
 
@@ -127,36 +144,29 @@ export const fetchChallengeHistory = createAsyncThunk<
     try {
         return await ChallengeService.getHistory(payload.challengeId, payload.userId);
     } catch (error: any) {
-        return rejectWithValue(error.response?.data?.message || 'Ошибка загрузки истории');
+        return rejectWithValue(error.response?.data?.message || 'Ошибка истории');
     }
 });
 
-// ОБНОВЛЕННЫЙ THUNK ДЛЯ ПАГИНАЦИИ РЕШЕНИЙ
 export const fetchCommunitySolutions = createAsyncThunk<
     { items: any[]; totalPages: number; currentPage: number },
-    { challengeId: number; userId: number; page?: number; pageSize?: number },
+    { challengeId: number; userId: number; params?: GetSolutionsParams },
     { rejectValue: string }
 >('challenges/fetchSolutions', async (payload, { rejectWithValue }) => {
     try {
-        console.log(payload.page,payload.pageSize)
-        return await ChallengeService.getSolutions(
-            payload.challengeId,
-            payload.userId,
-            payload.page,
-            payload.pageSize
-        );
+        return await ChallengeService.getSolutions(payload.challengeId, payload.userId, payload.params);
     } catch (error: any) {
-        return rejectWithValue(error.response?.data?.message || 'Решения доступны только после успешного прохождения');
+        return rejectWithValue(error.response?.data?.message || 'Ошибка загрузки решений');
     }
 });
 
 export const fetchReviews = createAsyncThunk<
-    { reviews: Review[]; avgRating: number },
-    number,
+    { reviews: Review[]; avgRating: number; pagination: any },
+    { challengeId: number; params?: GetReviewsParams },
     { rejectValue: string }
->('challenges/fetchReviews', async (challengeId, { rejectWithValue }) => {
+>('challenges/fetchReviews', async (payload, { rejectWithValue }) => {
     try {
-        return await ChallengeService.getReviews(challengeId);
+        return await ChallengeService.getReviews(payload.challengeId, payload.params);
     } catch (error: any) {
         return rejectWithValue(error.response?.data?.message || 'Ошибка загрузки отзывов');
     }
@@ -174,19 +184,27 @@ export const addReview = createAsyncThunk<
     }
 });
 
-export const formatChallengeCode = createAsyncThunk<
-    string,
-    { code: string; language: string },
-    { rejectValue: string }
->('challenges/format', async (payload, { rejectWithValue }) => {
-    try {
-        console.log(payload);
-        return await ChallengeService.formatCode(payload.code, payload.language);
-    } catch (error: any) {
-        return rejectWithValue(error.response?.data?.message || 'Ошибка форматирования');
+export const formatChallengeCode = createAsyncThunk<string, { code: string; language: string }, { rejectValue: string }>(
+    'challenges/format',
+    async (payload, { rejectWithValue }) => {
+        try {
+            return await ChallengeService.formatCode(payload.code, payload.language);
+        } catch (error: any) {
+            return rejectWithValue(error.response?.data?.message || 'Ошибка форматирования');
+        }
     }
-});
+);
 
+export const fetchTopics = createAsyncThunk<Topic[], void, { rejectValue: string }>(
+    'challenges/fetchTopics',
+    async (_, { rejectWithValue }) => {
+        try {
+            return await ChallengeService.getTopics();
+        } catch (error: any) {
+            return rejectWithValue(error.message || 'Ошибка загрузки тем');
+        }
+    }
+);
 const challengeSlice = createSlice({
     name: 'challenges',
     initialState,
@@ -195,32 +213,26 @@ const challengeSlice = createSlice({
             state.items = [];
             state.total = 0;
             state.page = 1;
-            state.error = null;
         },
         clearCurrentChallenge(state) {
             state.currentChallenge = null;
-            state.currentError = null;
             state.testResults = [];
             state.systemError = null;
-            state.executionError = null;
-            state.executionTimeMs = null;
-            state.isTimeLimitExceeded = false;
-            state.history = [];
-            state.solutions = [];
-            state.reviews = [];
-            state.solutionsCurrentPage = 1;
-            state.solutionsTotalPages = 1;
+            state.currentError = null;
         },
         resetTestResults(state) {
             state.testResults = [];
             state.systemError = null;
-            state.executionError = null;
-            state.executionTimeMs = null;
-            state.isTimeLimitExceeded = false;
-        }
+            state.xpGained = null;
+        },
+        resetCompetitiveResults(state) {
+            state.competitiveTestResults = [];
+            state.competitiveSystemError = null;
+        },
     },
     extraReducers: (builder) => {
         builder
+
             .addCase(fetchChallenges.pending, (state) => {
                 state.isLoading = true;
                 state.error = null;
@@ -235,8 +247,9 @@ const challengeSlice = createSlice({
             })
             .addCase(fetchChallenges.rejected, (state, action) => {
                 state.isLoading = false;
-                state.error = action.payload ?? 'Error';
+                state.error = action.payload || 'Ошибка загрузки';
             })
+
             .addCase(fetchChallengeById.pending, (state) => {
                 state.isCurrentLoading = true;
                 state.currentError = null;
@@ -247,42 +260,49 @@ const challengeSlice = createSlice({
             })
             .addCase(fetchChallengeById.rejected, (state, action) => {
                 state.isCurrentLoading = false;
-                state.currentError = action.payload ?? 'Error';
+                state.currentError = action.payload || 'Задача не найдена';
             })
+
             .addCase(runChallengeTests.pending, (state) => {
                 state.isExecuting = true;
-                state.executionError = null;
-                state.systemError = null;
                 state.testResults = [];
-                state.executionTimeMs = null;
-                state.isTimeLimitExceeded = false;
+                state.systemError = null;
             })
             .addCase(runChallengeTests.fulfilled, (state, action: PayloadAction<ExecuteResponse>) => {
                 state.isExecuting = false;
-                state.executionTimeMs = action.payload.executionTimeMs ?? null;
-                state.isTimeLimitExceeded = !!action.payload.isTimeLimitExceeded;
                 state.testResults = action.payload.testResults || [];
+                state.executionTimeMs = action.payload.executionTimeMs ?? null;
+                state.isTimeLimitExceeded = action.payload.isTimeLimitExceeded ?? false;
+                state.xpGained = action.payload.xpGained ?? null;
+                if (!action.payload.success) state.systemError = action.payload.error || null;
+            })
+            .addCase(runChallengeTests.rejected, (state) => {
+                state.isExecuting = false;
+            })
+
+            .addCase(runCompetitiveTests.pending, (state) => {
+                state.competitiveIsExecuting = true;
+                state.competitiveTestResults = [];
+                state.competitiveSystemError = null;
+            })
+            .addCase(runCompetitiveTests.fulfilled, (state, action: PayloadAction<ExecuteResponse>) => {
+                state.competitiveIsExecuting = false;
+                state.competitiveTestResults = action.payload.testResults || [];
                 if (!action.payload.success) {
-                    state.systemError = action.payload.error || null;
+                    state.competitiveSystemError = action.payload.error || null;
                 }
             })
-            .addCase(runChallengeTests.rejected, (state, action) => {
-                state.isExecuting = false;
-                state.executionError = action.payload ?? 'Ошибка запуска';
+            .addCase(runCompetitiveTests.rejected, (state, action) => {
+                state.competitiveIsExecuting = false;
+                state.competitiveSystemError = {
+                    type: 'runtime_error',
+                    message: action.payload || 'Ошибка выполнения',
+                    details: ''
+                };
             })
-            .addCase(fetchChallengeHistory.pending, (state) => {
-                state.isHistoryLoading = true;
-            })
-            .addCase(fetchChallengeHistory.fulfilled, (state, action) => {
-                state.isHistoryLoading = false;
-                state.history = action.payload;
-            })
-            .addCase(fetchChallengeHistory.rejected, (state) => {
-                state.isHistoryLoading = false;
-            })
+
             .addCase(fetchCommunitySolutions.pending, (state) => {
                 state.isSolutionsLoading = true;
-                state.executionError = null;
             })
             .addCase(fetchCommunitySolutions.fulfilled, (state, action) => {
                 state.isSolutionsLoading = false;
@@ -290,11 +310,10 @@ const challengeSlice = createSlice({
                 state.solutionsTotalPages = action.payload.totalPages;
                 state.solutionsCurrentPage = action.payload.currentPage;
             })
-            .addCase(fetchCommunitySolutions.rejected, (state, action) => {
+            .addCase(fetchCommunitySolutions.rejected, (state) => {
                 state.isSolutionsLoading = false;
-                state.executionError = action.payload || 'Доступ закрыт';
-                state.solutions = [];
             })
+
             .addCase(fetchReviews.pending, (state) => {
                 state.isReviewsLoading = true;
             })
@@ -302,10 +321,14 @@ const challengeSlice = createSlice({
                 state.isReviewsLoading = false;
                 state.reviews = action.payload.reviews;
                 state.avgRating = action.payload.avgRating;
+                state.reviewsTotalPages = action.payload.pagination.totalPages;
+                state.reviewsCurrentPage = action.payload.pagination.page;
+                state.reviewsTotalCount = action.payload.pagination.total;
             })
             .addCase(fetchReviews.rejected, (state) => {
                 state.isReviewsLoading = false;
             })
+
             .addCase(addReview.fulfilled, (state, action: PayloadAction<Review>) => {
                 const newReview = action.payload;
                 const existingIndex = state.reviews.findIndex(
@@ -318,19 +341,26 @@ const challengeSlice = createSlice({
                 }
                 const totalRating = state.reviews.reduce((sum, review) => sum + review.rating, 0);
                 state.avgRating = state.reviews.length > 0 ? totalRating / state.reviews.length : 0;
-                state.isReviewsLoading = false;
             })
-            .addCase(formatChallengeCode.pending, (state) => {
-                state.isFormatting = true;
+
+            .addCase(fetchTopics.pending, (state) => {
+                state.isTopicsLoading = true;
             })
-            .addCase(formatChallengeCode.fulfilled, (state) => {
-                state.isFormatting = false;
+            .addCase(fetchTopics.fulfilled, (state, action) => {
+                state.isTopicsLoading = false;
+                state.topics = action.payload;
             })
-            .addCase(formatChallengeCode.rejected, (state) => {
-                state.isFormatting = false;
+            .addCase(fetchTopics.rejected, (state) => {
+                state.isTopicsLoading = false;
             });
     },
 });
 
-export const { resetChallenges, clearCurrentChallenge, resetTestResults } = challengeSlice.actions;
+export const {
+    resetChallenges,
+    clearCurrentChallenge,
+    resetTestResults,
+    resetCompetitiveResults
+} = challengeSlice.actions;
+
 export default challengeSlice.reducer;

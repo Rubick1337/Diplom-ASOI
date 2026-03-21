@@ -15,7 +15,7 @@ export interface Challenge {
     id: number;
     name: string;
     description: string;
-    topic: string;
+    topics: { id: number; name: string }[];
     mode: string;
     funcName: string;
     parameters: ChallengeParameter[];
@@ -29,4 +29,6 @@ export interface Challenge {
         email: string;
     };
     difficulty?: number | null;
+    solvedCount?: number;
+    averageRating?: number;
 }

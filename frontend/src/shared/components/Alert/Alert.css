@@ -28,7 +28,6 @@
     flex: 1;
 }
 
-/* ----- Close button ----- */
 .custom-alert-close {
     background: none;
     border: none;
@@ -43,7 +42,6 @@
     opacity: 1;
 }
 
-/* ----- Types ----- */
 .custom-alert_success {
     background: #e8fff0;
     color: #0f8a41;

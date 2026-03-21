@@ -8,6 +8,8 @@ export interface AuthUser {
     username: string;
     email: string;
     role: number;
+    roleName: string | null;
+    experience: number;
 }
 
 export interface AuthResponse {
@@ -17,83 +19,29 @@ export interface AuthResponse {
 }
 
 export default class AuthService {
-    static async login(login: string, password: string): Promise<AuthResponse> {
-        try {
-            const { data } = await $api.post(API_ENDPOINTS.USER.LOGIN, {
-                login,
-                password,
-            });
-
-            const authResponse: AuthResponse = {
-                accessToken: data.accessToken,
-                refreshToken: data.refreshToken,
-                user: {
-                    id: data.user.id,
-                    username: data.user.username,
-                    email: data.user.email,
-                    role: data.user.role,
-                },
-            };
-
-            return authResponse;
-        } catch (error: unknown) {
-            // аккуратно сужаем unknown
-            if (typeof error === 'object' && error !== null) {
-                const err = error as {
-                    response?: { data?: { message?: string } };
-                    request?: unknown;
-                    message?: string;
-                };
-
-                if (err.response) {
-                    console.error('Server Error:', err.response.data);
-                    throw new Error(
-                        err.response.data?.message ||
-                        'Неизвестная ошибка при авторизации'
-                    );
-                }
-
-                if (err.request) {
-                    console.error('Request Error:', err.request);
-                    throw new Error('Не удалось установить соединение с сервером');
-                }
-
-                if (typeof err.message === 'string') {
-                    console.error('Error:', err.message);
-                    throw new Error('Ошибка при настройке запроса');
-                }
-            }
-
-            console.error('Unknown auth error:', error);
-            throw new Error('Неизвестная ошибка при авторизации');
-        }
-    }
-
-    static async registration(
-        username: string,
-        email: string,
-        password: string,
-        role: number
-    ): Promise<AuthResponse> {
-        const { data } = await $api.post(API_ENDPOINTS.USER.REGISTRATION, {
-            username,
-            email,
-            password,
-            role,
-        });
-
-        const authResponse: AuthResponse = {
+    private static mapResponse(data: any): AuthResponse {
+        return {
             accessToken: data.accessToken,
             refreshToken: data.refreshToken,
             user: {
                 id: data.user.id,
                 username: data.user.username,
                 email: data.user.email,
-                role: data.user.role,
+                role: data.user.role ?? data.user.roleId,
+                roleName: data.user.roleName ?? null,
+                experience: data.user.experience || 0,
             },
         };
+    }
 
-        return authResponse;
+    static async login(login: string, password: string): Promise<AuthResponse> {
+        const { data } = await $api.post(API_ENDPOINTS.USER.LOGIN, { login, password });
+        return this.mapResponse(data);
+    }
+
+    static async registration(username: string, email: string, password: string, role: number): Promise<AuthResponse> {
+        const { data } = await $api.post(API_ENDPOINTS.USER.REGISTRATION, { username, email, password, role });
+        return this.mapResponse(data);
     }
 
     static async logout(): Promise<void> {
@@ -101,21 +49,7 @@ export default class AuthService {
     }
 
     static async refresh(): Promise<AuthResponse> {
-        const { data } = await $api.get(API_ENDPOINTS.USER.REFRESH, {
-            withCredentials: true,
-        });
-
-        const authResponse: AuthResponse = {
-            accessToken: data.accessToken,
-            refreshToken: data.refreshToken,
-            user: {
-                id: data.user.id,
-                username: data.user.username,
-                email: data.user.email,
-                role: data.user.role,
-            },
-        };
-
-        return authResponse;
+        const { data } = await $api.get(API_ENDPOINTS.USER.REFRESH, { withCredentials: true });
+        return this.mapResponse(data);
     }
 }

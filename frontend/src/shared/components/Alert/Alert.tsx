@@ -7,7 +7,7 @@ interface AlertProps {
     type: 'success' | 'error' | 'warning' | 'info';
     message: string;
     onClose: () => void;
-    duration?: number; 
+    duration?: number;
 }
 
 export default function Alert({ type, message, onClose, duration = 3000 }: AlertProps) {

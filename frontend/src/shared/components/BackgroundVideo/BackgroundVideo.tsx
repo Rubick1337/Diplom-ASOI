@@ -7,7 +7,6 @@ interface BackgroundVideoProps {
     className?: string;
 }
 
-
 export default function  BackgroundVideo ({
                              src,
                              className = ""
@@ -24,4 +23,3 @@ export default function  BackgroundVideo ({
         </video>
     );
 };
-

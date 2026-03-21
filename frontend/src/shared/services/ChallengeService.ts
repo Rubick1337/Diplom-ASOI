@@ -25,13 +25,11 @@ export interface ChallengeHistory {
 export interface Review {
     userId: number;
     challengeId: number;
-    id?: number;
     content: string;
     rating: number;
     createdAt: string;
     user?: { username: string };
 }
-
 
 export interface ChallengeListResult {
     items: Challenge[];
@@ -47,6 +45,12 @@ export interface SystemError {
     details: string;
 }
 
+export interface GetReviewsParams {
+    page?: number;
+    pageSize?: number;
+    sort?: 'newest' | 'oldest' | 'highest' | 'lowest';
+}
+
 export interface ExecuteResponse {
     challengeId: number;
     language: string;
@@ -55,49 +59,80 @@ export interface ExecuteResponse {
     error?: SystemError;
     executionTimeMs?: number;
     isTimeLimitExceeded?: boolean;
+    xpGained?: number;
+}
+
+export interface GetSolutionsParams {
+    page?: number;
+    pageSize?: number;
+    language?: string;
+    sort?: 'newest' | 'oldest';
+}
+
+export interface GetChallengesParams {
+    page?: number;
+    pageSize?: number;
+    search?: string;
+    topicId?: number;
+    difficulty?: number | 'all';
+    sort?: string;
+}
+
+export interface Topic {
+    id: number;
+    name: string;
 }
 
 export default class ChallengeService {
     private static mapDto(dto: any): Challenge {
+        const data = dto.dataValues ? dto.dataValues : dto;
+
         return {
-            id: dto.id,
-            name: dto.name,
-            description: dto.description,
-            topic: dto.topic || 'General',
-            mode: dto.mode || 'harness',
-            funcName: dto.funcName || 'solution',
-            timeLimitMs: dto.timeLimitMs ?? 2000,
-            sampleInput: dto.sampleInput || '',
-            sampleOutput: dto.sampleOutput || '',
-            difficulty: dto.difficulty ?? null,
-            author: dto.author,
-            parameters: (dto.parameters || []).map((p: any): ChallengeParameter => ({
+            id: data.id,
+            name: data.name,
+            description: data.description,
+            topics: Array.isArray(data.topics) ? data.topics : [],
+            mode: data.mode || 'harness',
+            funcName: data.funcName || 'solution',
+            timeLimitMs: data.timeLimitMs,
+            difficulty: data.difficulty !== null && data.difficulty !== undefined
+                ? Number(data.difficulty)
+                : null,
+            solvedCount: data.solvedCount !== undefined ? Number(data.solvedCount) : 0,
+            averageRating: data.averageRating !== undefined ? Number(data.averageRating) : 0,
+            sampleInput: data.sampleInput || '',
+            sampleOutput: data.sampleOutput || '',
+            author: data.author ? {
+                id: data.author.id,
+                username: data.author.username,
+                email: data.author.email
+            } : undefined,
+            parameters: (data.parameters || []).map((p: any): ChallengeParameter => ({
                 name: p.name,
                 type: (p.dataType || p.type || 'string') as ChallengeParameter['type']
             })),
-            testCases: (dto.testCases || []).map((tc: any): ChallengeTestCase => ({
+            testCases: (data.testCases || []).map((tc: any): ChallengeTestCase => ({
                 id: tc.id,
                 challengeId: tc.challengeId,
                 title: tc.title || `Test ${tc.id}`,
                 expectedOutput: tc.expectedOutput,
-                inputArgs: (tc.testArgs || [])
-                    .sort((a: any, b: any) => a.order - b.order)
-                    .map((arg: any) => arg.value)
+                inputArgs: (tc.testArgs || []).map((arg: any) => arg.value)
             })),
         };
     }
 
-    static async getChallenges(params: {
-        page?: number;
-        pageSize?: number;
-        search?: string;
-    }): Promise<ChallengeListResult> {
-        const query: Record<string, string | number> = {};
+    static async getChallenges(params: GetChallengesParams): Promise<ChallengeListResult> {
+        const query: Record<string, any> = {};
+
         if (params.page) query.page = params.page;
         if (params.pageSize) query.pageSize = params.pageSize;
         if (params.search?.trim()) query.search = params.search.trim();
+        if (params.topicId) query.topicId = params.topicId;
+        if (params.difficulty && params.difficulty !== 'all') query.difficulty = params.difficulty;
+        if (params.sort) query.sort = params.sort;
 
         const { data } = await $api.get<any>(API_ENDPOINTS.CHALLENGE.GET_ALL, { params: query });
+
         return {
             items: data.items.map((dto: any) => this.mapDto(dto)),
             total: data.total,
@@ -113,7 +148,6 @@ export default class ChallengeService {
     }
 
     static async executeChallenge(id: number, code: string, language: string, userId?: number): Promise<ExecuteResponse> {
-        console.log(userId);
         const { data } = await $api.post<ExecuteResponse>(
             API_ENDPOINTS.CHALLENGE.EXECUTE(id),
             { code, language, userId }
@@ -137,13 +171,22 @@ export default class ChallengeService {
         return data;
     }
 
-    static async getSolutions(challengeId: number, userId: number, page: number = 1, pageSize: number = 6
+    static async getSolutions(
+        challengeId: number,
+        userId: number,
+        params: GetSolutionsParams = {}
     ): Promise<{ items: any[], totalPages: number, currentPage: number }> {
-        console.log(page)
-        console.log(pageSize)
         const { data } = await $api.get<any>(
             API_ENDPOINTS.CHALLENGE.GET_SOLUTIONS(challengeId),
-            { params: { userId, page, pageSize } }
+            {
+                params: {
+                    userId,
+                    page: params.page || 1,
+                    pageSize: params.pageSize || 6,
+                    language: params.language === 'all' ? undefined : params.language,
+                    sort: params.sort || 'newest'
+                }
+            }
         );
         return {
             items: data.items,
@@ -152,11 +195,15 @@ export default class ChallengeService {
         };
     }
 
-    static async getReviews(challengeId: number): Promise<{ reviews: Review[], avgRating: number }> {
-        const { data } = await $api.get<{ reviews: Review[], avgRating: number }>(
-            API_ENDPOINTS.CHALLENGE.GET_REVIEWS(challengeId)
+    static async getReviews(challengeId: number, params: GetReviewsParams = {}): Promise<{
+        reviews: Review[],
+        avgRating: number,
+        pagination: { total: number, page: number, totalPages: number }
+    }> {
+        const { data } = await $api.get<any>(
+            API_ENDPOINTS.CHALLENGE.GET_REVIEWS(challengeId),
+            { params }
         );
-        console.log(data)
         return data;
     }
 
@@ -166,5 +213,46 @@ export default class ChallengeService {
             { userId, content, rating }
         );
         return data;
+    }
+
+    static async generateChallenge(prompt: string): Promise<any> {
+        const { data } = await $api.post(API_ENDPOINTS.CHALLENGE.AI_GENERATE, { prompt });
+        return data;
+    }
+
+    static async createChallenge(data: any): Promise<Challenge> {
+        const response = await $api.post(API_ENDPOINTS.CHALLENGE.CREATE, data);
+        return response.data;
+    }
+
+    static async verifyChallenge(payload: {
+        funcName: string;
+        timeLimitMs: number;
+        testCases: any[];
+        code: string;
+        language: string;
+        parameters?: any[];
+    }): Promise<ExecuteResponse> {
+        const { data } = await $api.post<ExecuteResponse>(API_ENDPOINTS.CHALLENGE.VERIFY, payload);
+        return data;
+    }
+
+    static async getTopics(): Promise<Topic[]> {
+        const { data } = await $api.get<Topic[]>(API_ENDPOINTS.CHALLENGE.GET_TOPICS);
+        return data;
+    }
+
+    static async createTopic(name: string): Promise<Topic> {
+        const { data } = await $api.post<Topic>(API_ENDPOINTS.CHALLENGE.CREATE_TOPIC, { name });
+        return data;
+    }
+
+    static async getReportReasons(challengeId: number): Promise<{ id: number; name: string }[]> {
+        const { data } = await $api.get(API_ENDPOINTS.CHALLENGE.GET_REPORT_REASONS(challengeId));
+        return data;
+    }
+
+    static async createReport(challengeId: number, userId: number, reasonId: number | null, reasonText: string): Promise<void> {
+        await $api.post(API_ENDPOINTS.CHALLENGE.CREATE_REPORT(challengeId), { userId, reasonId, reasonText });
     }
 }

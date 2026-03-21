@@ -8,6 +8,7 @@ interface AuthState {
     isLoading: boolean;
     error: string | null;
     isAuth: boolean;
+    isInitialized: boolean;
 }
 
 const initialState: AuthState = {
@@ -15,27 +16,18 @@ const initialState: AuthState = {
     isLoading: false,
     error: null,
     isAuth: false,
+    isInitialized: false,
 };
 
-// === Thunks ===
-
-export const login = createAsyncThunk<
-    AuthResponse,
-    { login: string; password: string },
-    { rejectValue: string }
->(
+export const login = createAsyncThunk<AuthResponse, { login: string; password: string }, { rejectValue: string }>(
     'auth/login',
     async (payload, { rejectWithValue }) => {
         try {
             const res = await AuthService.login(payload.login, payload.password);
-            if (typeof window !== 'undefined') {
-                localStorage.setItem('token', res.accessToken);
-            }
+            localStorage.setItem('token', res.accessToken);
             return res;
-        } catch (error: unknown) {
-            const message =
-                error instanceof Error ? error.message : 'Ошибка при входе';
-            return rejectWithValue(message);
+        } catch (error: any) {
+            return rejectWithValue(error.response?.data?.message || 'Ошибка входа');
         }
     }
 );
@@ -54,69 +46,53 @@ export const registration = createAsyncThunk<
                 payload.password,
                 payload.role
             );
-            if (typeof window !== 'undefined') {
-                localStorage.setItem('token', res.accessToken);
-            }
+            localStorage.setItem('token', res.accessToken);
             return res;
-        } catch (error: unknown) {
-            const message =
-                error instanceof Error ? error.message : 'Ошибка при регистрации';
-            return rejectWithValue(message);
+        } catch (error: any) {
+            return rejectWithValue(error.response?.data?.message || 'Ошибка при регистрации');
         }
     }
 );
 
-export const logout = createAsyncThunk<void, void, { rejectValue: string }>(
-    'auth/logout',
-    async (_: void, { rejectWithValue }) => {
-        try {
-            await AuthService.logout();
-            if (typeof window !== 'undefined') {
-                localStorage.removeItem('token');
-            }
-        } catch (error: unknown) {
-            const message =
-                error instanceof Error ? error.message : 'Ошибка при выходе';
-            return rejectWithValue(message);
-        }
+export const logout = createAsyncThunk('auth/logout', async () => {
+    try {
+        await AuthService.logout();
+    } finally {
+        localStorage.removeItem('token');
     }
-);
+});
 
-export const checkAuth = createAsyncThunk<
-    AuthResponse,
-    void,
-    { rejectValue: string }
->(
+export const checkAuth = createAsyncThunk<AuthResponse, void, { rejectValue: string }>(
     'auth/checkAuth',
-    async (_: void, { rejectWithValue }) => {
+    async (_, { rejectWithValue }) => {
         try {
             const res = await AuthService.refresh();
-            if (typeof window !== 'undefined') {
-                localStorage.setItem('token', res.accessToken);
-            }
+            localStorage.setItem('token', res.accessToken);
             return res;
-        } catch (error: unknown) {
-            const message =
-                error instanceof Error ? error.message : 'Не авторизован';
-            return rejectWithValue(message);
+        } catch (e) {
+            return rejectWithValue('Не авторизован');
         }
     }
 );
-
-// === Slice ===
 
 const authSlice = createSlice({
     name: 'auth',
     initialState,
     reducers: {
-        setUserFromStorage(state, action: PayloadAction<AuthUser | null>) {
-            state.user = action.payload;
-            state.isAuth = !!action.payload;
+
+        addExperience(state, action: PayloadAction<number>) {
+            if (state.user) {
+                state.user.experience += action.payload;
+            }
         },
+
+        clearAuthError(state) {
+            state.error = null;
+        }
     },
     extraReducers: (builder) => {
         builder
-            // LOGIN
+
             .addCase(login.pending, (state) => {
                 state.isLoading = true;
                 state.error = null;
@@ -124,16 +100,14 @@ const authSlice = createSlice({
             .addCase(login.fulfilled, (state, action) => {
                 state.isLoading = false;
                 state.isAuth = true;
+                state.isInitialized = true;
                 state.user = action.payload.user;
-                state.error = null;
             })
             .addCase(login.rejected, (state, action) => {
                 state.isLoading = false;
-                state.error = action.payload ?? 'Ошибка входа';
-                state.isAuth = false;
+                state.error = action.payload as string;
             })
 
-            // REGISTRATION
             .addCase(registration.pending, (state) => {
                 state.isLoading = true;
                 state.error = null;
@@ -141,37 +115,40 @@ const authSlice = createSlice({
             .addCase(registration.fulfilled, (state, action) => {
                 state.isLoading = false;
                 state.isAuth = true;
+                state.isInitialized = true;
                 state.user = action.payload.user;
             })
             .addCase(registration.rejected, (state, action) => {
                 state.isLoading = false;
-                state.error = action.payload ?? 'Ошибка регистрации';
+                state.error = action.payload as string;
             })
 
-            // LOGOUT
             .addCase(logout.fulfilled, (state) => {
                 state.isAuth = false;
                 state.user = null;
                 state.error = null;
             })
 
-            // CHECK AUTH
             .addCase(checkAuth.pending, (state) => {
                 state.isLoading = true;
             })
             .addCase(checkAuth.fulfilled, (state, action) => {
                 state.isLoading = false;
                 state.isAuth = true;
+                state.isInitialized = true;
                 state.user = action.payload.user;
-                state.error = null;
             })
             .addCase(checkAuth.rejected, (state) => {
                 state.isLoading = false;
-                state.isAuth = false;
-                state.user = null;
+                state.isInitialized = true;
+
+                if (!state.isAuth) {
+                    state.isAuth = false;
+                    state.user = null;
+                }
             });
     },
 });
 
-export const { setUserFromStorage } = authSlice.actions;
+export const { addExperience, clearAuthError } = authSlice.actions;
 export default authSlice.reducer;
