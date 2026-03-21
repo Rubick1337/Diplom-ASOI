@@ -5,6 +5,7 @@ class User {
                     password = null,
                     email,
                     role,
+                    roleName = null,
                     refreshToken = null,
                     googleId = null,
                     githubId = null,
@@ -15,6 +16,7 @@ class User {
         this.password = password;
         this.email = email;
         this.role = role;
+        this.roleName = roleName;
         this.refreshToken = refreshToken;
         this.googleId = googleId;
         this.githubId = githubId;

@@ -4,10 +4,11 @@ class UserResponseDto {
         this.username = userEntity.username;
         this.email = userEntity.email;
         this.role = userEntity.role;
+        this.roleName = userEntity.roleName;
         this.googleId = userEntity.googleId;
         this.githubId = userEntity.githubId;
         this.experience = userEntity.experience;
-        // пароль и refreshToken наружу не отдаём
+
     }
 }
 

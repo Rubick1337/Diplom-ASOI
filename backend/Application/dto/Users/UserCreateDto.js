@@ -1,6 +1,6 @@
 
 class UserCreateDto {
-    constructor({ username, password, email, role = 0, googleId = null, githubId = null }) {
+    constructor({ username, password, email, role = 3, googleId = null, githubId = null }) {
         this.username = username;
         this.password = password;
         this.email = email;

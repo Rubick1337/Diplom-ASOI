@@ -2,6 +2,9 @@ const { Op } = require('sequelize');
 const IUserRepository = require('../../Domain/repository/IUserRepository');
 const UserEntity = require('../../Domain/entities/User');
 const UserModel = require('../models/UserModel');
+const RoleModel = require('../models/RoleModel');
+
+const ROLE_INCLUDE = [{ model: RoleModel, as: 'role', attributes: ['name'] }];
 
 class UserRepositorySequelize extends IUserRepository {
 
@@ -14,7 +17,8 @@ class UserRepositorySequelize extends IUserRepository {
             username: data.username,
             password: data.password,
             email: data.email,
-            role: data.role,
+            role: data.roleId ?? data.role,
+            roleName: data.role?.name ?? null,
             refreshToken: data.refreshToken,
             googleId: data.googleId,
             githubId: data.githubId,
@@ -79,12 +83,12 @@ class UserRepositorySequelize extends IUserRepository {
 
     async findOne(filter = {}) {
         const where = this.buildWhere(filter);
-        const row = await UserModel.findOne({ where });
+        const row = await UserModel.findOne({ where, include: ROLE_INCLUDE });
         return this.mapToEntity(row);
     }
 
     async findById(id) {
-        const row = await UserModel.findByPk(id);
+        const row = await UserModel.findByPk(id, { include: ROLE_INCLUDE });
         return this.mapToEntity(row);
     }
 
@@ -123,7 +127,7 @@ class UserRepositorySequelize extends IUserRepository {
             username: userEntity.username,
             password: userEntity.password,
             email: userEntity.email,
-            role: userEntity.role,
+            roleId: userEntity.role,
             refreshToken: userEntity.refreshToken,
             googleId: userEntity.googleId,
             githubId: userEntity.githubId,
@@ -139,7 +143,7 @@ class UserRepositorySequelize extends IUserRepository {
                 username: userEntity.username,
                 password: userEntity.password,
                 email: userEntity.email,
-                role: userEntity.role,
+                roleId: userEntity.role,
                 refreshToken: userEntity.refreshToken,
                 googleId: userEntity.googleId,
                 githubId: userEntity.githubId,
