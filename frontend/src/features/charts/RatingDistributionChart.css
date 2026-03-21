@@ -1,0 +1,11 @@
+.rating-dist-scroll {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.rating-dist-scroll::-webkit-scrollbar { height: 4px; }
+.rating-dist-scroll::-webkit-scrollbar-track { background: #0b1120; border-radius: 2px; }
+.rating-dist-scroll::-webkit-scrollbar-thumb { background: #1a2b42; border-radius: 2px; }
+.rating-dist-scroll::-webkit-scrollbar-thumb:hover { background: #00e5b044; }
+
+.rating-dist-inner { width: 100%; }

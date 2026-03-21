@@ -1,0 +1,11 @@
+.exp-dist-scroll {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.exp-dist-scroll::-webkit-scrollbar { height: 4px; }
+.exp-dist-scroll::-webkit-scrollbar-track { background: #0b1120; border-radius: 2px; }
+.exp-dist-scroll::-webkit-scrollbar-thumb { background: #1a2b42; border-radius: 2px; }
+.exp-dist-scroll::-webkit-scrollbar-thumb:hover { background: #00e5b044; }
+
+.exp-dist-inner { width: 100%; }

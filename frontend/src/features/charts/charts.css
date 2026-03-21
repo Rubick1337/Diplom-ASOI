@@ -1,0 +1,10 @@
+.chart-scroll {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+.chart-scroll::-webkit-scrollbar { height: 4px; }
+.chart-scroll::-webkit-scrollbar-track { background: #0b1120; border-radius: 2px; }
+.chart-scroll::-webkit-scrollbar-thumb { background: #1a2b42; border-radius: 2px; }
+.chart-scroll::-webkit-scrollbar-thumb:hover { background: #00e5b044; }
+
+.chart-inner { width: 100%; }
