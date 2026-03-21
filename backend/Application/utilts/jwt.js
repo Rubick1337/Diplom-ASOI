@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 
-const ACCESS_TOKEN_TTL = '15m';           // время жизни access токена
-const REFRESH_TOKEN_TTL = '7d';           // время жизни refresh токена
+const ACCESS_TOKEN_TTL = '15m';
+const REFRESH_TOKEN_TTL = '7d';
 
 const ACCESS_TOKEN_SECRET = process.env.JWT_ACCESS_SECRET || 'access_secret_dev';
 const REFRESH_TOKEN_SECRET = process.env.JWT_REFRESH_SECRET || 'refresh_secret_dev';

@@ -1,4 +1,3 @@
-// domain/repository/IUserRepository.js
 
 class IUserRepository {
 

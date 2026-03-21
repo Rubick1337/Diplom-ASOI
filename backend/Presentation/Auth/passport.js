@@ -8,7 +8,6 @@ const UserService = require('../../Application/services/UserService');
 const userRepository = new UserRepositorySequelize();
 const userService = new UserService(userRepository);
 
-// Google
 passport.use(
     new GoogleStrategy(
         {
@@ -29,7 +28,6 @@ passport.use(
     )
 );
 
-// GitHub
 passport.use(
     new GitHubStrategy(
         {
