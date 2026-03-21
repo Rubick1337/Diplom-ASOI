@@ -1,0 +1,224 @@
+
+.usb-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 52px;
+    background: #111;
+    border-right: 1px solid #1e1e1e;
+    z-index: 50;
+    overflow: hidden;
+    transition: width 0.25s ease;
+    display: flex;
+    flex-direction: column;
+}
+.usb-sidebar:hover { width: 240px; }
+
+.usb-list {
+    list-style: none;
+    margin: 0;
+    padding: 82px 0 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex: 1;
+}
+
+.usb-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    width: 100%;
+    padding: 11px 17px;
+    background: transparent;
+    border: none;
+    border-left: 3px solid transparent;
+    cursor: pointer;
+    font-family: inherit;
+    text-align: left;
+    white-space: nowrap;
+    color: inherit;
+    transition: background 0.12s;
+}
+.usb-item:hover { background: rgba(255,255,255,0.04); }
+.usb-item--active { background: rgba(255,107,53,0.06); border-left-color: #FF6B35; }
+
+.usb-icon {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+    color: #444;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.15s;
+}
+.usb-item:hover .usb-icon { color: #aaa; }
+.usb-item--active .usb-icon { color: #FF6B35; }
+
+.usb-text {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    opacity: 0;
+    transition: opacity 0.15s ease 0.06s;
+    overflow: hidden;
+    pointer-events: none;
+}
+.usb-sidebar:hover .usb-text { opacity: 1; pointer-events: auto; }
+
+.usb-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #ccc;
+    letter-spacing: 0.2px;
+}
+.usb-item--active .usb-label { color: #fff; }
+.usb-desc {
+    font-size: 11px;
+    color: #444;
+}
+
+.usb-bottom {
+    padding: 8px 0 12px;
+    border-top: 1px solid #1e1e1e;
+}
+.usb-item--logout:hover .usb-icon { color: #f87171; }
+.usb-label--logout { color: #666; }
+.usb-item--logout:hover .usb-label--logout { color: #f87171; }
+
+.usb-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.65);
+    backdrop-filter: blur(3px);
+    z-index: 180;
+    animation: usb-fade 0.15s ease;
+}
+.usb-overlay--open {
+    display: block;
+}
+@keyframes usb-fade {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+}
+
+.usb-drawer {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 260px;
+    background: #111;
+    border-left: 1px solid #222;
+    display: flex;
+    flex-direction: column;
+    animation: usb-slide 0.2s ease;
+}
+@keyframes usb-slide {
+    from { transform: translateX(100%); }
+    to   { transform: translateX(0); }
+}
+
+.usb-drawer__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 20px 16px;
+    border-bottom: 1px solid #1e1e1e;
+}
+.usb-drawer__title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #fff;
+}
+.usb-drawer__close {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    width: 32px;
+    height: 32px;
+    background: #1a1a1a;
+    border: 1px solid #2a2a2a;
+    border-radius: 8px;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: border-color 0.15s;
+}
+.usb-drawer__close:hover { border-color: #FF6B35; }
+.usb-drawer__close span {
+    display: block;
+    width: 16px;
+    height: 1.5px;
+    background: #666;
+    border-radius: 2px;
+    transition: transform 0.22s ease, opacity 0.15s ease, width 0.22s ease, background 0.15s;
+    transform-origin: center;
+}
+.usb-drawer__close:hover span { background: #ccc; }
+
+.usb-drawer__close--open span:first-child  { transform: translateY(5.5px) rotate(45deg); }
+.usb-drawer__close--open span:nth-child(2) { opacity: 0; width: 0; }
+.usb-drawer__close--open span:last-child   { transform: translateY(-5.5px) rotate(-45deg); }
+
+.usb-drawer__list {
+    list-style: none;
+    margin: 0;
+    padding: 8px 0;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    overflow-y: auto;
+}
+
+.usb-drawer__item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    width: 100%;
+    padding: 13px 20px;
+    background: transparent;
+    border: none;
+    border-left: 3px solid transparent;
+    cursor: pointer;
+    font-family: inherit;
+    text-align: left;
+    transition: background 0.12s;
+}
+.usb-drawer__item:hover { background: rgba(255,255,255,0.04); }
+.usb-drawer__item--active { background: rgba(255,107,53,0.07); border-left-color: #FF6B35; }
+
+.usb-drawer__icon {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+    color: #555;
+    display: flex;
+    align-items: center;
+}
+.usb-drawer__item:hover .usb-drawer__icon { color: #ccc; }
+.usb-drawer__item--active .usb-drawer__icon { color: #FF6B35; }
+
+.usb-drawer__label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #bbb;
+}
+.usb-drawer__item--active .usb-drawer__label { color: #fff; }
+
+.usb-drawer__bottom {
+    padding: 8px 0 16px;
+    border-top: 1px solid #1e1e1e;
+}
+.usb-drawer__item--logout:hover .usb-drawer__icon { color: #f87171; }
+.usb-drawer__label--logout { color: #555; }
+.usb-drawer__item--logout:hover .usb-drawer__label--logout { color: #f87171; }
+
+@media (max-width: 768px) {
+    .usb-sidebar { display: none; }
+}

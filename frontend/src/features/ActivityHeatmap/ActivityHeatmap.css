@@ -1,0 +1,119 @@
+.ahm-root {
+    background: #111;
+    border: 1px solid #1e1e1e;
+    border-radius: 12px;
+    padding: 18px 20px 16px;
+}
+
+.ahm-header {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+.ahm-title-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+.ahm-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+}
+.ahm-year-tabs {
+    display: flex;
+    gap: 4px;
+}
+.ahm-year-btn {
+    background: none;
+    border: 1px solid #2a2a2a;
+    color: #555;
+    border-radius: 6px;
+    padding: 3px 10px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: color .15s, border-color .15s;
+}
+.ahm-year-btn:hover { color: #888; border-color: #3a3a3a; }
+.ahm-year-btn.active {
+    color: #FF6B35;
+    border-color: rgba(255,107,53,0.4);
+    background: rgba(255,107,53,0.08);
+}
+.ahm-stats {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+}
+.ahm-stat {
+    font-size: 12px;
+    color: #777;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+.ahm-stat b { font-weight: 700; font-size: 13px; }
+.ahm-dim { font-size: 11px; color: #3a3a3a; }
+
+.ahm-wrap {
+    position: relative;
+    overflow-x: auto;
+    padding-bottom: 2px;
+}
+
+.ahm-month-text {
+    font-size: 10px;
+    fill: #555;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+.ahm-day-text {
+    font-size: 9px;
+    fill: #444;
+    text-anchor: end;
+    dominant-baseline: middle;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+.ahm-cell-rect {
+    cursor: pointer;
+    transition: opacity .1s;
+}
+.ahm-cell-rect:hover { opacity: .75; }
+
+.ahm-tooltip {
+    position: absolute;
+    background: #1e1e1e;
+    border: 1px solid #333;
+    color: #ccc;
+    font-size: 11px;
+    padding: 5px 10px;
+    border-radius: 6px;
+    white-space: nowrap;
+    pointer-events: none;
+    z-index: 20;
+    transform: translateX(-50%);
+}
+.ahm-tooltip-arrow {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border: 4px solid transparent;
+    border-top-color: #333;
+}
+
+.ahm-legend {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    margin-top: 10px;
+    justify-content: flex-end;
+}
+.ahm-legend .ahm-dim { margin: 0 2px; }
