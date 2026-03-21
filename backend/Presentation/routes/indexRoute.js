@@ -3,9 +3,11 @@ const router = new Router();
 const userRouter = require("./userRouter");
 const authRouter = require('./authRouter');
 const challengeRouter = require("./challengeRouter");
+const adminRouter = require('./adminRouter');
 
 router.use("/users", userRouter);
 router.use('/auth', authRouter);
 router.use("/challenges", challengeRouter);
+router.use('/admin', adminRouter);
 
 module.exports = router
