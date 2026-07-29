@@ -182,6 +182,47 @@ class AdminController {
     async deleteTopic(req, res, next) {
         try { res.json(await adminService.deleteTopic(req.params.id)); } catch (e) { next(e); }
     }
+
+    async getTestStats(req, res, next) {
+        try {
+            const data = await adminService.getTestStats();
+            res.json(data);
+        } catch (e) {
+            console.error('getTestStats ERROR:', e);
+            next(e);
+        }
+    }
+
+    async exportChallenges(req, res, next) {
+        try {
+            const { ids } = req.body;
+            if (!Array.isArray(ids) || ids.length === 0)
+                return res.status(400).json({ message: 'Укажите ids задач' });
+            const data = await adminService.exportChallenges(ids.map(Number));
+            res.setHeader('Content-Disposition', 'attachment; filename="challenges.json"');
+            res.setHeader('Content-Type', 'application/json');
+            res.json(data);
+        } catch (e) { next(e); }
+    }
+
+    async importChallenges(req, res, next) {
+        try {
+            const { challenges } = req.body;
+            if (!Array.isArray(challenges) || challenges.length === 0)
+                return res.status(400).json({ message: 'Список задач пуст' });
+            const results = await adminService.importChallenges(challenges);
+            res.json({ results });
+        } catch (e) { next(e); }
+    }
+
+    async generateChallengesAI(req, res, next) {
+        try {
+            const { prompt, count = 3 } = req.body;
+            if (!prompt?.trim()) return res.status(400).json({ message: 'Prompt обязателен' });
+            const data = await adminService.generateChallengesAI(prompt, count);
+            res.json(data);
+        } catch (e) { next(e); }
+    }
 }
 
 module.exports = new AdminController();

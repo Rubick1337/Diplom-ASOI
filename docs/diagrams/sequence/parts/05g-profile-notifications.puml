@@ -1,0 +1,37 @@
+@startuml
+title Profile Page — Уведомления
+
+actor User
+participant "ProfilePage" as Page
+participant "UserController" as UC
+participant "Notification" as Notif
+
+User -> Page: click иконка уведомлений
+Page -> UC: dispatch(getNotifications())
+UC -> Notif: findAll(userId, order=DESC)
+Notif --> UC: notifications[]{ id, title, message, type, isRead, createdAt }
+UC --> Page: notifications[]
+Page --> User: рендер панели уведомлений
+
+User -> Page: click на уведомлении → "Отметить прочитанным"
+Page -> UC: dispatch(markNotificationRead(notificationId))
+UC -> Notif: update(id, { isRead: true })
+Notif --> UC: ok
+UC --> Page: ok
+Page --> User: уведомление помечено прочитанным
+
+User -> Page: click "Удалить" одно уведомление
+Page -> UC: dispatch(deleteNotification(notificationId))
+UC -> Notif: destroy({ id, userId })
+Notif --> UC: ok
+UC --> Page: ok
+Page --> User: уведомление удалено из списка
+
+User -> Page: click "Удалить всё"
+Page -> UC: dispatch(deleteAllNotifications())
+UC -> Notif: destroy(userId)
+Notif --> UC: ok
+UC --> Page: { success: true }
+Page --> User: список уведомлений очищен
+
+@enduml

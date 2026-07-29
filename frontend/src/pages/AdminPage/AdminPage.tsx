@@ -14,10 +14,12 @@ import {
 import { fetchAdminReportsStats, fetchAdminChallengeStats } from '@/shared/store/slice/adminSlice';
 
 import ReportsTab from '@/features/Reportstab/Reportstab';
-import ChallengeManageTab from '@/features/ChallengeManageTab/ChallengeManageTab';
+import ChallengeManageTab from '@/widgets/ChallengeManageTab/ChallengeManageTab';
 import TopicsTab from '@/features/TopicsTab/TopicsTab';
+import AchievementsManageTab from '@/features/AchievementsManageTab/AchievementsManageTab';
+import TestsManageTab from '@/features/TestsManageTab/TestsManageTab';
 
-type TabId = 'reports' | 'manage' | 'topics';
+type TabId = 'reports' | 'manage' | 'topics' | 'achievements' | 'tests';
 
 export default function AdminPage() {
     const dispatch = useAppDispatch();
@@ -27,7 +29,7 @@ export default function AdminPage() {
 
     const searchParams = useSearchParams();
     const rawTab = searchParams.get('tab');
-    const tab: TabId = (rawTab === 'manage' || rawTab === 'topics' || rawTab === 'reports') ? rawTab : 'reports';
+    const tab: TabId = (rawTab === 'manage' || rawTab === 'topics' || rawTab === 'reports' || rawTab === 'achievements' || rawTab === 'tests') ? rawTab : 'reports';
 
     useEffect(() => {
         dispatch(fetchAdminReportsStats());
@@ -62,9 +64,6 @@ export default function AdminPage() {
             `}</style>
 
             <div className="admin-analytics__main">
-                <div className="admin-manage-topbar">
-                    <span className="admin-manage-topbar__title">Панель администратора</span>
-                </div>
 
                 <div className="admin-analytics__content">
                     {tab === 'reports' && (
@@ -92,6 +91,8 @@ export default function AdminPage() {
                     )}
                     {tab === 'manage' && <ChallengeManageTab />}
                     {tab === 'topics' && <TopicsTab />}
+                    {tab === 'achievements' && <AchievementsManageTab />}
+                    {tab === 'tests' && <TestsManageTab />}
                 </div>
             </div>
         </div>

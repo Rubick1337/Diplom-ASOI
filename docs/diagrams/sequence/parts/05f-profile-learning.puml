@@ -1,0 +1,38 @@
+@startuml
+title Profile Page — Обучение и генерация гайда
+
+actor User
+participant "ProfilePage" as Page
+participant "UserController" as UC
+participant "Topic" as Topic
+participant "Challenge" as Challenge
+participant "HistoryChallenge" as HC
+participant "AIService" as AI
+participant "Redis" as Redis
+
+User -> Page: click "Обучение"
+Page -> UC: dispatch(fetchLearningPlan())
+UC -> Topic: getAll()
+Topic --> UC: topics[]
+UC -> Challenge: findVisible()
+Challenge --> UC: challenges[]
+UC -> HC: findByUser(userId)
+HC --> UC: history[]
+UC --> Page: topicProgress[], recommendations[], overallProgress
+Page --> User: рендер LearningTab (прогресс по темам, рекомендации)
+
+User -> Page: click "Сгенерировать гайд" по теме
+Page -> UC: dispatch(generateTopicGuide(topicName, preferences))
+UC -> Redis: get(cacheKey)
+alt кэш найден
+    Redis --> UC: guide
+else кэша нет
+    UC -> AI: generateTopicGuide(topicName, preferences)
+    AI --> UC: concepts[], path[], related[]
+    UC -> Redis: setEx(cacheKey, guide, TTL)
+    Redis --> UC: ok
+end
+UC --> Page: guide
+Page --> User: рендер гайда по теме (концепции, путь, связанные темы)
+
+@enduml

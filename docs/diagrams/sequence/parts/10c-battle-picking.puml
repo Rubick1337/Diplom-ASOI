@@ -1,0 +1,35 @@
+@startuml
+title Battle Page — Выбор задач (пикинг)
+
+actor User
+participant "BattlePage" as Page
+participant "ChallengeController" as CC
+participant "SocketServer" as Socket
+participant "RoomStore" as RS
+
+note over Page: phase = picking
+
+User -> Page: click на задаче → handleSelectTask(id)
+Page -> CC: dispatch(getChallengeById(id))
+CC --> Page: fullTask
+Page --> User: предпросмотр выбранной задачи
+
+Page -> Socket: emit select_battle_challenge(roomId, challenge)
+Socket -> RS: getBattle(roomId)
+RS --> Socket: battle
+Socket -> RS: setBattle(roomId, { ...battle, selections })
+RS --> Socket: ok
+Socket --> Page: challenge_selected_by_player { challengeId, playerId }
+Page --> User: отображает выбор своей задачи
+
+Socket --> Page: challenge_selected_by_player { challengeId, playerId: opponent }
+Page --> User: отображает выбор задачи соперника
+
+alt оба игрока выбрали задачи
+    Socket --> Page: battle_start { challenges[] }
+    note over Page: sessionStorage ← battlePhase, battleChallenges
+    note over Page: phase → battle
+    Page --> User: рендер экрана битвы
+end
+
+@enduml

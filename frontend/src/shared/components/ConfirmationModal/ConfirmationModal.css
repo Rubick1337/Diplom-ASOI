@@ -65,3 +65,23 @@
     from { opacity: 0; transform: scale(0.9); }
     to { opacity: 1; transform: scale(1); }
 }
+
+/* LIGHT THEME */
+[data-theme="light"] .modal-card {
+    background: #ede8df;
+    border-color: rgba(26,24,23,0.12);
+    box-shadow: 0 16px 48px rgba(26,24,23,0.15);
+}
+[data-theme="light"] .modal-card h3 {
+    color: #1a1817;
+}
+[data-theme="light"] .modal-card p {
+    color: rgba(26,24,23,0.55);
+}
+[data-theme="light"] .btn-secondary {
+    background: #ddd8ce;
+    color: rgba(26,24,23,0.70);
+}
+[data-theme="light"] .btn-secondary:hover {
+    background: #d0c9be;
+}

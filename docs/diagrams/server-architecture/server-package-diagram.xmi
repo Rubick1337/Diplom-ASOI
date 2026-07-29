@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xmi:XMI xmi:version="2.1"
+  xmlns:xmi="http://schema.omg.org/spec/XMI/2.1"
+  xmlns:uml="http://schema.omg.org/spec/UML/2.1.2">
+
+  <xmi:Documentation exporter="Enterprise Architect" exporterVersion="6.5"/>
+
+  <!--
+    Package Diagram — GooseCode Backend Server Architecture
+    Слои: Presentation → Application → Domain → Data
+    Каждый файл представлен как uml:Component внутри своего пакета.
+  -->
+
+  <uml:Model xmi:type="uml:Model" name="GooseCode_ServerArchitecture" visibility="public">
+
+    <packagedElement xmi:type="uml:Package" xmi:id="pkg_backend" name="backend" visibility="public">
+
+      <!-- ═══════════════════════════════════════════
+           PRESENTATION LAYER
+      ═══════════════════════════════════════════ -->
+      <packagedElement xmi:type="uml:Package" xmi:id="pkg_presentation" name="Presentation" visibility="public">
+
+        <packagedElement xmi:type="uml:Component" xmi:id="cmp_app" name="app" visibility="public"/>
+
+        <packagedElement xmi:type="uml:Package" xmi:id="pkg_pres_auth" name="Auth" visibility="public">
+          <packagedElement xmi:type="uml:Component" xmi:id="cmp_passport" name="passport" visibility="public"/>
+        </packagedElement>
+
+        <packagedElement xmi:type="uml:Package" xmi:id="pkg_pres_error" name="ErrorExtend" visibility="public">
+          <packagedElement xmi:type="uml:Component" xmi:id="cmp_apierror" name="ApiError" visibility="public"/>
+        </packagedElement>
+
+        <packagedElement xmi:type="uml:Package" xmi:id="pkg_controllers" name="controllers" visibility="public">
+          <packagedElement xmi:type="uml:Component" xmi:id="cmp_admin_ctrl"       name="AdminController"       visibility="public"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="cmp_solution_ctrl"    name="SolutionController"    visibility="public"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="cmp_achievement_ctrl" name="achievementController" visibility="public"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="cmp_challenge_ctrl"   name="challengeController"   visibility="public"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="cmp_codewars_ctrl"    name="codewarsController"    visibility="public"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="cmp_test_ctrl"        name="testController"        visibility="public"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="cmp_user_ctrl"        name="userController"        visibility="public"/>
+        </packagedElement>
+
+        <packagedElement xmi:type="uml:Package" xmi:id="pkg_middleware" name="middleware" visibility="public">
+          <packagedElement xmi:type="uml:Component" xmi:id="cmp_err_mw" name="ErrorHandlingMiddleware" visibility="public"/>
+        </packagedElement>
+
+        <packagedElement xmi:type="uml:Package" xmi:id="pkg_routes" name="routes" visibility="public">
+          <packagedElement xmi:type="uml:Component" xmi:id="cmp_admin_route"     name="adminRouter"     visibility="public"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="cmp_auth_route"      name="authRouter"      visibility="public"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="cmp_challenge_route" name="challengeRouter" visibility="public"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="cmp_index_route"     name="indexRoute"      visibility="public"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="cmp_solution_route"  name="solutionRouter"  visibility="public"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="cmp_test_route"      name="testRouter"      visibility="public"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="cmp_user_route"      name="userRouter"      visibility="public"/>
+        </packagedElement>
+
+        <packagedElement xmi:type="uml:Package" xmi:id="pkg_socket" name="socket" visibility="public">
+          <packagedElement xmi:type="uml:Component" xmi:id="cmp_room_store" name="roomStore" visibility="public"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="cmp_socket"     name="socket"    visibility="public"/>
+        </packagedElement>
+
+      </packagedElement>
+
+      <!-- ═══════════════════════════════════════════
+           APPLICATION LAYER
+      ═══════════════════════════════════════════ -->
+      <packagedElement xmi:type="uml:Package" xmi:id="pkg_application" name="Application" visibility="public">
+
+        <packagedElement xmi:type="uml:Package" xmi:id="pkg_dto" name="dto" visibility="public">
+
+          <packagedElement xmi:type="uml:Package" xmi:id="pkg_dto_auth" name="Auth" visibility="public">
+            <packagedElement xmi:type="uml:Component" xmi:id="cmp_login_dto"   name="LoginDto"        visibility="public"/>
+            <packagedElement xmi:type="uml:Component" xmi:id="cmp_refresh_dto" name="RefreshTokenDto" visibility="public"/>
+          </packagedElement>
+
+          <packagedElement xmi:type="uml:Package" xmi:id="pkg_dto_users" name="Users" visibility="public">
+            <packagedElement xmi:type="uml:Component" xmi:id="cmp_user_create_dto"   name="UserCreateDto"   visibility="public"/>
+            <packagedElement xmi:type="uml:Component" xmi:id="cmp_user_response_dto" name="UserResponseDto" visibility="public"/>
+            <packagedElement xmi:type="uml:Component" xmi:id="cmp_user_update_dto"   name="UserUpdateDto"   visibility="public"/>
+          </packagedElement>
+
+        </packagedElement>
+
+        <packagedElement xmi:type="uml:Package" xmi:id="pkg_services" name="services" visibility="public">
+          <packagedElement xmi:type="uml:Component" xmi:id="cmp_ai_svc"          name="AIService"          visibility="public"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="cmp_achievement_svc" name="AchievementService" visibility="public"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="cmp_admin_svc"       name="AdminService"       visibility="public"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="cmp_challenge_svc"   name="ChallengeService"   visibility="public"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="cmp_email_svc"       name="EmailService"       visibility="public"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="cmp_moodle_svc"      name="MoodleXMLService"   visibility="public"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="cmp_quiz_svc"        name="QuizApiService"     visibility="public"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="cmp_solution_svc"    name="SolutionService"    visibility="public"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="cmp_test_svc"        name="TestService"        visibility="public"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="cmp_token_svc"       name="TokenService"       visibility="public"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="cmp_user_svc"        name="UserService"        visibility="public"/>
+        </packagedElement>
+
+        <packagedElement xmi:type="uml:Package" xmi:id="pkg_utilts" name="utilts" visibility="public">
+          <packagedElement xmi:type="uml:Component" xmi:id="cmp_jwt"             name="jwt"             visibility="public"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="cmp_password_hasher" name="passwordHasher"  visibility="public"/>
+        </packagedElement>
+
+        <packagedElement xmi:type="uml:Package" xmi:id="pkg_validators" name="validators" visibility="public">
+
+          <packagedElement xmi:type="uml:Package" xmi:id="pkg_val_auth" name="Auth" visibility="public">
+            <packagedElement xmi:type="uml:Component" xmi:id="cmp_validate_login" name="validateLogin" visibility="public"/>
+          </packagedElement>
+
+          <packagedElement xmi:type="uml:Package" xmi:id="pkg_val_users" name="Users" visibility="public">
+            <packagedElement xmi:type="uml:Component" xmi:id="cmp_validate_user_create" name="validateUserCreate" visibility="public"/>
+            <packagedElement xmi:type="uml:Component" xmi:id="cmp_validate_user_update" name="validateUserUpdate" visibility="public"/>
+          </packagedElement>
+
+        </packagedElement>
+
+      </packagedElement>
+
+      <!-- ═══════════════════════════════════════════
+           DOMAIN LAYER
+      ═══════════════════════════════════════════ -->
+      <packagedElement xmi:type="uml:Package" xmi:id="pkg_domain" name="Domain" visibility="public">
+
+        <packagedElement xmi:type="uml:Package" xmi:id="pkg_entities" name="entities" visibility="public">
+          <packagedElement xmi:type="uml:Component" xmi:id="cmp_achievement_entity"   name="Achievement"          visibility="public"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="cmp_ans_mp_entity"        name="AnswerMatchingPair"   visibility="public"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="cmp_ans_so_entity"        name="AnswerSelectedOption" visibility="public"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="cmp_ans_tcr_entity"       name="AnswerTestCaseResult" visibility="public"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="cmp_attempt_ans_entity"   name="AttemptAnswer"        visibility="public"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="cmp_attempt_q_entity"     name="AttemptQuestion"      visibility="public"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="cmp_challenge_entity"     name="Challenge"            visibility="public"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="cmp_challenge_param_ent"  name="ChallengeParameter"   visibility="public"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="cmp_challenge_tc_ent"     name="ChallengeTestCase"    visibility="public"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="cmp_challenge_top_ent"    name="ChallengeTopic"       visibility="public"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="cmp_history_entity"       name="HistoryChallenges"    visibility="public"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="cmp_notification_entity"  name="Notification"         visibility="public"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="cmp_question_entity"      name="Question"             visibility="public"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="cmp_question_opt_entity"  name="QuestionOption"       visibility="public"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="cmp_question_tc_entity"   name="QuestionTestCase"     visibility="public"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="cmp_question_type_entity" name="QuestionType"         visibility="public"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="cmp_report_entity"        name="Report"               visibility="public"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="cmp_report_reason_entity" name="ReportReason"         visibility="public"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="cmp_review_entity"        name="ReviewChallenges"     visibility="public"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="cmp_role_entity"          name="Role"                 visibility="public"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="cmp_sol_comment_entity"   name="SolutionComment"      visibility="public"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="cmp_sol_vote_entity"      name="SolutionVote"         visibility="public"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="cmp_test_entity"          name="Test"                 visibility="public"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="cmp_test_attempt_entity"  name="TestAttempt"          visibility="public"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="cmp_tc_arg_entity"        name="TestCaseArgument"     visibility="public"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="cmp_topic_entity"         name="Topic"                visibility="public"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="cmp_user_entity"          name="User"                 visibility="public"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="cmp_user_ach_entity"      name="UserAchievement"      visibility="public"/>
+        </packagedElement>
+
+        <packagedElement xmi:type="uml:Package" xmi:id="pkg_domain_repo" name="repository" visibility="public">
+          <packagedElement xmi:type="uml:Component" xmi:id="cmp_i_admin_repo"     name="IAdminRepository"     visibility="public"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="cmp_i_challenge_repo" name="IChallengeRepository" visibility="public"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="cmp_i_test_repo"      name="ITestRepository"      visibility="public"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="cmp_i_user_repo"      name="IUserRepository"      visibility="public"/>
+        </packagedElement>
+
+      </packagedElement>
+
+      <!-- ═══════════════════════════════════════════
+           DATA LAYER
+      ═══════════════════════════════════════════ -->
+      <packagedElement xmi:type="uml:Package" xmi:id="pkg_data" name="Data" visibility="public">
+
+        <packagedElement xmi:type="uml:Package" xmi:id="pkg_docker_runner" name="DockerRunner" visibility="public">
+          <packagedElement xmi:type="uml:Component" xmi:id="cmp_docker_runner" name="DockerRunner" visibility="public"/>
+        </packagedElement>
+
+        <packagedElement xmi:type="uml:Package" xmi:id="pkg_config" name="config" visibility="public">
+          <packagedElement xmi:type="uml:Component" xmi:id="cmp_harness_config" name="HarnessConfig"  visibility="public"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="cmp_config"         name="config"         visibility="public"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="cmp_db_config"      name="dbConfig"       visibility="public"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="cmp_redis_config"   name="redisConfig"    visibility="public"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="cmp_upload_config"  name="uploadConfig"   visibility="public"/>
+
+          <packagedElement xmi:type="uml:Package" xmi:id="pkg_harness" name="harness" visibility="public">
+            <packagedElement xmi:type="uml:Component" xmi:id="cmp_harness_cpp"    name="cpp"        visibility="public"/>
+            <packagedElement xmi:type="uml:Component" xmi:id="cmp_harness_csharp" name="csharp"     visibility="public"/>
+            <packagedElement xmi:type="uml:Component" xmi:id="cmp_harness_help"   name="helpers"    visibility="public"/>
+            <packagedElement xmi:type="uml:Component" xmi:id="cmp_harness_index"  name="index"      visibility="public"/>
+            <packagedElement xmi:type="uml:Component" xmi:id="cmp_harness_java"   name="java"       visibility="public"/>
+            <packagedElement xmi:type="uml:Component" xmi:id="cmp_harness_js"     name="javascript" visibility="public"/>
+            <packagedElement xmi:type="uml:Component" xmi:id="cmp_harness_php"    name="php"        visibility="public"/>
+            <packagedElement xmi:type="uml:Component" xmi:id="cmp_harness_py"     name="python"     visibility="public"/>
+          </packagedElement>
+
+        </packagedElement>
+
+        <packagedElement xmi:type="uml:Package" xmi:id="pkg_models" name="models" visibility="public">
+          <packagedElement xmi:type="uml:Component" xmi:id="cmp_models_index"         name="index"                    visibility="public"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="cmp_achievement_model"    name="AchievementModel"         visibility="public"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="cmp_answer_mp_model"      name="AnswerMatchingPairModel"   visibility="public"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="cmp_answer_so_model"      name="AnswerSelectedOptionModel" visibility="public"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="cmp_answer_tcr_model"     name="AnswerTestCaseResultModel" visibility="public"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="cmp_attempt_answer_model" name="AttemptAnswerModel"        visibility="public"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="cmp_attempt_quest_model"  name="AttemptQuestionModel"      visibility="public"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="cmp_challenge_model"      name="ChallengeModel"            visibility="public"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="cmp_challenge_pm_model"   name="ChallengeParameterModel"   visibility="public"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="cmp_challenge_tc_model"   name="ChallengeTestCaseModel"    visibility="public"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="cmp_challenge_top_model"  name="ChallengeTopicModel"       visibility="public"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="cmp_history_model"        name="HistoryChallengesModel"    visibility="public"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="cmp_notification_model"   name="NotificationModel"         visibility="public"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="cmp_question_model"       name="QuestionModel"             visibility="public"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="cmp_question_opt_model"   name="QuestionOptionModel"       visibility="public"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="cmp_question_tc_model"    name="QuestionTestCaseModel"     visibility="public"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="cmp_question_type_model"  name="QuestionTypeModel"         visibility="public"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="cmp_report_model"         name="ReportModel"               visibility="public"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="cmp_report_reason_model"  name="ReportReasonModel"         visibility="public"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="cmp_review_model"         name="ReviewModel"               visibility="public"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="cmp_role_model"           name="RoleModel"                 visibility="public"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="cmp_sol_comment_model"    name="SolutionCommentModel"      visibility="public"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="cmp_sol_vote_model"       name="SolutionVoteModel"         visibility="public"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="cmp_test_attempt_model"   name="TestAttemptModel"          visibility="public"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="cmp_tc_arg_model"         name="TestCaseArgumentModel"     visibility="public"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="cmp_test_model"           name="TestModel"                 visibility="public"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="cmp_topic_model"          name="TopicModel"                visibility="public"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="cmp_user_ach_model"       name="UserAchievementModel"      visibility="public"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="cmp_user_model"           name="UserModel"                 visibility="public"/>
+        </packagedElement>
+
+        <packagedElement xmi:type="uml:Package" xmi:id="pkg_data_repo" name="repository" visibility="public">
+          <packagedElement xmi:type="uml:Component" xmi:id="cmp_admin_repo"     name="AdminRepositorySequelize"     visibility="public"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="cmp_challenge_repo" name="ChallengeRepositorySequelize" visibility="public"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="cmp_test_repo"      name="TestRepositorySequelize"      visibility="public"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="cmp_user_repo"      name="UserRepositorySequelize"      visibility="public"/>
+        </packagedElement>
+
+        <packagedElement xmi:type="uml:Package" xmi:id="pkg_data_utils" name="utils" visibility="public">
+          <packagedElement xmi:type="uml:Component" xmi:id="cmp_cache_utils" name="cacheUtils" visibility="public"/>
+        </packagedElement>
+
+      </packagedElement>
+
+      <!-- ═══════════════════════════════════════════
+           ЗАВИСИМОСТИ МЕЖДУ СЛОЯМИ (пунктирные стрелки)
+      ═══════════════════════════════════════════ -->
+      <packagedElement xmi:type="uml:Dependency" xmi:id="dep_pres_app"
+        name="" visibility="public"
+        client="pkg_presentation" supplier="pkg_application"/>
+
+      <packagedElement xmi:type="uml:Dependency" xmi:id="dep_app_domain"
+        name="" visibility="public"
+        client="pkg_application" supplier="pkg_domain"/>
+
+      <packagedElement xmi:type="uml:Dependency" xmi:id="dep_data_domain"
+        name="" visibility="public"
+        client="pkg_data" supplier="pkg_domain"/>
+
+    </packagedElement>
+  </uml:Model>
+
+</xmi:XMI>

@@ -1,0 +1,269 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="app.diagrams.net" version="21.0.0">
+  <diagram id="recommendations" name="Алгоритм рекомендаций">
+    <mxGraphModel dx="1422" dy="762" grid="1" gridSize="10" guides="1"
+                  page="1" pageScale="1" pageWidth="900" pageHeight="2400">
+      <root>
+        <mxCell id="0" /><mxCell id="1" parent="0" />
+
+        <!-- Терминалы: x=270, w=160, h=50 -->
+        <!-- Прямоугольники: x=240, w=220, h=60 -->
+        <!-- Ромбы: x=250, w=200, h=90 -->
+        <!-- Правая колонка: x=510, w=220, h=60 -->
+
+        <mxCell id="n1" value="Начало" style="rounded=1;arcSize=50;whiteSpace=wrap;html=1;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="270" y="20" width="160" height="50" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n2" value="Получить данные из БД" style="shape=mxgraph.flowchart.predefined_process;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="240" y="100" width="220" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- ЦИКЛ 1: для каждой темы -->
+        <mxCell id="n3" value="Для каждой темы" style="shape=mxgraph.flowchart.loop_limit;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="240" y="190" width="220" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n4" value="Вычислить прогресс темы" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="240" y="280" width="220" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n5" value="masteryRate&#xa;≥ 80%?" style="rhombus;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="250" y="370" width="200" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="n5r" value="Статус: mastered" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="510" y="385" width="220" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n6" value="solved = 0 и&#xa;attempted = 0?" style="rhombus;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="250" y="490" width="200" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="n6r" value="Статус: not_started" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="510" y="505" width="220" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n7" value="Статус: in_progress" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="240" y="610" width="220" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n8" value="Конец цикла по темам" style="shape=mxgraph.flowchart.loop_limit;whiteSpace=wrap;html=1;flipV=1;" vertex="1" parent="1">
+          <mxGeometry x="240" y="700" width="220" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- Между циклами -->
+        <mxCell id="n9" value="Определить диапазон сложности" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="240" y="790" width="220" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n10" value="Отобрать активные темы" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="240" y="880" width="220" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- ЦИКЛ 2: для каждой активной темы -->
+        <mxCell id="n11" value="Для каждой активной темы" style="shape=mxgraph.flowchart.loop_limit;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="240" y="970" width="220" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- Цепочка определения типа рекомендации -->
+        <mxCell id="n12" value="in_progress И&#xa;rate &lt; 60%?" style="rhombus;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="250" y="1060" width="200" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="n12r" value="Тип: improve" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="510" y="1075" width="220" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n13" value="in_progress И&#xa;rate ≥ 60%?" style="rhombus;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="250" y="1180" width="200" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="n13r" value="Тип: continue" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="510" y="1195" width="220" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- else -->
+        <mxCell id="n14" value="Тип: start" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="240" y="1300" width="220" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- Цепочка бонусов и штрафов -->
+        <mxCell id="n15" value="Есть задачи в&#xa;диапазоне сложности?" style="rhombus;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="250" y="1390" width="200" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="n15r" value="Добавить бонус за сложность" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="510" y="1405" width="220" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n16" value="Тема не решалась&#xa;более 7 дней?" style="rhombus;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="250" y="1510" width="200" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="n16r" value="Добавить бонус за давность" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="510" y="1525" width="220" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n17" value="masteryRate&#xa;= 70–80%?" style="rhombus;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="250" y="1630" width="200" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="n17r" value="Добавить бонус за прогресс" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="510" y="1645" width="220" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n18" value="failedHardCount&#xa;≥ 3?" style="rhombus;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="250" y="1750" width="200" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="n18r" value="Начислить штраф" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="510" y="1765" width="220" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n19" value="Конец цикла активных тем" style="shape=mxgraph.flowchart.loop_limit;whiteSpace=wrap;html=1;flipV=1;" vertex="1" parent="1">
+          <mxGeometry x="240" y="1870" width="220" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- После циклов -->
+        <mxCell id="n20" value="Добавить освоенные темы для повторения" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="240" y="1960" width="220" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n21" value="Объединить и выбрать топ 5" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="240" y="2050" width="220" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n22" value="Вернуть рекомендации" style="shape=parallelogram;perimeter=parallelogramPerimeter;whiteSpace=wrap;html=1;fixedSize=1;" vertex="1" parent="1">
+          <mxGeometry x="240" y="2140" width="220" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n23" value="Конец" style="rounded=1;arcSize=50;whiteSpace=wrap;html=1;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="270" y="2240" width="160" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- ===== РЁБРА ===== -->
+
+        <mxCell id="e1" edge="1" source="n1" target="n2" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e2" edge="1" source="n2" target="n3" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e3" edge="1" source="n3" target="n4" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e4" edge="1" source="n4" target="n5" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- n5 Да → n5r, Нет → n6 -->
+        <mxCell id="e5" value="Да" edge="1" source="n5" target="n5r" parent="1">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="480" y="415"/></Array></mxGeometry>
+        </mxCell>
+        <mxCell id="e6" value="Нет" edge="1" source="n5" target="n6" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- n6 Да → n6r, Нет → n7 -->
+        <mxCell id="e7" value="Да" edge="1" source="n6" target="n6r" parent="1">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="480" y="535"/></Array></mxGeometry>
+        </mxCell>
+        <mxCell id="e8" value="Нет" edge="1" source="n6" target="n7" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- n5r, n6r → шина x=770 → n8 (y=730) -->
+        <mxCell id="e9" edge="1" source="n5r" target="n8" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points"><mxPoint x="770" y="415"/><mxPoint x="770" y="730"/><mxPoint x="460" y="730"/></Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e10" edge="1" source="n6r" target="n8" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points"><mxPoint x="770" y="535"/><mxPoint x="770" y="730"/><mxPoint x="460" y="730"/></Array>
+          </mxGeometry>
+        </mxCell>
+        <!-- n7 → n8 прямо вниз -->
+        <mxCell id="e11" edge="1" source="n7" target="n8" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- FOR END 1 → возврат к n3 по x=120 -->
+        <mxCell id="e12" value="Следующая тема" edge="1" source="n8" target="n3" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points"><mxPoint x="120" y="730"/><mxPoint x="120" y="220"/></Array>
+          </mxGeometry>
+        </mxCell>
+        <!-- FOR END 1 → n9 -->
+        <mxCell id="e13" value="Все темы обработаны" edge="1" source="n8" target="n9" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <mxCell id="e14" edge="1" source="n9" target="n10" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e15" edge="1" source="n10" target="n11" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e16" edge="1" source="n11" target="n12" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- Цепочка типов рекомендации -->
+        <mxCell id="e17" value="Да" edge="1" source="n12" target="n12r" parent="1">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="480" y="1105"/></Array></mxGeometry>
+        </mxCell>
+        <mxCell id="e18" value="Нет" edge="1" source="n12" target="n13" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <mxCell id="e19" value="Да" edge="1" source="n13" target="n13r" parent="1">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="480" y="1225"/></Array></mxGeometry>
+        </mxCell>
+        <mxCell id="e20" value="Нет" edge="1" source="n13" target="n14" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- n12r, n13r → шина x=770 → n15 (y=1435) -->
+        <mxCell id="e21" edge="1" source="n12r" target="n15" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points"><mxPoint x="770" y="1105"/><mxPoint x="770" y="1435"/><mxPoint x="460" y="1435"/></Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e22" edge="1" source="n13r" target="n15" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points"><mxPoint x="770" y="1225"/><mxPoint x="770" y="1435"/><mxPoint x="460" y="1435"/></Array>
+          </mxGeometry>
+        </mxCell>
+        <!-- n14 → n15 прямо вниз -->
+        <mxCell id="e23" edge="1" source="n14" target="n15" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- Цепочка бонусов/штрафов: Да → правый блок → следующее условие -->
+        <mxCell id="e24" value="Да" edge="1" source="n15" target="n15r" parent="1">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="480" y="1435"/></Array></mxGeometry>
+        </mxCell>
+        <mxCell id="e25" value="Нет" edge="1" source="n15" target="n16" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <!-- n15r → n16 (ниже n15) -->
+        <mxCell id="e26" edge="1" source="n15r" target="n16" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points"><mxPoint x="620" y="1495"/><mxPoint x="350" y="1495"/></Array>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="e27" value="Да" edge="1" source="n16" target="n16r" parent="1">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="480" y="1555"/></Array></mxGeometry>
+        </mxCell>
+        <mxCell id="e28" value="Нет" edge="1" source="n16" target="n17" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <!-- n16r → n17 -->
+        <mxCell id="e29" edge="1" source="n16r" target="n17" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points"><mxPoint x="620" y="1615"/><mxPoint x="350" y="1615"/></Array>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="e30" value="Да" edge="1" source="n17" target="n17r" parent="1">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="480" y="1675"/></Array></mxGeometry>
+        </mxCell>
+        <mxCell id="e31" value="Нет" edge="1" source="n17" target="n18" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <!-- n17r → n18 -->
+        <mxCell id="e32" edge="1" source="n17r" target="n18" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points"><mxPoint x="620" y="1735"/><mxPoint x="350" y="1735"/></Array>
+          </mxGeometry>
+        </mxCell>
+
+        <mxCell id="e33" value="Да" edge="1" source="n18" target="n18r" parent="1">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="480" y="1795"/></Array></mxGeometry>
+        </mxCell>
+        <mxCell id="e34" value="Нет" edge="1" source="n18" target="n19" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <!-- n18r → n19 -->
+        <mxCell id="e35" edge="1" source="n18r" target="n19" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points"><mxPoint x="620" y="1855"/><mxPoint x="350" y="1855"/></Array>
+          </mxGeometry>
+        </mxCell>
+
+        <!-- FOR END 2 → возврат к n11 по x=120 -->
+        <mxCell id="e36" value="Следующая тема" edge="1" source="n19" target="n11" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points"><mxPoint x="120" y="1900"/><mxPoint x="120" y="1000"/></Array>
+          </mxGeometry>
+        </mxCell>
+        <!-- FOR END 2 → n20 -->
+        <mxCell id="e37" value="Все темы обработаны" edge="1" source="n19" target="n20" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <mxCell id="e38" edge="1" source="n20" target="n21" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e39" edge="1" source="n21" target="n22" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e40" edge="1" source="n22" target="n23" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

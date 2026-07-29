@@ -19,6 +19,40 @@ class UserService {
         this.userRepository = userRepository;
     }
 
+    async createVerifiedUser({ username, email, passwordHash }) {
+        if (await this.userRepository.findOne({ email })) {
+            throw new Error('Пользователь с такой почтой уже существует');
+        }
+        if (await this.userRepository.findOne({ username })) {
+            throw new Error('Username уже занят');
+        }
+
+        const userEntity = new UserEntity({
+            username,
+            password: passwordHash,
+            email,
+            role: 3,
+            googleId: null,
+            githubId: null,
+            experience: 0,
+        });
+
+        const createdUser = await this.userRepository.create(userEntity);
+
+        const tokens = tokenService.generateTokens({
+            id: createdUser.id,
+            email: createdUser.email,
+            role: createdUser.role,
+        });
+
+        await this.userRepository.setRefreshToken(createdUser.id, tokens.refreshToken);
+
+        return {
+            user: new UserResponseDto(createdUser),
+            ...tokens,
+        };
+    }
+
     async register(rawData) {
         const dto = new UserCreateDto(rawData);
         validateUserCreate(dto);

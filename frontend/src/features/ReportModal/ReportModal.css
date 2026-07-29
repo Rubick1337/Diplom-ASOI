@@ -313,6 +313,87 @@
     to { transform: rotate(360deg); }
 }
 
+/* LIGHT THEME */
+[data-theme="light"] .rm-modal {
+    background: #ede8df;
+    border-color: rgba(26,24,23,0.12);
+    box-shadow: 0 24px 60px rgba(26,24,23,0.15);
+}
+[data-theme="light"] .rm-title {
+    color: #1a1817;
+}
+[data-theme="light"] .rm-subtitle {
+    color: rgba(26,24,23,0.45);
+}
+[data-theme="light"] .rm-close {
+    border-color: rgba(26,24,23,0.14);
+    color: rgba(26,24,23,0.45);
+}
+[data-theme="light"] .rm-divider {
+    background: rgba(26,24,23,0.10);
+}
+[data-theme="light"] .rm-label {
+    color: rgba(26,24,23,0.70);
+}
+[data-theme="light"] .rm-label-optional {
+    color: rgba(26,24,23,0.40);
+}
+[data-theme="light"] .rm-select-trigger {
+    background: #f5f0e8;
+    border-color: rgba(26,24,23,0.14);
+    color: #1a1817;
+}
+[data-theme="light"] .rm-select-placeholder {
+    color: rgba(26,24,23,0.35);
+}
+[data-theme="light"] .rm-select-value {
+    color: #1a1817;
+}
+[data-theme="light"] .rm-chevron {
+    color: rgba(26,24,23,0.35);
+}
+[data-theme="light"] .rm-dropdown {
+    background: #ede8df;
+    border-color: rgba(26,24,23,0.12);
+    box-shadow: 0 12px 32px rgba(26,24,23,0.12);
+}
+[data-theme="light"] .rm-option {
+    color: rgba(26,24,23,0.70);
+}
+[data-theme="light"] .rm-option:hover {
+    background: rgba(26,24,23,0.05);
+    color: #1a1817;
+}
+[data-theme="light"] .rm-option-none {
+    color: rgba(26,24,23,0.35);
+    border-bottom-color: rgba(26,24,23,0.08);
+}
+[data-theme="light"] .rm-textarea {
+    background: #f5f0e8;
+    border-color: rgba(26,24,23,0.14);
+    color: #1a1817;
+}
+[data-theme="light"] .rm-textarea::placeholder {
+    color: rgba(26,24,23,0.35);
+}
+[data-theme="light"] .rm-char-count {
+    color: rgba(26,24,23,0.35);
+}
+[data-theme="light"] .rm-btn-ghost {
+    border-color: rgba(26,24,23,0.14);
+    color: rgba(26,24,23,0.55);
+}
+[data-theme="light"] .rm-btn-ghost:hover:not(:disabled) {
+    border-color: rgba(26,24,23,0.28);
+    color: #1a1817;
+}
+[data-theme="light"] .rm-success-title {
+    color: #1a1817;
+}
+[data-theme="light"] .rm-success-text {
+    color: rgba(26,24,23,0.55);
+}
+
 .rm-success {
     display: flex;
     flex-direction: column;

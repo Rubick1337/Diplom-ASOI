@@ -45,6 +45,18 @@ body {
   background-size: auto, cover, cover;
 }
 
+/* LIGHT THEME MAIN PAGE */
+[data-theme="light"] .app-main-page {
+  background-color: #f5f0e8;
+  background-image: none;
+}
+
+/* LIGHT THEME GLOBAL */
+[data-theme="light"] body {
+  background: #f5f0e8;
+  color: #1a1817;
+}
+
 .app-main-page--sidebar {
   padding-left: 52px;
 }
@@ -53,4 +65,9 @@ body {
   .app-main-page--sidebar {
     padding-left: 0;
   }
+}
+
+.icon-back {
+    filter: brightness(0) invert(50%);
+    flex-shrink: 0;
 }

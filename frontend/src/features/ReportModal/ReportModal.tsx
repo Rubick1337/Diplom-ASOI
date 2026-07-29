@@ -2,15 +2,20 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import ChallengeService from '@/shared/services/ChallengeService';
+import TestApiService from '@/shared/services/TestApiService';
 import './ReportModal.css';
 
 interface Props {
-    challengeId: number;
-    userId: number;
-    onClose: () => void;
+    challengeId?: number;
+    testId?:      number;
+    userId:       number;
+    onClose:      () => void;
 }
 
-export default function ReportModal({ challengeId, userId, onClose }: Props) {
+export default function ReportModal({ challengeId, testId, userId, onClose }: Props) {
+    const isTest = !!testId;
+    const entityId = (testId ?? challengeId)!;
+
     const [reasons, setReasons] = useState<{ id: number; name: string }[]>([]);
     const [selectedReasonId, setSelectedReasonId] = useState<number | ''>('');
     const [reasonText, setReasonText] = useState('');
@@ -21,8 +26,11 @@ export default function ReportModal({ challengeId, userId, onClose }: Props) {
     const selectRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        ChallengeService.getReportReasons(challengeId).then(setReasons).catch(() => {});
-    }, [challengeId]);
+        const fetch = isTest
+            ? TestApiService.getTestReportReasons(entityId)
+            : ChallengeService.getReportReasons(entityId);
+        fetch.then(setReasons).catch(() => {});
+    }, [entityId, isTest]);
 
     useEffect(() => {
         const handleClickOutside = (e: MouseEvent) => {
@@ -44,12 +52,20 @@ export default function ReportModal({ challengeId, userId, onClose }: Props) {
         setError('');
         setIsSubmitting(true);
         try {
-            await ChallengeService.createReport(
-                challengeId,
-                userId,
-                selectedReasonId || null,
-                reasonText.trim()
-            );
+            if (isTest) {
+                await TestApiService.createTestReport(
+                    entityId,
+                    selectedReasonId || null,
+                    reasonText.trim()
+                );
+            } else {
+                await ChallengeService.createReport(
+                    entityId,
+                    userId,
+                    selectedReasonId || null,
+                    reasonText.trim()
+                );
+            }
             setSubmitted(true);
         } catch {
             setError('Не удалось отправить жалобу. Попробуйте позже.');
@@ -58,17 +74,19 @@ export default function ReportModal({ challengeId, userId, onClose }: Props) {
         }
     };
 
+    const title    = isTest ? 'Жалоба на тест'  : 'Жалоба на задачу';
+    const subtitle = isTest ? 'Помогите нам улучшить качество тестов' : 'Помогите нам улучшить качество задач';
+
     return (
         <div className="rm-overlay" onClick={onClose}>
             <div className="rm-modal" onClick={e => e.stopPropagation()}>
 
-                {}
                 <div className="rm-header">
                     <div className="rm-header-left">
                         <span className="rm-icon">⚑</span>
                         <div>
-                            <h2 className="rm-title">Жалоба на задачу</h2>
-                            <p className="rm-subtitle">Помогите нам улучшить качество задач</p>
+                            <h2 className="rm-title">{title}</h2>
+                            <p className="rm-subtitle">{subtitle}</p>
                         </div>
                     </div>
                     <button className="rm-close" onClick={onClose} aria-label="Закрыть">✕</button>
@@ -77,7 +95,6 @@ export default function ReportModal({ challengeId, userId, onClose }: Props) {
                 <div className="rm-divider" />
 
                 {submitted ? (
-
                     <div className="rm-success">
                         <div className="rm-success-circle">
                             <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
@@ -89,7 +106,6 @@ export default function ReportModal({ challengeId, userId, onClose }: Props) {
                         <button className="rm-btn-primary" onClick={onClose}>Закрыть</button>
                     </div>
                 ) : (
-
                     <div className="rm-body">
                         <div className="rm-field">
                             <label className="rm-label">Причина жалобы</label>
@@ -172,11 +188,7 @@ export default function ReportModal({ challengeId, userId, onClose }: Props) {
                                 onClick={handleSubmit}
                                 disabled={isSubmitting}
                             >
-                                {isSubmitting ? (
-                                    <span className="rm-spinner" />
-                                ) : (
-                                    'Отправить жалобу'
-                                )}
+                                {isSubmitting ? <span className="rm-spinner" /> : 'Отправить жалобу'}
                             </button>
                         </div>
                     </div>

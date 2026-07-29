@@ -1,7 +1,7 @@
 'use client';
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Beaker, Plus, Trash2 } from 'lucide-react';
+import { Beaker, Plus } from 'lucide-react';
 
 interface TestsProps {
     testCases: any[];
@@ -36,7 +36,7 @@ export const TestCasesSection = ({ testCases, setTestCases, parameters, addTestC
                             <div className="test-header">
                                 <input className="test-title-input" value={tc.title} onChange={e => updateTest(tcIdx, 'title', e.target.value)} />
                                 <button className="btn-delete" onClick={() => setTestCases(testCases.filter((_, i) => i !== tcIdx))}>
-                                    <Trash2 size={14} />
+                                    <img src="/images/trash.png" alt="del" style={{width:'14px',height:'14px',verticalAlign:'middle'}} />
                                 </button>
                             </div>
                             <div className="test-args-grid">

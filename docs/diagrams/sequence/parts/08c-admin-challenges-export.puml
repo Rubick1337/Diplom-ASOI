@@ -1,0 +1,30 @@
+@startuml
+title Admin Page — Экспорт, импорт и ИИ-генерация задач
+
+actor Admin
+participant "AdminPage" as Page
+participant "AdminController" as AC
+participant "Challenge" as Challenge
+
+Admin -> Page: click "Экспорт задач"
+Page -> AC: dispatch(exportChallenges(filters))
+AC -> Challenge: findAll(filters)
+Challenge --> AC: challenges[]
+AC --> Page: challenges.json (скачивание)
+Page --> Admin: файл challenges.json скачан
+
+Admin -> Page: click "Импорт задач" → загружает JSON-файл
+Page -> AC: dispatch(importChallenges(file))
+AC -> Challenge: bulkCreate(challenges[])
+Challenge --> AC: importedCount
+AC --> Page: { imported: count }
+Page --> Admin: импорт завершён, таблица обновлена
+
+Admin -> Page: click "Сгенерировать задачи ИИ"
+Page --> Admin: открывается панель генерации
+Admin -> Page: input[prompt, count] → click "Сгенерировать"
+Page -> AC: dispatch(generateChallengesAI(prompt, count))
+AC --> Page: generatedChallenges[]
+Page --> Admin: таблица сгенерированных задач для ревью
+
+@enduml

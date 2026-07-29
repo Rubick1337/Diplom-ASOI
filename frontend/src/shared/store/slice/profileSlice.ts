@@ -4,10 +4,12 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import ProfileService, {
     ProfileData,
     MySubmission,
+    MyTestAttempt,
     MyReport,
     LearningPlan,
     PagedResult,
     HistoryParams,
+    TestHistoryParams,
     ReportsParams,
 } from '@/shared/services/ProfileService';
 
@@ -27,6 +29,7 @@ interface ProfileState {
     data:            ProfileData | null;
     isLoading:       boolean;
     history:         PagedState<MySubmission>;
+    testHistory:     PagedState<MyTestAttempt>;
     reports:         PagedState<MyReport>;
     learningPlan:    LearningPlan | null;
     learningLoading: boolean;
@@ -37,6 +40,7 @@ const initialState: ProfileState = {
     data:            null,
     isLoading:       false,
     history:         emptyPaged(),
+    testHistory:     emptyPaged(),
     reports:         emptyPaged(),
     learningPlan:    null,
     learningLoading: false,
@@ -48,6 +52,14 @@ export const fetchProfile = createAsyncThunk<ProfileData, void, { rejectValue: s
     async (_, { rejectWithValue }) => {
         try { return await ProfileService.getProfile(); }
         catch (e: any) { return rejectWithValue(e.response?.data?.message || 'Ошибка загрузки профиля'); }
+    }
+);
+
+export const fetchMyTestHistory = createAsyncThunk<PagedResult<MyTestAttempt>, TestHistoryParams, { rejectValue: string }>(
+    'profile/fetchTestHistory',
+    async (params, { rejectWithValue }) => {
+        try { return await ProfileService.getMyTestHistory(params); }
+        catch (e: any) { return rejectWithValue(e.response?.data?.message || 'Ошибка загрузки истории тестов'); }
     }
 );
 
@@ -105,6 +117,10 @@ const profileSlice = createSlice({
             .addCase(fetchMyHistory.pending,   (s) => { s.history.isLoading = true; })
             .addCase(fetchMyHistory.fulfilled,  (s, a) => applyPaged(s.history, a.payload))
             .addCase(fetchMyHistory.rejected,   (s) => { s.history.isLoading = false; })
+
+            .addCase(fetchMyTestHistory.pending,   (s) => { s.testHistory.isLoading = true; })
+            .addCase(fetchMyTestHistory.fulfilled,  (s, a) => applyPaged(s.testHistory, a.payload))
+            .addCase(fetchMyTestHistory.rejected,   (s) => { s.testHistory.isLoading = false; })
 
             .addCase(fetchMyReports.pending,   (s) => { s.reports.isLoading = true; })
             .addCase(fetchMyReports.fulfilled,  (s, a) => applyPaged(s.reports, a.payload))

@@ -49,6 +49,7 @@ interface ChallengeState {
     topics: Topic[];
     isTopicsLoading: boolean;
     xpGained: number | null;
+    newAchievements: Array<{ id: number; title: string; desc: string; rarity: string; imageFilename: string | null }>;
 }
 
 const initialState: ChallengeState = {
@@ -87,6 +88,7 @@ const initialState: ChallengeState = {
     topics: [],
     isTopicsLoading: false,
     xpGained: null,
+    newAchievements: [],
 };
 
 export const fetchChallenges = createAsyncThunk<
@@ -274,6 +276,7 @@ const challengeSlice = createSlice({
                 state.executionTimeMs = action.payload.executionTimeMs ?? null;
                 state.isTimeLimitExceeded = action.payload.isTimeLimitExceeded ?? false;
                 state.xpGained = action.payload.xpGained ?? null;
+                state.newAchievements = action.payload.newAchievements || [];
                 if (!action.payload.success) state.systemError = action.payload.error || null;
             })
             .addCase(runChallengeTests.rejected, (state) => {

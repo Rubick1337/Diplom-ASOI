@@ -15,7 +15,7 @@ const {
     Topic: TopicModel,
     ChallengeTopic: ChallengeTopicModel,
     HistoryChallenges: HistoryChallengesModel,
-    ReviewChallenges: ReviewChallengesModel
+    Review: ReviewModel
 } = require('../models');
 
 class ChallengeRepositorySequelize extends IChallengeRepository {
@@ -312,7 +312,7 @@ class ChallengeRepositorySequelize extends IChallengeRepository {
             case 'lowest':  order = [['rating', 'ASC'],  ['createdAt', 'DESC']]; break;
             default:        order = [['createdAt', 'DESC']]; break;
         }
-        const { rows, count } = await ReviewChallengesModel.findAndCountAll({
+        const { rows, count } = await ReviewModel.findAndCountAll({
             where: { challengeId },
             include: [{ model: UserModel, as: 'user', attributes: ['id', 'username'] }],
             order,
@@ -330,7 +330,7 @@ class ChallengeRepositorySequelize extends IChallengeRepository {
     }
 
     async getAverageRating(challengeId) {
-        const result = await ReviewChallengesModel.findOne({
+        const result = await ReviewModel.findOne({
             where: { challengeId },
             attributes: [[sequelize.fn('AVG', sequelize.col('rating')), 'avgRating']],
             raw: true
@@ -339,7 +339,7 @@ class ChallengeRepositorySequelize extends IChallengeRepository {
     }
 
     async findReviewByIdWithUser(userId, challengeId) {
-        const row = await ReviewChallengesModel.findOne({
+        const row = await ReviewModel.findOne({
             where: { userId, challengeId },
             include: [{ model: UserModel, as: 'user', attributes: ['id', 'username'] }]
         });
@@ -348,7 +348,7 @@ class ChallengeRepositorySequelize extends IChallengeRepository {
 
     async upsertReview(reviewData) {
         const { userId, challengeId, content, rating } = reviewData;
-        const existingReview = await ReviewChallengesModel.findOne({ where: { userId, challengeId } });
+        const existingReview = await ReviewModel.findOne({ where: { userId, challengeId } });
         if (existingReview) {
             await existingReview.update({
                 content: content || existingReview.content,
@@ -356,7 +356,7 @@ class ChallengeRepositorySequelize extends IChallengeRepository {
                 createdAt: new Date()
             });
         } else {
-            await ReviewChallengesModel.create({
+            await ReviewModel.create({
                 userId, challengeId, content: content || '', rating: rating || 0, createdAt: new Date()
             });
         }
@@ -393,8 +393,8 @@ class ChallengeRepositorySequelize extends IChallengeRepository {
     }
 
     async createReport({ userId, challengeId, reasonId, reasonText }) {
-        const { ReportChallenge } = require('../models');
-        return await ReportChallenge.create({
+        const { Report } = require('../models');
+        return await Report.create({
             userId,
             challengeId,
             reasonId: reasonId || null,

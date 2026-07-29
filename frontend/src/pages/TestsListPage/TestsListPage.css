@@ -1,0 +1,11 @@
+/* skeleton-заглушки во время загрузки тестов */
+.tl-skeleton {
+    min-height: 180px;
+    animation: tl-pulse 1.4s ease-in-out infinite;
+    pointer-events: none;
+}
+
+@keyframes tl-pulse {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: .45; }
+}

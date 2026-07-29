@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useMemo } from 'react';
 import Image from 'next/image';
 import CodeEditor from '@/features/CodeEditor/CodeEditor';
 import TerminalPanel from '@/features/TerminalPanel/TerminalPanel';
@@ -45,16 +45,23 @@ export default function CodeIdeWidget({
 
     const { isFormatting, executionTimeMs, isTimeLimitExceeded, isExecuting } = useAppSelector((state: RootState) => state.challenges);
 
-    const errorLine = (() => {
-        const details = executionResults?.systemError?.details || '';
+    const errorMarker = useMemo(() => {
+        const err = executionResults?.systemError;
+        if (!err) return undefined;
+        if (err.errorLine) {
+            return { line: err.errorLine, col: err.errorCol || 1, endCol: err.errorEndCol ?? undefined };
+        }
+        const details = err.details || '';
         if (!details) return undefined;
-        const m = details.match(/code:(\d+):\d+:\s*(?:error|warning)/i)
+        const m = details.match(/code:(\d+):(\d+):\s*(?:error|warning)/i)
+            || details.match(/code\((\d+),(\d+)\)/i)
             || details.match(/on line (\d+)/i)
             || details.match(/\[stdin\]:(\d+)/i)
             || details.match(/line (\d+)/i);
         const n = m ? parseInt(m[1]) : 0;
-        return (n > 0 && n < 1000) ? n : undefined;
-    })();
+        const col = m?.[2] ? parseInt(m[2]) : 1;
+        return (n > 0 && n < 1000) ? { line: n, col, endCol: undefined } : undefined;
+    }, [executionResults?.systemError]);
 
     const [validationStats, setValidationStats] = useState<EditorValidation>({
         errors: 0, warnings: 0, problems: []
@@ -195,7 +202,7 @@ export default function CodeIdeWidget({
                     code={code}
                     originalCode={starterCode}
                     isDiffMode={isDiffMode}
-                    errorLine={errorLine}
+                    errorMarker={errorMarker}
                     onChange={(val: string | undefined) => onCodeChange(val || '')}
                     onValidate={setValidationStats}
                     editorRef={editorRef}

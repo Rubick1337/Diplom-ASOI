@@ -261,6 +261,23 @@ bash restore.sh
 
 ---
 
+## Тестовые пользователи
+
+После инициализации БД (`init-db/init.sql`) доступны следующие тестовые аккаунты.
+
+Пароль для всех: **`password123`**
+
+| Роль | Логин | Email | Пароль |
+|---|---|---|---|
+| Owner | `owner` | owner@example.com | password123 |
+| Admin | `admin1` | admin1@example.com | password123 |
+| Admin | `admin2` | admin2@example.com | password123 |
+| User | `user1` | user1@example.com | password123 |
+| User | `user2` | user2@example.com | password123 |
+| User | `user3` | user3@example.com | password123 |
+
+---
+
 ## Роли пользователей
 
 | Роль | Доступ |

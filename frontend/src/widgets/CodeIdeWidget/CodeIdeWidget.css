@@ -210,3 +210,45 @@
     z-index: 10;
     pointer-events: none;
 }
+
+/* LIGHT THEME */
+[data-theme="light"] .ide-container,
+[data-theme="light"] .ide-wrapper {
+    background: #f5f0e8;
+    border-color: rgba(26,24,23,0.12);
+}
+[data-theme="light"] .ide-header,
+[data-theme="light"] .ide-header-main,
+[data-theme="light"] .ide-file-bar {
+    background: #ede8df;
+    border-bottom-color: rgba(26,24,23,0.10);
+}
+[data-theme="light"] .file-tab {
+    background: #f5f0e8;
+    color: #1a1817;
+    border-right-color: rgba(26,24,23,0.08);
+}
+[data-theme="light"] .terminal-pane,
+[data-theme="light"] .ide-terminal-area {
+    background: #ede8df;
+    border-top-color: rgba(26,24,23,0.10);
+}
+[data-theme="light"] .terminal-tabs {
+    background: #f5f0e8;
+    border-bottom-color: rgba(26,24,23,0.10);
+}
+[data-theme="light"] .tab-btn { color: rgba(26,24,23,0.45); }
+[data-theme="light"] .tab-btn:hover { color: #1a1817; }
+[data-theme="light"] .tab-btn.active {
+    color: #1a1817;
+    border-bottom-color: #FF6B35;
+}
+[data-theme="light"] .log-time { color: rgba(26,24,23,0.35); }
+[data-theme="light"] .log-msg { color: #1a1817; }
+[data-theme="light"] .terminal-content::-webkit-scrollbar-thumb { background: rgba(26,24,23,0.18); }
+[data-theme="light"] .ide-actions-group {
+    border-left-color: rgba(26,24,23,0.10);
+}
+[data-theme="light"] .ide-format-btn:hover {
+    background: rgba(26,24,23,0.06);
+}

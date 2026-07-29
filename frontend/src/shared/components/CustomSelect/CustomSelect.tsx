@@ -14,19 +14,56 @@ interface Props {
     onChange: (v: string) => void;
     placeholder?: string;
     small?: boolean;
+    searchable?: boolean;
+    searchThreshold?: number;
 }
 
-export default function CustomSelect({ options, value, onChange, placeholder = 'Выбрать...', small }: Props) {
-    const [open, setOpen] = useState(false);
-    const ref  = useRef<HTMLDivElement>(null);
+const DEFAULT_SEARCH_THRESHOLD = 7;
+
+export default function CustomSelect({
+    options,
+    value,
+    onChange,
+    placeholder = 'Выбрать...',
+    small,
+    searchable,
+    searchThreshold = DEFAULT_SEARCH_THRESHOLD,
+}: Props) {
+    const [open,    setOpen]    = useState(false);
+    const [query,   setQuery]   = useState('');
+    const [dropUp,  setDropUp]  = useState(false);
+    const ref       = useRef<HTMLDivElement>(null);
+    const searchRef = useRef<HTMLInputElement>(null);
+
+    const showSearch = searchable || options.length >= searchThreshold;
 
     useEffect(() => {
         const handler = (e: MouseEvent) => {
-            if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+            if (ref.current && !ref.current.contains(e.target as Node)) {
+                setOpen(false);
+                setQuery('');
+            }
         };
         document.addEventListener('mousedown', handler);
         return () => document.removeEventListener('mousedown', handler);
     }, []);
+
+    useEffect(() => {
+        if (open) {
+            if (showSearch) setTimeout(() => searchRef.current?.focus(), 0);
+            if (ref.current) {
+                const rect = ref.current.getBoundingClientRect();
+                const spaceBelow = window.innerHeight - rect.bottom;
+                setDropUp(spaceBelow < 260);
+            }
+        } else {
+            setQuery('');
+        }
+    }, [open, showSearch]);
+
+    const filtered = query.trim()
+        ? options.filter(o => o.label.toLowerCase().includes(query.toLowerCase()))
+        : options;
 
     const selected = options.find(o => o.value === value);
 
@@ -42,17 +79,33 @@ export default function CustomSelect({ options, value, onChange, placeholder = '
             </button>
 
             {open && (
-                <div className="csel__dropdown">
-                    {options.map(opt => (
-                        <button
-                            key={opt.value}
-                            type="button"
-                            className={`csel__option${opt.value === value ? ' csel__option--active' : ''}`}
-                            onClick={() => { onChange(opt.value); setOpen(false); }}
-                        >
-                            {opt.label}
-                        </button>
-                    ))}
+                <div className={`csel__dropdown${dropUp ? ' csel__dropdown--up' : ''}`}>
+                    {showSearch && (
+                        <div className="csel__search-wrap">
+                            <input
+                                ref={searchRef}
+                                className="csel__search"
+                                placeholder="Поиск..."
+                                value={query}
+                                onChange={e => setQuery(e.target.value)}
+                                onKeyDown={e => e.key === 'Escape' && setOpen(false)}
+                            />
+                        </div>
+                    )}
+                    <div className="csel__list">
+                        {filtered.length === 0 ? (
+                            <span className="csel__empty">Ничего не найдено</span>
+                        ) : filtered.map(opt => (
+                            <button
+                                key={opt.value}
+                                type="button"
+                                className={`csel__option${opt.value === value ? ' csel__option--active' : ''}`}
+                                onClick={() => { onChange(opt.value); setOpen(false); setQuery(''); }}
+                            >
+                                {opt.label}
+                            </button>
+                        ))}
+                    </div>
                 </div>
             )}
         </div>

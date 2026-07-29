@@ -1,7 +1,16 @@
-const { GoogleGenAI } = require('@google/genai');
+const { Mistral } = require('@mistralai/mistralai');
 
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
-const MODEL = 'gemini-2.5-flash';
+const client = new Mistral({ apiKey: process.env.MISTRAL_API_KEY });
+const MODEL = 'mistral-small-latest';
+
+async function complete(messages, maxTokens = 2048) {
+    const response = await client.chat.complete({
+        model: MODEL,
+        messages,
+        maxTokens,
+    });
+    return response.choices[0]?.message?.content ?? '';
+}
 
 class AIService {
     async analyzeCode({ code, language, challengeTitle, challengeDescription, testResults, isSolved }) {
@@ -20,7 +29,7 @@ class AIService {
         const codeBlock = `\`\`\`${language}\n${code}\n\`\`\``;
 
         const prompt = isSolved
-            ? `Ты опытный наставник по программированию.а
+            ? `Ты опытный наставник по программированию.
 
 Задача: ${challengeTitle}
 Описание: ${challengeDescription}
@@ -51,11 +60,7 @@ ${testResultsText}
 - Если есть результаты тестов — объясни почему конкретные тесты провалились
 - Максимум 4-5 пунктов, будь лаконичным`;
 
-        const response = await ai.models.generateContent({
-            model: MODEL,
-            contents: prompt,
-        });
-        return response.text;
+        return complete([{ role: 'user', content: prompt }]);
     }
 
     async generateTopicGuide(topicName, preferences = null) {
@@ -80,8 +85,7 @@ ${preferencesBlock}
 - related: 3 смежные темы для дальнейшего развития
 - Всё строго на русском языке`;
 
-        const response = await ai.models.generateContent({ model: MODEL, contents: prompt });
-        const text = response.text.trim();
+        const text = (await complete([{ role: 'user', content: prompt }])).trim();
         const match = text.match(/\{[\s\S]*\}/);
         if (!match) throw new Error('AI вернул невалидный JSON для гайда');
         return JSON.parse(match[0]);
@@ -138,18 +142,64 @@ ${preferencesBlock}
 - solution — рабочий JavaScript-код функции с именем funcName, который проходит ВСЕ тест-кейсы. Переносы строк экранировать как \\n
 - Весь текст (name, description, sampleInput, sampleOutput, title тестов, topics) на русском языке (кроме funcName и имён параметров)`;
 
-        const response = await ai.models.generateContent({
-            model: MODEL,
-            contents: systemPrompt,
-        });
-        const text = response.text.trim();
+        const text = (await complete([{ role: 'user', content: systemPrompt }], 4096)).trim();
         const match = text.match(/\{[\s\S]*\}/);
         if (!match) throw new Error('AI вернул невалидный JSON');
         return JSON.parse(match[0]);
     }
 
+    async generateChallengesBatch(prompt, count = 3) {
+        const n = Math.min(Math.max(Number(count) || 3, 1), 10);
+        const systemPrompt = `Ты — создатель задач по программированию в стиле LeetCode.
+
+ЗАПРОС ПОЛЬЗОВАТЕЛЯ: "${prompt}"
+КОЛИЧЕСТВО ЗАДАЧ: ${n}
+
+Создай РОВНО ${n} разных задач по запросу пользователя.
+
+Верни ТОЛЬКО валидный JSON-массив без markdown-блоков и без пояснений:
+[
+  {
+    "name": "Название задачи",
+    "difficulty": 3,
+    "funcName": "camelCaseName",
+    "description": "Подробное условие на русском: что принимает функция, что возвращает, ограничения, примеры",
+    "sampleInput": "a=5, b=10",
+    "sampleOutput": "15",
+    "topics": ["Математика"],
+    "parameters": [
+      {"name": "a", "dataType": "int", "order": 0},
+      {"name": "b", "dataType": "int", "order": 1}
+    ],
+    "testCases": [
+      {
+        "title": "Тест 1",
+        "expectedOutput": "15",
+        "testArgs": [{"value": "5", "order": 0}, {"value": "10", "order": 1}]
+      }
+    ]
+  }
+]
+
+Строгие правила:
+- Каждая задача должна быть УНИКАЛЬНОЙ и относиться к теме запроса
+- difficulty: целое число от 1 до 10
+- funcName: camelCase, только латинские буквы и цифры
+- dataType: только одно из: int, float, string, bool, array, array2d, object
+- testCases: минимум 3, максимум 6 на задачу
+- testArgs для array/array2d/object — валидный JSON строкой ("[1,2,3]")
+- expectedOutput — всегда строка ("42", "true", "[1,2,3]")
+- topics — массив строк с названиями тем на русском
+- Весь текст на русском (кроме funcName и имён параметров)`;
+
+        const text = (await complete([{ role: 'user', content: systemPrompt }], 8192)).trim();
+        const match = text.match(/\[[\s\S]*\]/);
+        if (!match) throw new Error('AI вернул невалидный JSON');
+        return JSON.parse(match[0]);
+    }
+
     async chat({ message, code, language, challengeTitle, challengeDescription, history }) {
-        const systemContext = `Ты опытный ментор по программированию. Отвечай ТОЛЬКО на русском языке. НЕ давай готовые решения — только направляй рассуждения.
+        const systemContent = `Ты опытный ментор по программированию. Отвечай ТОЛЬКО на русском языке. НЕ давай готовые решения — только направляй рассуждения.
 
 Контекст задачи: "${challengeTitle}"
 Описание: ${challengeDescription}
@@ -160,21 +210,16 @@ ${preferencesBlock}
 ${code}
 \`\`\``;
 
-        const contents = [
-            { role: 'user', parts: [{ text: systemContext }] },
-            { role: 'model', parts: [{ text: 'Понял контекст. Готов помочь с задачей.' }] },
+        const messages = [
+            { role: 'system', content: systemContent },
             ...(history || []).map(m => ({
-                role: m.role,
-                parts: [{ text: m.text }],
+                role: m.role === 'model' ? 'assistant' : m.role,
+                content: m.text,
             })),
-            { role: 'user', parts: [{ text: message }] },
+            { role: 'user', content: message },
         ];
 
-        const response = await ai.models.generateContent({
-            model: MODEL,
-            contents,
-        });
-        return response.text;
+        return complete(messages);
     }
 }
 

@@ -1,0 +1,143 @@
+@startuml
+title Диаграмма последовательности — Admin Tests (управление тестами)
+
+actor Admin
+participant "AdminTestsPage" as Page
+participant "TestController" as TC
+participant "Test" as TestModel
+participant "Question" as Q
+participant "QuestionType" as QT
+participant "MoodleXMLService" as Moodle
+participant "QuizApiService" as QuizApi
+participant "DockerRunner" as Docker
+
+Admin -> Page: открывает /admin/tests
+
+Page -> TC: getAdminTests()
+TC -> TestModel: findAll(include=questionCount)
+TestModel --> TC: tests[]{ id, title, isPublished, questionCount, createdAt }
+TC --> Page: tests[]
+Page --> Admin: рендер таблицы тестов
+
+Page -> TC: getQuestionTypes()
+TC -> QT: findAll()
+QT --> TC: types[]{ id, name }
+TC --> Page: types[]
+
+Admin -> Page: click "+ Создать тест"
+Page --> Admin: открывается форма создания
+
+Admin -> Page: input[title, description, timeLimitSec, topics[]] → click "Создать"
+Page -> TC: createTest({ title, description, timeLimitSec, topics }, adminId)
+TC -> TestModel: create(title, description, timeLimitSec, adminId)
+TestModel --> TC: newTest
+TC --> Page: newTest
+Page --> Admin: переход в редактор теста
+
+Admin -> Page: открывает тест → click "+ Добавить вопрос"
+Admin -> Page: select тип вопроса → input[text, points, imageUrl?]
+alt single-choice / multiple-choice
+    Admin -> Page: добавляет варианты ответов (options[])
+else matching
+    Admin -> Page: добавляет пары соответствий (pairs[])
+else code
+    Admin -> Page: input[код-шаблон, testCases[]]
+end
+
+Admin -> Page: click "Сохранить вопрос"
+Page -> TC: createQuestion(testId, { typeId, text, points, options?, testCases? })
+TC -> Q: create(testId, typeId, text, points, orderIndex)
+Q --> TC: newQuestion
+TC --> Page: newQuestion
+Page --> Admin: вопрос добавлен в список
+
+alt загрузка изображения к вопросу
+    Admin -> Page: upload[image] для вопроса
+    Page -> TC: uploadQuestionImage(questionId, imageFile)
+    TC -> Q: update(questionId, { imageUrl })
+    Q --> TC: updatedQuestion
+    TC --> Page: { imageUrl }
+    Page --> Admin: изображение загружено, отображается в вопросе
+end
+
+Admin -> Page: перетаскивает вопросы (drag-n-drop) → новый порядок
+Page -> TC: reorderQuestions(testId, orderedIds[])
+TC -> Q: bulkUpdate(orderedIds, orderIndex)
+Q --> TC: ok
+TC --> Page: ok
+Page --> Admin: порядок вопросов сохранён
+
+Admin -> Page: click "Редактировать" вопрос → изменяет поля → click "Сохранить"
+Page -> TC: updateQuestion(questionId, { text, points, options?, testCases? })
+TC -> Q: update(questionId, changes)
+Q --> TC: updatedQuestion
+TC --> Page: updatedQuestion
+Page --> Admin: вопрос обновлён
+
+alt предпросмотр код-вопроса
+    Admin -> Page: input[код] → click "Предпросмотр"
+    Page -> TC: previewCode(questionId, code, language)
+    TC -> Docker: runInDocker(language, code, testCases[])
+    Docker --> TC: results[]{ passed, output, expected }
+    TC --> Page: results[]
+    Page --> Admin: результаты прогона по тест-кейсам
+end
+
+Admin -> Page: click "Удалить" вопрос → ConfirmationModal
+Admin -> Page: click "Удалить" в модалке
+Page -> TC: deleteQuestion(testId, questionId)
+TC -> Q: destroy(questionId)
+Q --> TC: ok
+TC --> Page: ok
+Page --> Admin: вопрос удалён из списка
+
+Admin -> Page: click "Редактировать тест" → изменяет мета-данные → click "Сохранить"
+Page -> TC: updateTest(testId, { title, description, timeLimitSec })
+TC -> TestModel: update(testId, changes)
+TestModel --> TC: updatedTest
+TC --> Page: updatedTest
+Page --> Admin: тест обновлён
+
+Admin -> Page: click "Опубликовать" / "Снять с публикации"
+Page -> TC: publishTest(testId, isPublished)
+TC -> TestModel: update(testId, { isPublished })
+TestModel --> TC: { id, isPublished }
+TC --> Page: { id, isPublished }
+Page --> Admin: статус публикации обновлён
+
+Admin -> Page: click "Удалить тест" → ConfirmationModal
+Admin -> Page: click "Удалить" в модалке
+Page -> TC: deleteTest(testId)
+TC -> TestModel: destroy(testId)
+TestModel --> TC: ok
+TC --> Page: ok
+Page --> Admin: тест удалён из таблицы
+
+Admin -> Page: click "Экспорт в Moodle"
+Page -> TC: exportMoodle(testId)
+TC -> Moodle: exportTest(testId)
+Moodle -> TestModel: findByPk(testId, include=Questions)
+TestModel --> Moodle: test
+Moodle --> TC: { zipBuffer, filename, hasCode, hasImages }
+TC --> Page: скачивание ZIP-файла
+Page --> Admin: файл {filename}.zip скачан
+
+Admin -> Page: click "Импорт из Moodle XML" → upload[xml-file]
+Page -> TC: importMoodle(xmlFile)
+TC -> Moodle: importTest(xmlString, adminId)
+Moodle -> TestModel: create(title, ...)
+TestModel --> Moodle: newTest
+Moodle -> Q: bulkCreate(questions[])
+Q --> Moodle: questions[]
+Moodle --> TC: { test, questionsCount }
+TC --> Page: { test, questionsCount }
+Page --> Admin: тест импортирован, показан в таблице
+
+Admin -> Page: click "Импорт из Quiz API" → input[tags, difficulty, limit, title]
+Page -> TC: importQuizApi({ tags, difficulty, limit, title, adminId })
+TC -> QuizApi: importFromQuizApi({ apiKey, tags, difficulty, limit, title, adminId })
+QuizApi --> TC: { test, questionsCount }
+TC --> Page: { test, questionsCount }
+Page --> Admin: тест импортирован из внешнего API
+
+@enduml

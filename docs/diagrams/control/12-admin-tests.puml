@@ -1,0 +1,134 @@
+@startuml
+title 12 Admin Tests — Control Classes
+
+class AdminTestsPage <<boundary>> {
+  - testId: int
+  - adminId: int
+  - title: string
+  - description: string
+  - timeLimitSec: int
+  - isPublished: boolean
+  - questionId: int
+  - typeId: int
+  - text: string
+  - points: int
+  - options: Option[]
+  - testCases: TestCase[]
+  - orderedIds: int[]
+  - imageFile: File
+  - code: string
+  - language: string
+  - xmlFile: File
+  - tags: string
+  - difficulty: string
+  - limit: int
+  + tests: TestRow[]
+  + questionTypes: QuestionType[]
+  + test: TestDetail
+  + newQuestion: Question
+  + updatedQuestion: Question
+  + previewResults: RunResult[]
+  + exportFile: ZipFile
+  + importResult: ImportResult
+}
+
+class TestController <<control>> {
+  - testId: int
+  - adminId: int
+  - title: string
+  - description: string
+  - timeLimitSec: int
+  - isPublished: boolean
+  - questionId: int
+  - typeId: int
+  - text: string
+  - points: int
+  - options: Option[]
+  - testCases: TestCase[]
+  - orderedIds: int[]
+  - code: string
+  - language: string
+  - tags: string
+  - difficulty: string
+  - limit: int
+  + tests: TestRow[]
+  + questionTypes: QuestionType[]
+  + test: TestDetail
+  + newQuestion: Question
+  + updatedQuestion: Question
+  + previewResults: RunResult[]
+  + importResult: ImportResult
+}
+
+class Test <<entity>> {
+  - id: int
+  - isPublished: boolean
+  - adminId: int
+  + id: int
+  + title: string
+  + description: string
+  + timeLimitSec: int
+  + questionCount: int
+  + isPublished: boolean
+  + createdAt: datetime
+}
+
+class Question <<entity>> {
+  - testId: int
+  - typeId: int
+  - questionId: int
+  - orderIndex: int
+  + id: int
+  + text: string
+  + points: int
+  + imageUrl: string
+  + options: Option[]
+  + testCases: TestCase[]
+}
+
+class QuestionType <<entity>> {
+  + id: int
+  + name: string
+}
+
+class MoodleXMLService <<entity>> {
+  - testId: int
+  - xmlString: string
+  - adminId: int
+  + zipBuffer: Buffer
+  + filename: string
+  + hasCode: boolean
+  + hasImages: boolean
+  + test: TestDetail
+  + questionsCount: int
+}
+
+class QuizApiService <<entity>> {
+  - apiKey: string
+  - tags: string
+  - difficulty: string
+  - limit: int
+  - title: string
+  - adminId: int
+  + test: TestDetail
+  + questionsCount: int
+}
+
+class DockerRunner <<entity>> {
+  - language: string
+  - code: string
+  - testCases: TestCase[]
+  + results: RunResult[]
+}
+
+AdminTestsPage ..> TestController : getAdminTests() / getQuestionTypes() /\ncreateTest(title, description, timeLimitSec, adminId) /\nupdateTest(testId, changes) / publishTest(testId, isPublished) /\ndeleteTest(testId) / createQuestion(testId, {...}) /\nuploadQuestionImage(questionId, imageFile) /\nreorderQuestions(testId, orderedIds) / updateQuestion(questionId, changes) /\npreviewCode(questionId, code, language) / deleteQuestion(testId, questionId) /\nexportMoodle(testId) / importMoodle(xmlFile) /\nimportQuizApi({ tags, difficulty, limit, title, adminId })
+TestController o-- Test : "1" findAll / create / update / destroy "0..*"
+TestController o-- Question : "1" create / update / destroy / bulkUpdate "0..*"
+TestController o-- QuestionType : "1" findAll "0..*"
+TestController ..> MoodleXMLService : exportTest(testId) / importTest(xmlString, adminId)
+TestController ..> QuizApiService : importFromQuizApi({ apiKey, tags, difficulty, limit, title, adminId })
+TestController ..> DockerRunner : runInDocker(language, code, testCases)
+MoodleXMLService o-- Test : findByPk(testId, include=Questions) / create
+MoodleXMLService o-- Question : bulkCreate(questions)
+
+@enduml

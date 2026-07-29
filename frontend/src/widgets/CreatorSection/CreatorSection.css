@@ -134,3 +134,19 @@
         font-size: 1rem;
     }
 }
+
+/* LIGHT THEME */
+[data-theme="light"] .creator-card {
+    background: #ddd8ce;
+    border-color: rgba(26,24,23,0.14);
+}
+[data-theme="light"] .creator-name {
+    color: #1a1817;
+}
+[data-theme="light"] .creator-desc {
+    color: rgba(26,24,23,0.72);
+    opacity: 1;
+}
+[data-theme="light"] .creator-desc span {
+    color: #1a1817;
+}

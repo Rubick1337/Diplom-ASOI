@@ -1,3 +1,143 @@
+/* ── Step indicator ─────────────────────────────────────────────────────── */
+
+.reg-steps {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+    gap: 0;
+}
+
+.reg-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+}
+
+.reg-step-circle {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.95rem;
+    border: 2px solid rgba(255, 255, 255, 0.15);
+    color: rgba(255, 255, 255, 0.35);
+    background: transparent;
+    transition: background 0.25s, border-color 0.25s, color 0.25s;
+}
+
+.reg-step-circle.active {
+    background: linear-gradient(135deg, #FF6B35, #F04949);
+    border-color: transparent;
+    color: #fff;
+}
+
+.reg-step-circle.done {
+    background: rgba(255, 107, 53, 0.15);
+    border-color: #FF6B35;
+    color: #FF6B35;
+}
+
+.reg-step-label {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.35);
+    font-weight: 600;
+    white-space: nowrap;
+    transition: color 0.25s;
+}
+
+.reg-step-label.active {
+    color: #FF6B35;
+}
+
+.reg-step-line {
+    width: 56px;
+    height: 2px;
+    background: rgba(255, 255, 255, 0.1);
+    margin: 0 8px 22px;
+    transition: background 0.25s;
+}
+
+.reg-step-line.done {
+    background: linear-gradient(90deg, #FF6B35, #F04949);
+}
+
+/* ── Verification code ───────────────────────────────────────────────────── */
+
+.reg-code-hint {
+    text-align: center;
+    color: #aaa;
+    font-size: 0.9rem;
+    margin: 0 0 24px;
+    line-height: 1.5;
+}
+
+.reg-code-hint strong {
+    color: #fff;
+}
+
+.reg-code-inputs {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-bottom: 24px;
+}
+
+.reg-code-box {
+    width: 46px;
+    height: 54px;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    background: rgba(255, 255, 255, 0.07);
+    color: #fff;
+    font-size: 1.5rem;
+    font-weight: 700;
+    text-align: center;
+    outline: none;
+    transition: border-color 0.2s;
+    caret-color: #FF6B35;
+}
+
+.reg-code-box:focus {
+    border-color: #FF6B35;
+    background: rgba(255, 107, 53, 0.08);
+}
+
+.reg-code-box:not(:placeholder-shown) {
+    border-color: rgba(255, 107, 53, 0.5);
+}
+
+.reg-code-actions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 16px;
+}
+
+.reg-link-btn {
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.85rem;
+    cursor: pointer;
+    padding: 4px 0;
+    transition: color 0.2s;
+}
+
+.reg-link-btn:hover:not(:disabled) {
+    color: #FF6B35;
+}
+
+.reg-link-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+/* ── Form ────────────────────────────────────────────────────────────────── */
+
 .register-form {
     background: rgba(255, 255, 255, 0.06);
     border: 1px solid rgba(255, 255, 255, 0.1);

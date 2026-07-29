@@ -1,0 +1,58 @@
+@startuml
+title Диаграмма последовательности — Register Page
+actor User
+participant "RegisterPage" as Page
+participant "UserController" as UC
+participant "User" as UserModel
+participant "TokenService" as Token
+participant "EmailService" as Email
+User -> Page: открывает /auth/register
+Page --> User: рендер формы регистрации
+User -> Page: input[username, email, password, confirmPassword]
+User -> Page: click "Зарегистрироваться"
+Page -> UC: registration(username, email, password, role=0)
+UC -> UserModel: findOne(email)
+UserModel --> UC: user | null
+alt email уже занят
+    UC --> Page: ошибка "Email уже используется"
+    Page --> User: сообщение об ошибке
+end
+UC -> UserModel: findOne(username)
+UserModel --> UC: user | null
+alt username уже занят
+    UC --> Page: ошибка "Имя пользователя уже используется"
+    Page --> User: сообщение об ошибке
+end
+UC -> UserModel: bcrypt.hash(password)
+UserModel --> UC: hashedPassword
+UC -> UserModel: create(username, email, hashedPassword, role, isVerified=false)
+UserModel --> UC: newUser
+UC -> UC: generateVerificationCode()
+UC -> UserModel: saveVerificationCode(userId, code, expiresAt)
+UserModel --> UC: ok
+UC -> Email: sendVerificationEmail(email, code)
+Email --> UC: ok
+UC --> Page: { message: "Код отправлен на email" }
+Page --> User: рендер формы ввода кода
+User -> Page: input[verificationCode]
+User -> Page: click "Подтвердить"
+Page -> UC: verifyEmail(email, verificationCode)
+UC -> UserModel: findVerificationCode(email)
+UserModel --> UC: { code, expiresAt }
+alt код истёк
+    UC --> Page: ошибка "Код устарел"
+    Page --> User: сообщение об ошибке
+else код неверен
+    UC --> Page: ошибка "Неверный код"
+    Page --> User: сообщение об ошибке
+else код верен
+    UC -> UserModel: markAsVerified(userId)
+    UserModel --> UC: ok
+    UC -> Token: generateTokens(userId, role)
+    Token --> UC: { accessToken, refreshToken }
+    UC -> UserModel: setRefreshToken(userId, refreshToken)
+    UserModel --> UC: ok
+    UC --> Page: accessToken, user{ id, role }
+    Page --> User: переход на /challenges
+end
+@enduml

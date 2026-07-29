@@ -1,0 +1,24 @@
+@startuml
+title Challenges Page — Загрузка списка и тем
+
+actor User
+participant "ChallengesPage" as Page
+participant "ChallengeController" as CC
+participant "Challenge" as Challenge
+participant "Topic" as Topic
+
+User -> Page: открывает /challenges
+
+Page -> CC: dispatch(getAllChallenges(page=1, pageSize, sort=newest))
+CC -> Challenge: findAll(page, pageSize, sort)
+Challenge --> CC: items[], total
+CC --> Page: items[], total, totalPages
+Page --> User: рендер списка задач
+
+Page -> CC: dispatch(getTopics())
+CC -> Topic: getTopics()
+Topic --> CC: topics[]
+CC --> Page: topics[]
+Page --> User: рендер фильтра тем
+
+@enduml

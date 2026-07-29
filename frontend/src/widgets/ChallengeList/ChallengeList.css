@@ -30,3 +30,11 @@
 .motion-wrapper > div {
     will-change: transform, opacity;
 }
+
+/* LIGHT THEME */
+[data-theme="light"] .challenge-list-loading,
+[data-theme="light"] .challenge-list-empty {
+    background: linear-gradient(180deg, rgba(26,24,23,0.04), #ede8df);
+    border-color: rgba(26,24,23,0.10);
+    color: rgba(26,24,23,0.55);
+}

@@ -1,0 +1,58 @@
+@startuml
+title Challenge Page — Решения сообщества (голоса и комментарии)
+
+actor User
+participant "ChallengeWorkspace" as Page
+participant "ChallengeController" as CC
+participant "SolutionController" as SC
+participant "HistoryChallenge" as HC
+participant "SolutionVote" as SV
+participant "SolutionComment" as SCom
+
+User -> Page: click "Решения сообщества"
+Page -> CC: dispatch(getSolutions(challengeId, userId, page, language))
+CC -> HC: findAll(challengeId, status=success)
+HC --> CC: items[], total
+CC --> Page: items[], totalPages, currentPage
+Page --> User: рендер списка решений
+
+User -> Page: click на решении → открыть детали
+Page -> SC: dispatch(getVotes(solutionId, userId))
+SC -> SV: findAll(solutionId)
+SV --> SC: upvotes, downvotes, userVote
+SC --> Page: upvotes, downvotes, userVote
+Page -> SC: dispatch(getComments(solutionId, page=1, pageSize=20))
+SC -> SCom: findAll(solutionId, page, pageSize)
+SCom --> SC: items[], total, totalPages
+SC --> Page: items[], total, totalPages
+Page --> User: рендер решения с голосами и комментариями
+
+User -> Page: click "Нравится" / "Не нравится"
+Page -> SC: dispatch(vote(solutionId, { userId, vote: 1|-1 }))
+SC -> SV: upsert(solutionId, userId, vote)
+SV --> SC: updatedVote
+SC --> Page: upvotes, downvotes, userVote
+Page --> User: обновлённые счётчики голосов
+
+User -> Page: click убрать голос
+Page -> SC: dispatch(removeVote(solutionId, { userId }))
+SC -> SV: destroy(solutionId, userId)
+SV --> SC: ok
+SC --> Page: upvotes, downvotes, userVote: null
+Page --> User: голос сброшен
+
+User -> Page: textarea[комментарий] → click "Отправить"
+Page -> SC: dispatch(addComment(solutionId, { userId, content }))
+SC -> SCom: create(solutionId, userId, content)
+SCom --> SC: newComment
+SC --> Page: newComment
+Page --> User: новый комментарий в списке
+
+User -> Page: click "Удалить" на своём комментарии
+Page -> SC: dispatch(deleteComment(solutionId, commentId, { userId }))
+SC -> SCom: destroy(commentId, userId)
+SCom --> SC: ok
+SC --> Page: { message: "Комментарий удалён" }
+Page --> User: комментарий удалён из списка
+
+@enduml

@@ -96,3 +96,22 @@
 .icon-orange {
     color: #b1361e;
 }
+
+/* LIGHT THEME */
+[data-theme="light"] .random-challenge-card {
+    background: #ffffff;
+    border-color: rgba(26,24,23,0.12);
+    box-shadow: 0 4px 20px rgba(26,24,23,0.08);
+}
+[data-theme="light"] .random-card-header h3 {
+    color: #1a1817;
+}
+[data-theme="light"] .random-card-desc {
+    color: rgba(26,24,23,0.50);
+}
+[data-theme="light"] .difficulty-selector label {
+    color: rgba(26,24,23,0.65);
+}
+[data-theme="light"] .random-range {
+    background: rgba(26,24,23,0.15);
+}

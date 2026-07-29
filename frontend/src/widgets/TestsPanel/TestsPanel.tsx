@@ -5,7 +5,7 @@ import { TestCaseItem } from '@/entities/test/TestCaseItem';
 import './TestsPanel.css';
 
 export default function TestsPanel({ tests }: { tests: TestCase[] }) {
-    const [expandedTestId, setExpandedTestId] = useState<string | null>(null);
+    const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
 
     const total = tests.length;
     const passed = tests.filter(t => t.status === 'success').length;
@@ -13,22 +13,17 @@ export default function TestsPanel({ tests }: { tests: TestCase[] }) {
     const isRunning = tests.some(t => t.status === 'running');
 
     useEffect(() => {
-        if (isRunning && tests.length > 0 && !expandedTestId) {
-            setExpandedTestId(tests[0].id);
-        }
-    }, [isRunning, tests, expandedTestId]);
-
-    useEffect(() => {
-        const firstFailed = tests.find(t => t.status === 'fail');
-        if (firstFailed) {
-            setExpandedTestId(firstFailed.id);
-        }
-    }, [failed]);
+        setExpandedIds(new Set(tests.map(t => t.id)));
+    }, [tests.map(t => t.id).join(',')]);
 
     const progressPercent = total > 0 ? (passed / total) * 100 : 0;
 
     const toggleExpand = (id: string) => {
-        setExpandedTestId(prevId => (prevId === id ? null : id));
+        setExpandedIds(prev => {
+            const next = new Set(prev);
+            next.has(id) ? next.delete(id) : next.add(id);
+            return next;
+        });
     };
 
     return (
@@ -64,7 +59,7 @@ export default function TestsPanel({ tests }: { tests: TestCase[] }) {
                         >
                             <TestCaseItem
                                 test={test}
-                                isExpanded={expandedTestId === test.id}
+                                isExpanded={expandedIds.has(test.id)}
                             />
                         </div>
                     ))

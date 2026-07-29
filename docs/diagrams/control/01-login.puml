@@ -1,0 +1,39 @@
+@startuml
+title 01 Login — Control Classes
+
+class LoginPage <<boundary>> {
+  - login: string
+  - password: string
+  + accessToken: string
+  + user: User
+}
+
+class UserController <<control>> {
+  - login: string
+  - password: string
+  + accessToken: string
+  + user: User
+}
+
+class UserModel <<entity>> {
+  - email: string
+  - username: string
+  - password: string
+  + id: int
+  + roleId: int
+  + refreshToken: string
+}
+
+class TokenService <<entity>> {
+  - userId: int
+  - role: int
+  + accessToken: string
+  + refreshToken: string
+}
+
+LoginPage ..> UserController : login(login, password)
+UserController o-- UserModel : findOne(email) / findOne(username) /\nbcrypt.compare / setRefreshToken
+UserController *-- TokenService : generateTokens(userId, role)
+UserController ..> LoginPage : accessToken, user{id, role}
+
+@enduml

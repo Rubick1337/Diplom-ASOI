@@ -9,6 +9,7 @@ import '@/widgets/MainHeader/Header.css';
 import './Header.css'
 import NotificationBell from '@/widgets/NotificationBell/NotificationBell';
 import UserSidebar from '@/widgets/UserSidebar/UserSidebar';
+import ThemeToggle from '@/widgets/ThemeToggle/ThemeToggle';
 
 import { RootState } from '@/shared/store/store';
 
@@ -58,6 +59,7 @@ export default function AuthHeader() {
                 <div className="header-right-section">
                     {!mounted || !isInitialized ? null : user ? (
                         <>
+                            <ThemeToggle />
                             <NotificationBell />
                             <button
                                 className="header-burger"

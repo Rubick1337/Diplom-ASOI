@@ -1,0 +1,44 @@
+@startuml
+title 02 Register — Control Classes
+
+class RegisterPage <<boundary>> {
+  - username: string
+  - email: string
+  - password: string
+  - confirmPassword: string
+  + accessToken: string
+  + user: User
+}
+
+class UserController <<control>> {
+  - username: string
+  - email: string
+  - password: string
+  - role: int
+  + accessToken: string
+  + user: User
+}
+
+class UserModel <<entity>> {
+  - email: string
+  - username: string
+  - password: string
+  - role: int
+  + id: int
+  + roleId: int
+  + refreshToken: string
+}
+
+class TokenService <<entity>> {
+  - userId: int
+  - role: int
+  + accessToken: string
+  + refreshToken: string
+}
+
+RegisterPage ..> UserController : registration(username, email, password, role=0)
+UserController o-- UserModel : findOne(email) / findOne(username) /\nbcrypt.hash / create / setRefreshToken
+UserController *-- TokenService : generateTokens(userId, role)
+UserController ..> RegisterPage : accessToken, user{id, role}
+
+@enduml

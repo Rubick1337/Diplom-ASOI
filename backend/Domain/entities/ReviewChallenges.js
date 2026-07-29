@@ -1,8 +1,9 @@
-class ReviewChallenges {
+class Review {
     constructor({
                     id = null,
                     userId,
-                    challengeId,
+                    challengeId = null,
+                    testId = null,
                     content,
                     rating = 5,
                     createdAt = new Date()
@@ -10,10 +11,11 @@ class ReviewChallenges {
         this.id = id;
         this.userId = userId;
         this.challengeId = challengeId;
+        this.testId = testId;
         this.content = content;
         this.rating = rating;
         this.createdAt = createdAt;
     }
 }
 
-module.exports = ReviewChallenges;
+module.exports = Review;

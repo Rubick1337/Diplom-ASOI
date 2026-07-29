@@ -1,0 +1,41 @@
+@startuml
+title Profile Page — История задач
+
+actor User
+participant "ProfilePage" as Page
+participant "UserController" as UC
+participant "HistoryChallenge" as HC
+
+User -> Page: click "История задач"
+Page -> UC: dispatch(fetchMyHistory(page=1, pageSize, search="", status="", language=""))
+UC -> HC: findPaginated(userId, status, language, search, page, pageSize)
+HC --> UC: rows[], count
+UC --> Page: items[], total, totalPages
+Page --> User: рендер таблицы истории решений
+
+User -> Page: input[поиск] → setHistSearch
+Page -> UC: dispatch(fetchMyHistory(page=1, ...search))
+UC -> HC: findPaginated(userId, status, language, search, 1, pageSize)
+HC --> UC: rows[], count
+UC --> Page: items[], total, totalPages
+Page --> User: отфильтрованная таблица
+
+User -> Page: select[статус] → setHistStatus
+User -> Page: select[язык] → setHistLang
+Page -> UC: dispatch(fetchMyHistory(page=1, ...filters))
+UC -> HC: findPaginated(userId, status, language, search, 1, pageSize)
+HC --> UC: rows[], count
+UC --> Page: items[], total, totalPages
+Page --> User: отфильтрованная таблица
+
+User -> Page: click пагинация → setHistPage(n)
+Page -> UC: dispatch(fetchMyHistory(page=n, ...))
+UC -> HC: findPaginated(userId, status, language, search, n, pageSize)
+HC --> UC: rows[], count
+UC --> Page: items[], total, totalPages
+Page --> User: страница n таблицы
+
+User -> Page: click "Код" на строке истории
+Page --> User: открывает модалку с кодом решения
+
+@enduml

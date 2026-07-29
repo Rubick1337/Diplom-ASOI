@@ -1,0 +1,37 @@
+@startuml
+title Challenge Page — Загрузка и выполнение кода
+
+actor User
+participant "ChallengeWorkspace" as Page
+participant "ChallengeController" as CC
+participant "UserController" as UC
+participant "Challenge" as Challenge
+participant "HistoryChallenge" as HC
+participant "DockerRunner" as Docker
+
+User -> Page: открывает /challenges/:id
+Page -> CC: dispatch(getChallengeById(id))
+CC -> Challenge: findByIdWithTestCases(id)
+Challenge --> CC: name, description, funcName, parameters[], testCases[], topics[]
+CC --> Page: name, description, funcName, parameters[], testCases[], topics[]
+Page --> User: рендер workspace (описание + редактор + тесты)
+
+User -> Page: select язык → setLanguage
+User -> Page: редактирует код в Monaco Editor
+
+User -> Page: click "Отправить"
+Page -> CC: dispatch(execute(id, code, language, userId))
+CC -> Docker: runInDocker(language, harness+code, timeLimitMs)
+Docker --> CC: testResults[] (status, actual, duration)
+CC -> HC: saveHistory(userId, challengeId, status, language, code, testsPassed, executionTimeMs)
+HC --> CC: ok
+CC --> Page: testResults[]
+Page --> User: отображает результаты тестов
+
+alt все тесты прошли (isSolved)
+    Page -> UC: dispatch(addExperience(xpGained))
+    UC --> Page: обновлённый XP
+    Page --> User: обновлённый XP, конфетти
+end
+
+@enduml

@@ -1,0 +1,88 @@
+@startuml
+title 02 Owner Analytics — Управляющие классы
+
+class AdminController {
+  + getOverview(): Overview
+  + getActivity(from: string, to: string): Activity[]
+  + getActivityHeatmap(): HeatmapData
+  + getChallengeStats(): ChallengeStats
+  + getTopUsers(limit: int): UserStats[]
+  + getUserDistributions(ratingBucket: int, expBucket: int): Distributions
+  + getReportsStats(): ReportsStats
+  + getRecentReports(page, limit, status, challenge, reporter, dateFrom, dateTo): ReportsPage
+  + updateReportStatus(id: int, status: string, adminMessage: string): ReportChallenge
+  + getChallengesManage(page, limit, search, topicId): ChallengePage
+  + toggleChallengeHidden(id: int, isHidden: boolean): void
+  + deleteChallengeAdmin(id: int): void
+  + getAllTopics(): Topic[]
+  + createTopic(name: string): Topic
+  + updateTopic(id: int, name: string): Topic
+  + deleteTopic(id: int): void
+}
+
+class Overview {
+  + totalUsers: int
+  + totalChallenges: int
+  + totalSubmissions: int
+  + totalReports: int
+  + activeUsersToday: int
+  + newUsersThisWeek: int
+}
+
+class Activity {
+  + date: string
+  + submissions: int
+  + uniqueUsers: int
+}
+
+class ChallengeStats {
+  + byTopic: TopicCount[]
+  + byDifficulty: DifficultyCount[]
+  + byLanguage: LanguageCount[]
+  + hardestChallenges: HardestChallenge[]
+}
+
+class UserStats {
+  + userId: int
+  + username: string
+  + experience: int
+  + rating: int
+  + solvedCount: int
+  + ratingDistribution: BucketCount[]
+  + expDistribution: BucketCount[]
+}
+
+class ReportChallenge {
+  - id: int
+  - userId: int
+  - challengeId: int
+  - reasonId: int
+  - reasonText: string
+  - status: string
+  - resolvedById: int
+  - resolvedAt: date
+  - createdAt: date
+  + getReportsByStatus(): StatusCount[]
+  + getReportsByReason(): ReasonCount[]
+  + getRecentReports(params: object): ReportsPage
+  + updateReportStatus(id: int, status: string, adminId: int): ReportChallenge
+}
+
+class Topic {
+  - id: int
+  - name: string
+  + getAllTopics(): Topic[]
+  + getChallengesByTopic(): TopicCount[]
+  + createTopic(name: string): Topic
+  + updateTopic(id: int, name: string): Topic
+  + deleteTopic(id: int): void
+}
+
+AdminController *-- Overview : getOverview
+AdminController *-- Activity : getActivity
+AdminController *-- ChallengeStats : getChallengeStats
+AdminController *-- UserStats : getTopUsers
+AdminController o-- ReportChallenge : getReportsStats
+AdminController o-- Topic : getAllTopics
+
+@enduml

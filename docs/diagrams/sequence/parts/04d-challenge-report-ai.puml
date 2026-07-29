@@ -1,0 +1,36 @@
+@startuml
+title Challenge Page — Жалоба и ИИ-помощник
+
+actor User
+participant "ChallengeWorkspace" as Page
+participant "ChallengeController" as CC
+participant "ReportModel" as RC
+participant "AIService" as AI
+
+User -> Page: click "Пожаловаться"
+Page --> User: открывается ReportModal
+
+Page -> CC: dispatch(getReportReasons(challengeId))
+CC -> RC: getReportReasons()
+RC --> CC: reasons[]
+CC --> Page: reasons[]
+Page --> User: список причин в модалке
+
+User -> Page: select[причина] + textarea[текст] → click "Отправить"
+Page -> CC: dispatch(createReport(challengeId, userId, reasonId, reasonText))
+CC -> RC: create(challengeId, userId, reasonId, reasonText)
+RC --> CC: ok
+CC --> Page: success
+Page --> User: модалка закрывается
+
+User -> Page: click "Помощник ИИ"
+Page --> User: открывается AI-панель
+
+User -> Page: textarea[вопрос по задаче] → click "Спросить"
+Page -> CC: dispatch(aiChat(challengeId, { question, code, language }))
+CC -> AI: generateHint(challengeDescription, question, code, language)
+AI --> CC: hint
+CC --> Page: hint
+Page --> User: отображает подсказку ИИ
+
+@enduml

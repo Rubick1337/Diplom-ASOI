@@ -1,0 +1,29 @@
+@startuml
+title Profile Page — Загрузка профиля и тепловой карты
+
+actor User
+participant "ProfilePage" as Page
+participant "UserController" as UC
+participant "User" as UserModel
+participant "HistoryChallenge" as HC
+participant "Topic" as Topic
+
+User -> Page: открывает /profile
+
+Page -> UC: dispatch(fetchProfile())
+UC -> UserModel: findById(userId)
+UserModel --> UC: user
+UC -> HC: findByUser(userId)
+HC --> UC: attempts[]
+UC -> Topic: getAll()
+Topic --> UC: topics[]
+UC --> Page: user, stats, languages[], topics[], allTopics[]
+
+Page -> UC: dispatch(fetchActivityHeatmap())
+UC -> HC: findByUserAndYear(userId, year)
+HC --> UC: rows[]
+UC --> Page: days{ date → count }
+
+Page --> User: рендер сайдбара (аватар, уровень, XP, статистика, языки) + тепловая карта
+
+@enduml

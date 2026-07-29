@@ -6,15 +6,25 @@ import { useAppDispatch, useAppSelector } from '@/shared/store/hooks';
 import {
     fetchProfile,
     fetchMyHistory,
+    fetchMyTestHistory,
     fetchMyReports,
     fetchLearningPlan,
     fetchActivityHeatmap,
 } from '@/shared/store/slice/profileSlice';
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import dynamic from 'next/dynamic';
+
+// SyntaxHighlighter использует refractor (ESM-only) — загружаем только на клиенте
+// чтобы избежать ERR_REQUIRE_ESM во время SSR-сборки Next.js Pages Router.
+const SyntaxHighlighter = dynamic(
+    () => import('@/shared/components/ClientSyntaxHighlighter/ClientSyntaxHighlighter'),
+    { ssr: false, loading: () => <pre style={{ padding: 16, background: '#0d0d0d' }} /> }
+) as any;
+
+import { useTheme } from '@/shared/context/ThemeContext';
 import CustomSelect from '@/shared/components/CustomSelect/CustomSelect';
 import AnalysisTab from '@/features/AnalysisTab/AnalysisTab';
 import LearningTab from '@/features/LearningTab/LearningTab';
+import AchievementsTab from '@/features/AchievementsTab/AchievementsTab';
 import ActivityHeatmap from '@/features/ActivityHeatmap/ActivityHeatmap';
 import Header from '@/widgets/Header/Header';
 import './ProfilePage.css';
@@ -72,16 +82,23 @@ const getReportStatus = (status: string) => {
     }
 };
 
-type ActiveTab = 'history' | 'reports' | 'analysis' | 'learning';
+type ActiveTab = 'history' | 'testHistory' | 'reports' | 'analysis' | 'learning' | 'achievements';
 
 export default function ProfilePage() {
     const router   = useRouter();
     const dispatch = useAppDispatch();
+    const { theme } = useTheme();
 
-    const { data: profile, isLoading, history, reports, learningPlan, learningLoading, heatmap } = useAppSelector(s => s.profile);
+    const { data: profile, isLoading, history, testHistory, reports, learningPlan, learningLoading, heatmap } = useAppSelector(s => s.profile);
     const { isInitialized, isAuth } = useAppSelector(s => s.auth);
 
-    const [activeTab, setActiveTab] = useState<ActiveTab>('history');
+    const [activeTab,      setActiveTab]      = useState<ActiveTab>('history');
+    const [confettiOff,    setConfettiOff]    = useState(() =>
+        typeof window !== 'undefined' && localStorage.getItem('confetti_disabled') === '1'
+    );
+    const [achSoundOff,    setAchSoundOff]    = useState(() =>
+        typeof window !== 'undefined' && localStorage.getItem('achievement_sound_disabled') === '1'
+    );
 
     const [histSearch,   setHistSearch]   = useState('');
     const [histStatus,   setHistStatus]   = useState('all');
@@ -89,12 +106,17 @@ export default function ProfilePage() {
     const [histPage,     setHistPage]     = useState(1);
     const [expandedId,   setExpandedId]   = useState<number | null>(null);
 
+    const [testHistSearch,  setTestHistSearch]  = useState('');
+    const [testHistStatus,  setTestHistStatus]  = useState('all');
+    const [testHistPage,    setTestHistPage]    = useState(1);
+
     const [repSearch,    setRepSearch]    = useState('');
     const [repStatus,    setRepStatus]    = useState('all');
     const [repPage,      setRepPage]      = useState(1);
 
-    const histDebounce  = useRef<ReturnType<typeof setTimeout> | null>(null);
-    const repDebounce   = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const histDebounce     = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const testHistDebounce = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const repDebounce      = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     useEffect(() => {
         if (!isInitialized) return;
@@ -112,6 +134,14 @@ export default function ProfilePage() {
     }, [activeTab, histSearch, histStatus, histLang, histPage]);
 
     useEffect(() => {
+        if (activeTab !== 'testHistory') return;
+        if (testHistDebounce.current) clearTimeout(testHistDebounce.current);
+        testHistDebounce.current = setTimeout(() => {
+            dispatch(fetchMyTestHistory({ page: testHistPage, pageSize: PAGE_SIZE, search: testHistSearch || undefined, status: testHistStatus }));
+        }, 300);
+    }, [activeTab, testHistSearch, testHistStatus, testHistPage]);
+
+    useEffect(() => {
         if (activeTab !== 'learning') return;
         if (learningPlan) return;
         dispatch(fetchLearningPlan());
@@ -125,8 +155,9 @@ export default function ProfilePage() {
         }, 300);
     }, [activeTab, repSearch, repStatus, repPage]);
 
-    const setHistFilter = (fn: () => void) => { setHistPage(1); fn(); };
-    const setRepFilter   = (fn: () => void) => { setRepPage(1); fn(); };
+    const setHistFilter     = (fn: () => void) => { setHistPage(1); fn(); };
+    const setTestHistFilter = (fn: () => void) => { setTestHistPage(1); fn(); };
+    const setRepFilter      = (fn: () => void) => { setRepPage(1); fn(); };
 
     if (isLoading) return <LoadingSkeleton />;
     if (!profile)  return null;
@@ -142,10 +173,12 @@ export default function ProfilePage() {
     const ringFill  = stats.totalAttempts > 0 ? (stats.solvedCount / stats.totalAttempts) * 213.6 : 0;
 
     const TABS: { key: ActiveTab; label: string; count?: number }[] = [
-        { key: 'history',  label: 'История',    count: history.total  || undefined },
+        { key: 'history',     label: 'История задач', count: history.total     || undefined },
+        { key: 'testHistory', label: 'История тестов', count: testHistory.total || undefined },
         { key: 'reports',  label: 'Жалобы',     count: reports.total  || undefined },
         { key: 'analysis', label: 'Статистика' },
-        { key: 'learning', label: 'Обучение' },
+        { key: 'learning',      label: 'Обучение'    },
+        { key: 'achievements',  label: 'Достижения'  },
     ];
 
     return (
@@ -241,6 +274,34 @@ export default function ProfilePage() {
                             </div>
                         </div>
                     )}
+                    <div className="p-sidebar-card">
+                        <div className="p-sidebar-card-title">Настройки</div>
+                        <label className="p-setting-row">
+                            <input
+                                type="checkbox"
+                                checked={confettiOff}
+                                onChange={e => {
+                                    const v = e.target.checked;
+                                    setConfettiOff(v);
+                                    localStorage.setItem('confetti_disabled', v ? '1' : '0');
+                                }}
+                            />
+                            <span className="p-setting-label">Отключить эффект конфетти</span>
+                        </label>
+                        <label className="p-setting-row">
+                            <input
+                                type="checkbox"
+                                checked={achSoundOff}
+                                onChange={e => {
+                                    const v = e.target.checked;
+                                    setAchSoundOff(v);
+                                    localStorage.setItem('achievement_sound_disabled', v ? '1' : '0');
+                                }}
+                            />
+                            <span className="p-setting-label">Отключить звук достижений</span>
+                        </label>
+                    </div>
+
                 </aside>
 
                 {}
@@ -378,13 +439,13 @@ export default function ProfilePage() {
                                                                         </div>
                                                                         <SyntaxHighlighter
                                                                             language={PRISM_LANG[h.language] ?? 'text'}
-                                                                            style={vscDarkPlus}
+                                                                            isDarkTheme={theme !== 'light'}
                                                                             showLineNumbers
                                                                             wrapLongLines={false}
                                                                             customStyle={{
                                                                                 margin: 0,
                                                                                 padding: '16px',
-                                                                                background: '#0d0d0d',
+                                                                                background: theme === 'light' ? '#ddd8ce' : '#0d0d0d',
                                                                                 fontSize: '12px',
                                                                                 lineHeight: '1.65',
                                                                                 maxHeight: '380px',
@@ -393,7 +454,7 @@ export default function ProfilePage() {
                                                                                 borderRadius: 0,
                                                                             }}
                                                                             lineNumberStyle={{
-                                                                                color: '#2e2e2e',
+                                                                                color: theme === 'light' ? '#999' : '#2e2e2e',
                                                                                 minWidth: '2.5em',
                                                                                 paddingRight: '1em',
                                                                                 userSelect: 'none',
@@ -410,6 +471,94 @@ export default function ProfilePage() {
                                             })}
                                         </div>
                                         <Pagination page={histPage} totalPages={history.totalPages} onPage={setHistPage} />
+                                    </>
+                                )}
+                            </>
+                        )}
+
+                        {}
+                        {activeTab === 'testHistory' && (
+                            <>
+                                <div className="p-filters-row">
+                                    <div className="p-search-wrap">
+                                        <svg className="p-search-icon" viewBox="0 0 16 16" fill="none">
+                                            <circle cx="6.5" cy="6.5" r="5" stroke="#3a3a3a" strokeWidth="1.5"/>
+                                            <path d="M10.5 10.5L14 14" stroke="#3a3a3a" strokeWidth="1.5" strokeLinecap="round"/>
+                                        </svg>
+                                        <input
+                                            className="p-search"
+                                            placeholder="Поиск по тесту…"
+                                            value={testHistSearch}
+                                            onChange={e => setTestHistFilter(() => setTestHistSearch(e.target.value))}
+                                        />
+                                    </div>
+                                    <div className="p-select-wrap">
+                                        <CustomSelect
+                                            value={testHistStatus}
+                                            onChange={v => setTestHistFilter(() => setTestHistStatus(v))}
+                                            options={[
+                                                { value: 'all',       label: 'Все статусы' },
+                                                { value: 'completed', label: 'Завершён' },
+                                                { value: 'timed_out', label: 'Время вышло' },
+                                                { value: 'active',    label: 'Активный' },
+                                            ]}
+                                        />
+                                    </div>
+                                </div>
+
+                                {testHistory.isLoading && testHistory.items.length === 0 ? <TabSpinner /> : testHistory.items.length === 0 ? (
+                                    <EmptyState msg="Ничего не найдено" />
+                                ) : (
+                                    <>
+                                        <div className="p-hist-list">
+                                            <div className="p-hist-header">
+                                                <span>Тест</span><span>Статус</span><span>Счёт</span><span>%</span><span>Дата</span><span/>
+                                            </div>
+                                            {testHistory.items.map(a => {
+                                                const statusMap: Record<string, { label: string; color: string; bg: string }> = {
+                                                    completed: { label: 'Завершён',    color: '#4ade80', bg: 'rgba(74,222,128,0.1)' },
+                                                    timed_out: { label: 'Время вышло', color: '#f87171', bg: 'rgba(248,113,113,0.1)' },
+                                                    active:    { label: 'Активный',    color: '#fbbf24', bg: 'rgba(251,191,36,0.1)' },
+                                                };
+                                                const st  = statusMap[a.status] ?? { label: a.status, color: '#888', bg: 'rgba(128,128,128,0.1)' };
+                                                const pct = a.maxScore > 0 && a.score != null ? Math.round((a.score / a.maxScore) * 100) : null;
+                                                return (
+                                                    <div key={a.id} className="p-hist-item">
+                                                        <div className="p-hist-row">
+                                                            <span
+                                                                className={`p-hist-name ${a.test ? 'clickable' : ''}`}
+                                                                onClick={() => a.test && router.push(`/tests/${a.testId}/take`)}
+                                                            >
+                                                                {a.test?.title ?? `Тест #${a.testId}`}
+                                                            </span>
+                                                            <span className="p-hist-status" style={{ color: st.color, background: st.bg }}>
+                                                                {st.label}
+                                                            </span>
+                                                            <span className="p-hist-tests" style={{ color: a.score != null ? '#4ade80' : '#555' }}>
+                                                                {a.score != null ? `${a.score}/${a.maxScore}` : '—'}
+                                                            </span>
+                                                            <span className="p-hist-time">
+                                                                {pct != null ? `${pct}%` : '—'}
+                                                            </span>
+                                                            <span className="p-hist-date">{fmtDate(a.startedAt)}</span>
+                                                            {(a.status === 'completed' || a.status === 'timed_out') ? (
+                                                                <button
+                                                                    className="p-hist-code-btn"
+                                                                    onClick={() => router.push(`/tests/attempts/${a.id}/result`)}
+                                                                    title="Результат"
+                                                                >
+                                                                    <svg viewBox="0 0 16 16" fill="none">
+                                                                        <path d="M8 3v10M3 8h10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+                                                                    </svg>
+                                                                    Итог
+                                                                </button>
+                                                            ) : <span />}
+                                                        </div>
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+                                        <Pagination page={testHistPage} totalPages={testHistory.totalPages} onPage={setTestHistPage} />
                                     </>
                                 )}
                             </>
@@ -498,6 +647,8 @@ export default function ProfilePage() {
                                     : <div className="p-empty"><div className="p-empty-icon">◎</div><p>Не удалось загрузить план обучения</p></div>
                         )}
 
+                        {activeTab === 'achievements' && <AchievementsTab />}
+
                     </div>
                 </main>
             </div>
@@ -523,13 +674,13 @@ function Pagination({ page, totalPages, onPage }: { page: number; totalPages: nu
 
     return (
         <div className="p-pagination">
-            <button className="p-pag-btn" disabled={page === 1} onClick={() => onPage(page - 1)}>←</button>
+            <button className="p-pag-btn" disabled={page === 1} onClick={() => onPage(page - 1)}><img src="/images/left-arrow.png" alt="←" style={{width:'14px',height:'14px',verticalAlign:'middle'}} /></button>
             {pages.map((p, i) =>
                 p === '…'
                     ? <span key={`e${i}`} className="p-pag-ellipsis">…</span>
                     : <button key={p} className={`p-pag-btn ${p === page ? 'active' : ''}`} onClick={() => onPage(p as number)}>{p}</button>
             )}
-            <button className="p-pag-btn" disabled={page === totalPages} onClick={() => onPage(page + 1)}>→</button>
+            <button className="p-pag-btn" disabled={page === totalPages} onClick={() => onPage(page + 1)}><img src="/images/right-arrow.png" alt="→" style={{width:'14px',height:'14px',verticalAlign:'middle'}} /></button>
         </div>
     );
 }

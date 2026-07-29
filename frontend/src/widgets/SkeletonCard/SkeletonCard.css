@@ -79,3 +79,25 @@
     background: #1a1a1a;
     border-radius: 4px;
 }
+
+/* LIGHT THEME */
+[data-theme="light"] .skeleton-card {
+    background: #ffffff;
+    border-color: rgba(26,24,23,0.08);
+}
+[data-theme="light"] .skeleton-card::after {
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(26,24,23,0.06),
+        transparent
+    );
+}
+[data-theme="light"] .skeleton-title,
+[data-theme="light"] .skeleton-badge {
+    background: #e8e2d8;
+}
+[data-theme="light"] .skeleton-line,
+[data-theme="light"] .skeleton-meta {
+    background: #ede8df;
+}

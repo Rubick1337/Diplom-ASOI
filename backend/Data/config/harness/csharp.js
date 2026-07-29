@@ -139,8 +139,9 @@ const prepareScript = (userCode, harnessCode) => {
 
 module.exports = {
     csharp: {
-        image:  'mono:latest',
-        runCmd: "sh -c 'cat > /tmp/prog.cs && mcs /tmp/prog.cs -out:/tmp/prog.exe 2>&1 && mono /tmp/prog.exe'",
+        image:       'mono:latest',
+        runCmd:      "sh -c 'cat > /tmp/prog.cs && mcs /tmp/prog.cs -out:/tmp/prog.exe 2>&1 && mono /tmp/prog.exe'",
+        inputRunCmd: "head -1 | base64 -d > /tmp/__in; cat > /tmp/prog.cs && mcs /tmp/prog.cs -out:/tmp/prog.exe && mono /tmp/prog.exe < /tmp/__in",
         template,
         prepareScript,
     }

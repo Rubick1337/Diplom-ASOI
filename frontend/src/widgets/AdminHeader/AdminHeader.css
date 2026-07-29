@@ -56,3 +56,11 @@
         display: none;
     }
 }
+
+/* LIGHT THEME */
+[data-theme="light"] .admin-header-sub {
+    color: rgba(26,24,23,0.45);
+}
+[data-theme="light"] .admin-header-divider {
+    background: rgba(26,24,23,0.12);
+}

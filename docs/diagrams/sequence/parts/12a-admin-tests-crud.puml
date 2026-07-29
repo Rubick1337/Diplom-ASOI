@@ -1,0 +1,49 @@
+@startuml
+title Admin Tests — Управление тестами (CRUD)
+
+actor Admin
+participant "AdminTestsPage" as Page
+participant "TestController" as TC
+participant "Test" as TestModel
+participant "QuestionType" as QT
+
+Admin -> Page: открывает /admin/tests
+Page -> TC: dispatch(getAdminTests())
+TC -> TestModel: findAll(include=questionCount)
+TestModel --> TC: tests[]{ id, title, isPublished, questionCount }
+TC --> Page: tests[]
+Page -> TC: dispatch(getQuestionTypes())
+TC -> QT: findAll()
+QT --> TC: types[]{ id, name }
+TC --> Page: types[]
+Page --> Admin: рендер таблицы тестов
+
+Admin -> Page: click "+ Создать тест" → input[title, description, timeLimitSec]
+Page -> TC: dispatch(createTest({ title, description, timeLimitSec }, adminId))
+TC -> TestModel: create(title, description, timeLimitSec, adminId)
+TestModel --> TC: newTest
+TC --> Page: newTest
+Page --> Admin: переход в редактор теста
+
+Admin -> Page: изменяет мета-данные теста → click "Сохранить"
+Page -> TC: dispatch(updateTest(testId, { title, description, timeLimitSec }))
+TC -> TestModel: update(testId, changes)
+TestModel --> TC: updatedTest
+TC --> Page: updatedTest
+Page --> Admin: тест обновлён
+
+Admin -> Page: click "Опубликовать" / "Снять с публикации"
+Page -> TC: dispatch(publishTest(testId, isPublished))
+TC -> TestModel: update(testId, { isPublished })
+TestModel --> TC: { id, isPublished }
+TC --> Page: { id, isPublished }
+Page --> Admin: статус публикации обновлён
+
+Admin -> Page: click "Удалить" → ConfirmationModal → подтвердить
+Page -> TC: dispatch(deleteTest(testId))
+TC -> TestModel: destroy(testId)
+TestModel --> TC: ok
+TC --> Page: ok
+Page --> Admin: тест удалён из таблицы
+
+@enduml

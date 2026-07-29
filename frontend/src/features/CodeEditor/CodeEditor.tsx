@@ -3,13 +3,20 @@
 import React, { useEffect, useRef } from 'react';
 import Editor, { DiffEditor, OnMount, OnValidate } from '@monaco-editor/react';
 import { EditorValidation, EditorProblem } from '@/shared/types/ide';
+import { useTheme } from '@/shared/context/ThemeContext';
+
+interface ErrorMarker {
+    line: number;
+    col: number;
+    endCol?: number;
+}
 
 interface CodeEditorProps {
     language: string;
     code: string;
     originalCode: string;
     isDiffMode: boolean;
-    errorLine?: number;
+    errorMarker?: ErrorMarker;
 
     onChange: (value: string | undefined) => void;
     onValidate: (stats: EditorValidation) => void;
@@ -21,13 +28,19 @@ export default function CodeEditor({
                                        code,
                                        originalCode,
                                        isDiffMode,
-                                       errorLine,
+                                       errorMarker,
                                        onChange,
                                        onValidate,
                                        editorRef
                                    }: CodeEditorProps) {
     const monacoRef = useRef<any>(null);
     const decorationsRef = useRef<string[]>([]);
+    const { theme } = useTheme();
+
+    useEffect(() => {
+        if (!monacoRef.current) return;
+        monacoRef.current.editor.setTheme(theme === 'light' ? 'vs-warm' : 'cyber-dark');
+    }, [theme]);
 
     const registerSnippets = (monaco: any, lang: string) => {
         if (lang === 'python') {
@@ -132,19 +145,40 @@ export default function CodeEditor({
         if (!editor || !monaco) return;
 
         decorationsRef.current = editor.deltaDecorations(decorationsRef.current, []);
+        const model = editor.getModel();
+        if (model) monaco.editor.setModelMarkers(model, 'execution-error', []);
 
-        if (errorLine && errorLine > 0) {
-            decorationsRef.current = editor.deltaDecorations([], [{
-                range: new monaco.Range(errorLine, 1, errorLine, 1),
-                options: {
-                    isWholeLine: true,
-                    className: 'editor-error-line',
-                    glyphMarginClassName: 'editor-error-glyph',
-                    overviewRuler: { color: '#f85149', position: 1 },
-                }
+        if (!errorMarker || errorMarker.line <= 0) return;
+
+        const { line, col, endCol } = errorMarker;
+
+        if (!model || line > model.getLineCount()) return;
+
+        const safeCol = Math.max(1, col);
+
+        decorationsRef.current = editor.deltaDecorations([], [{
+            range: new monaco.Range(line, 1, line, 1),
+            options: {
+                isWholeLine: true,
+                className: 'editor-error-line',
+                glyphMarginClassName: 'editor-error-glyph',
+                overviewRuler: { color: '#f85149', position: 1 },
+            }
+        }]);
+
+        if (model) {
+            const lineContent = model.getLineContent(line) || '';
+            const resolvedEndCol = Math.max(safeCol + 1, endCol ?? (lineContent.length + 1));
+            monaco.editor.setModelMarkers(model, 'execution-error', [{
+                severity: monaco.MarkerSeverity.Error,
+                message: 'Runtime Error',
+                startLineNumber: line,
+                startColumn: safeCol,
+                endLineNumber: line,
+                endColumn: resolvedEndCol,
             }]);
         }
-    }, [errorLine]);
+    }, [errorMarker]);
 
     const handleEditorDidMount: OnMount = (editor, monaco) => {
         editorRef.current = editor;
@@ -159,7 +193,18 @@ export default function CodeEditor({
                 'editor.lineHighlightBackground': '#1a2e42',
             }
         });
-        monaco.editor.setTheme('cyber-dark');
+        monaco.editor.defineTheme('vs-warm', {
+            base: 'vs',
+            inherit: true,
+            rules: [],
+            colors: {
+                'editor.background': '#f5f0e8',
+                'editor.lineHighlightBackground': '#ede8df',
+                'editorLineNumber.foreground': '#b0a898',
+                'editorGutter.background': '#f5f0e8',
+            }
+        });
+        monaco.editor.setTheme(theme === 'light' ? 'vs-warm' : 'cyber-dark');
 
         if (language === 'coffeescript') {
             monaco.languages.typescript.javascriptDefaults.setDiagnosticsOptions({
@@ -233,11 +278,12 @@ export default function CodeEditor({
             <DiffEditor
                 height="100%"
                 language={language}
-                theme="vs-dark"
+                theme={theme === 'light' ? 'vs-warm' : 'vs-dark'}
                 original={originalCode}
                 modified={code}
                 onMount={(editor, monaco) => {
-                    monaco.editor.setTheme('cyber-dark');
+                    monacoRef.current = monaco;
+                    monaco.editor.setTheme(theme === 'light' ? 'vs-warm' : 'cyber-dark');
                 }}
                 options={{
                     ...commonOptions,
@@ -254,7 +300,7 @@ export default function CodeEditor({
             language={getMonacoLanguage(language)}
             path={`solution.${getExtension(language)}`}
             value={code}
-            theme="vs-dark"
+            theme={theme === 'light' ? 'vs-warm' : 'vs-dark'}
             onChange={onChange}
             onMount={handleEditorDidMount}
             onValidate={handleValidate}

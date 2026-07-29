@@ -174,6 +174,10 @@
     padding: 12px 20px;
     font-size: 0.85rem;
     color: #888;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
 }
 
 .stat-item b {
@@ -198,6 +202,58 @@
     grid-template-columns: 300px 1fr;
     gap: 24px;
     align-items: start;
+}
+
+/* LIGHT THEME */
+[data-theme="light"] .solutions-section { color: #1a1817; }
+[data-theme="light"] .solutions-header { border-bottom-color: rgba(26,24,23,0.12); }
+[data-theme="light"] .header-info h2 { color: #1a1817; }
+[data-theme="light"] .solutions-count { color: rgba(26,24,23,0.45); }
+[data-theme="light"] .filter-card,
+[data-theme="light"] .sidebar-filter-card {
+    background: #ede8df;
+    border-color: rgba(26,24,23,0.12);
+}
+[data-theme="light"] .filter-card h3,
+[data-theme="light"] .sidebar-filter-card h3 { color: #1a1817; }
+[data-theme="light"] .filter-group label,
+[data-theme="light"] .filter-label { color: rgba(26,24,23,0.55); }
+[data-theme="light"] .filter-select {
+    background: #ddd8ce;
+    border-color: rgba(26,24,23,0.14);
+    color: #1a1817;
+}
+[data-theme="light"] .filter-hint {
+    color: rgba(26,24,23,0.40);
+    border-top-color: rgba(26,24,23,0.10);
+}
+[data-theme="light"] .solution-card {
+    background: #ede8df;
+    border-color: rgba(26,24,23,0.12);
+}
+[data-theme="light"] .solution-card-header {
+    background: rgba(26,24,23,0.03);
+}
+[data-theme="light"] .author-name { color: #1a1817; }
+[data-theme="light"] .sol-date { color: rgba(26,24,23,0.45); }
+[data-theme="light"] .lang-badge {
+    background: #ddd8ce;
+    color: rgba(26,24,23,0.65);
+}
+[data-theme="light"] .solution-code-container {
+    border-top-color: rgba(26,24,23,0.10);
+    border-bottom-color: rgba(26,24,23,0.10);
+}
+[data-theme="light"] .copy-btn {
+    background: rgba(26,24,23,0.08);
+    border-color: rgba(26,24,23,0.14);
+    color: #1a1817;
+}
+[data-theme="light"] .solution-card-footer { color: rgba(26,24,23,0.50); }
+[data-theme="light"] .empty-solutions {
+    background: #ede8df;
+    border-color: rgba(26,24,23,0.14);
+    color: rgba(26,24,23,0.40);
 }
 
 .sidebar-filter-card {

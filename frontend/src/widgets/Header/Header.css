@@ -34,8 +34,6 @@
 
 @media (max-width: 768px) {
     .header-burger { display: flex; }
-    .notification-bell,
-    .user-profile-card { display: none; }
 }
 
 @media (max-width: 550px) {
@@ -233,4 +231,38 @@
     background: linear-gradient(135deg, #FF6B35, #F04949);
     z-index: 1;
     opacity: 0.3;
+}
+
+/* LIGHT THEME */
+[data-theme="light"] .user-profile-card {
+    background: rgba(26,24,23,0.05);
+    border-color: rgba(26,24,23,0.12);
+}
+[data-theme="light"] .user-nickname {
+    color: #1a1817;
+}
+[data-theme="light"] .xp-bar-bg {
+    background: rgba(26,24,23,0.10);
+}
+[data-theme="light"] .header-burger {
+    background: rgba(26,24,23,0.06);
+    border-color: rgba(26,24,23,0.14);
+}
+[data-theme="light"] .header-burger span {
+    background: rgba(26,24,23,0.55);
+}
+[data-theme="light"] .header-burger:hover span {
+    background: #1a1817;
+}
+[data-theme="light"] .btn-dark {
+    background: rgba(26,24,23,0.06);
+    border-color: rgba(26,24,23,0.14);
+    color: #1a1817;
+}
+[data-theme="light"] .btn-dark:hover {
+    background: rgba(26,24,23,0.12);
+}
+
+@media (max-width: 768px) {
+    .user-profile-card { display: none !important; }
 }

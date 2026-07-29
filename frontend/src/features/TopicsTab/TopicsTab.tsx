@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef, useEffect } from 'react';
 import './TopicsTab.css';
 import { useAppDispatch, useAppSelector } from '@/shared/store/hooks';
 import {
@@ -13,6 +13,41 @@ import CustomSelect from '@/shared/components/CustomSelect/CustomSelect';
 
 type SortKey = 'name' | 'challenges' | 'submissions';
 const PAGE_SIZES = [5, 10, 20];
+
+function RowMenu({ onEdit, onDelete }: { onEdit: () => void; onDelete: () => void }) {
+    const [open, setOpen] = useState(false);
+    const ref = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        if (!open) return;
+        const close = (e: MouseEvent) => {
+            if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+        };
+        document.addEventListener('mousedown', close);
+        return () => document.removeEventListener('mousedown', close);
+    }, [open]);
+
+    const act = (fn: () => void) => { fn(); setOpen(false); };
+
+    return (
+        <div className="tt-menu" ref={ref}>
+            <button className="tt-menu__btn" onClick={() => setOpen(v => !v)} title="Действия">⋯</button>
+            {open && (
+                <div className="tt-menu__dropdown">
+                    <button className="tt-menu__item tt-menu__item--edit" onClick={() => act(onEdit)}>
+                        <img src="/images/edit.png" alt="" />
+                        Изменить
+                    </button>
+                    <div className="tt-menu__divider" />
+                    <button className="tt-menu__item tt-menu__item--delete" onClick={() => act(onDelete)}>
+                        <img src="/images/trash.png" alt="" />
+                        Удалить
+                    </button>
+                </div>
+            )}
+        </div>
+    );
+}
 
 function fmtNum(n: number) { return n >= 1000 ? (n / 1000).toFixed(1) + 'K' : String(n); }
 
@@ -355,8 +390,10 @@ export default function TopicsTab() {
                                                     ) : <span className="tt-td--muted">—</span>}
                                                 </td>
                                                 <td className="tt-td tt-td--right">
-                                                    <button className="tt-action-btn tt-action-btn--edit"   onClick={() => startEdit(t.id, t.name)}>✎ Изменить</button>
-                                                    <button className="tt-action-btn tt-action-btn--delete" onClick={() => setDeleteTarget({ id: t.id, name: t.name })}>✕ Удалить</button>
+                                                    <RowMenu
+                                                        onEdit={() => startEdit(t.id, t.name)}
+                                                        onDelete={() => setDeleteTarget({ id: t.id, name: t.name })}
+                                                    />
                                                 </td>
                                             </>
                                         )}

@@ -1,0 +1,89 @@
+@startuml
+title 06 Create Challenge — Control Classes
+
+class CreateChallengePage <<boundary>> {
+  - name: string
+  - difficulty: string
+  - funcName: string
+  - description: string
+  - parameters: Parameter[]
+  - testCases: TestCase[]
+  - topicIds: int[]
+  - userId: int
+  - timeLimitMs: int
+  - prompt: string
+  - code: string
+  - language: string
+  + topics: Topic[]
+  + testResults: TestResult[]
+  + challenge: Challenge
+}
+
+class ChallengeController <<control>> {
+  - name: string
+  - difficulty: string
+  - funcName: string
+  - description: string
+  - parameters: Parameter[]
+  - testCases: TestCase[]
+  - topicIds: int[]
+  - userId: int
+  - timeLimitMs: int
+  - prompt: string
+  - code: string
+  - language: string
+  + topics: Topic[]
+  + testResults: TestResult[]
+  + challenge: Challenge
+  + generatedData: GeneratedChallenge
+}
+
+class Topic <<entity>> {
+  - name: string
+  + id: int
+  + name: string
+}
+
+class Challenge <<entity>> {
+  - name: string
+  - difficulty: string
+  - funcName: string
+  - timeLimitMs: int
+  - description: string
+  - parameters: Parameter[]
+  - testCases: TestCase[]
+  - topicIds: int[]
+  - userId: int
+  + id: int
+  + name: string
+  + difficulty: string
+}
+
+class DockerRunner <<control>> {
+  - language: string
+  - harness: string
+  - code: string
+  - timeLimitMs: int
+  + stdout: string
+  + stderr: string
+  + testResults: TestResult[]
+}
+
+class AIService <<control>> {
+  - prompt: string
+  + name: string
+  + difficulty: string
+  + funcName: string
+  + description: string
+  + parameters: Parameter[]
+  + testCases: TestCase[]
+  + solution: string
+}
+
+CreateChallengePage ..> ChallengeController : getTopics() / createTopic(name) /\ngenerateChallenge(prompt) /\nverifyChallenge(...) / createChallenge(...)
+ChallengeController o-- Topic : getTopics() / createTopic(name) / findOrCreateTopic(name)
+ChallengeController *-- Challenge : createWithTestCases(challengeData, testCases[])
+ChallengeController *-- DockerRunner : runInDocker(language, harness+code, timeLimitMs)
+ChallengeController *-- AIService : generateChallenge(prompt)
+
+@enduml

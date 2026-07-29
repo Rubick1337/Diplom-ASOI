@@ -1,0 +1,50 @@
+@startuml
+title Admin Page — Управление темами
+
+actor Admin
+participant "AdminPage" as Page
+participant "AdminController" as AC
+participant "Topic" as Topic
+participant "HistoryChallenge" as HC
+participant "Challenge" as Challenge
+
+Admin -> Page: click "Topics"
+Page -> AC: dispatch(getAllTopics())
+AC -> Topic: getAllTopics()
+Topic --> AC: topics[]
+AC --> Page: topics[]
+
+Page -> AC: dispatch(getChallengeStats())
+AC -> Topic: getChallengesByTopic()
+Topic --> AC: topicStats[]
+AC -> Challenge: getChallengesByDifficulty()
+Challenge --> AC: difficultyCounts[]
+AC -> HC: getSubmissionsByLanguage()
+HC --> AC: languageCounts[]
+AC -> Challenge: getHardestChallenges(limit)
+Challenge --> AC: hardestChallenges[]
+AC --> Page: challengeStats
+Page --> Admin: рендер Topics (таблица тем + StatsPanel)
+
+Admin -> Page: input[название] → click "+ Добавить"
+Page -> AC: dispatch(createTopic(name))
+AC -> Topic: createTopic(name)
+Topic --> AC: newTopic
+AC --> Page: новая тема
+Page --> Admin: тема добавлена в таблицу
+
+Admin -> Page: click "Изменить" → input → click "Сохранить"
+Page -> AC: dispatch(updateTopic(id, name))
+AC -> Topic: updateTopic(id, name)
+Topic --> AC: updatedTopic
+AC --> Page: обновлённая тема
+Page --> Admin: тема обновлена в таблице
+
+Admin -> Page: click "Удалить" → ConfirmationModal → подтвердить
+Page -> AC: dispatch(deleteTopic(id))
+AC -> Topic: deleteTopic(id)
+Topic --> AC: ok
+AC --> Page: success
+Page --> Admin: тема удалена из таблицы
+
+@enduml

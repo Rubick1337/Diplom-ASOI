@@ -404,6 +404,81 @@
     }
 }
 
+/* LIGHT THEME */
+[data-theme="light"] .users-section__title {
+    color: #1a1817;
+}
+[data-theme="light"] .users-limit-badge {
+    background: rgba(26,24,23,0.06);
+    border-color: rgba(26,24,23,0.14);
+}
+[data-theme="light"] .users-preset-btn {
+    border-color: rgba(26,24,23,0.14);
+    color: rgba(26,24,23,0.55);
+}
+[data-theme="light"] .users-preset-btn:hover {
+    border-color: #FF6B35;
+    color: #FF6B35;
+    background: rgba(255,107,53,0.07);
+}
+[data-theme="light"] .users-picker-card,
+[data-theme="light"] .users-card {
+    background: linear-gradient(180deg, rgba(255,255,255,0.9), #ffffff);
+    border-color: rgba(26,24,23,0.10);
+}
+[data-theme="light"] .users-card:hover,
+[data-theme="light"] .users-picker-card:hover {
+    border-color: rgba(255,107,53,0.30);
+    box-shadow: 0 0 20px rgba(255,107,53,0.08);
+}
+[data-theme="light"] .users-search {
+    background: #f5f0e8;
+    border-color: rgba(26,24,23,0.14);
+    color: #1a1817;
+}
+[data-theme="light"] .users-search::placeholder {
+    color: rgba(26,24,23,0.35);
+}
+[data-theme="light"] .users-bucket-stepper {
+    background: #f5f0e8;
+    border-color: rgba(26,24,23,0.14);
+}
+[data-theme="light"] .users-bucket-label {
+    color: rgba(26,24,23,0.50);
+}
+[data-theme="light"] .users-picker-item:hover:not(.users-picker-item--disabled) {
+    background: rgba(26,24,23,0.05);
+    border-color: rgba(26,24,23,0.12);
+}
+[data-theme="light"] .users-picker-name {
+    color: rgba(26,24,23,0.80);
+}
+[data-theme="light"] .users-picker-solved,
+[data-theme="light"] .users-picker-empty {
+    color: rgba(26,24,23,0.40);
+}
+[data-theme="light"] .users-bucket-stepper__input {
+    color: #1a1817;
+    border-color: rgba(26,24,23,0.14);
+}
+[data-theme="light"] .users-card__label {
+    color: rgba(26,24,23,0.45);
+}
+[data-theme="light"] .users-th {
+    color: rgba(26,24,23,0.40);
+    border-bottom-color: rgba(26,24,23,0.10);
+}
+[data-theme="light"] .users-td {
+    border-bottom-color: rgba(26,24,23,0.06);
+    color: #1a1817;
+}
+[data-theme="light"] .users-td--muted {
+    color: rgba(26,24,23,0.45);
+}
+[data-theme="light"] .users-row:hover {
+    background: rgba(26,24,23,0.04) !important;
+}
+
 @media (max-width: 360px) {
     .users-section { margin-top: 16px; }
     .users-section__title { font-size: 11px; letter-spacing: 0.5px; }

@@ -83,9 +83,31 @@ ${callBlock}
         except __TLE:
             signal.alarm(0)
             __results.append({'id': t['id'], 'status': 'tle', 'actual': 'Time Limit Exceeded'})
-        except Exception:
+        except Exception as __e:
             signal.alarm(0)
-            __results.append({'id': t['id'], 'status': 'error', 'actual': __filter_tb(traceback.format_exc())})
+            __exc_tb = __sys.exc_info()[2]
+            __frames = traceback.extract_tb(__exc_tb)
+            __SKIP = ('__raw = ', '__fn(', 'getattr(__cls', '__results', 'signal.alarm', 'asyncio.run(__raw)')
+            __err_loc = None
+            for __f in reversed(__frames):
+                if __f.filename != '<stdin>':
+                    continue
+                __src = __f.line or ''
+                if any(__m in __src for __m in __SKIP):
+                    continue
+                __abs_line = __f.lineno
+                __col = 1
+                __end_col = None
+                __etype = type(__e).__name__
+                if __etype == 'NameError' and "'" in str(__e) and str(__e).count("'") >= 2:
+                    __vname = str(__e).split("'")[1]
+                    __idx = (__f.line or '').find(__vname)
+                    if __idx >= 0:
+                        __col = __idx + 1
+                        __end_col = __col + len(__vname)
+                __err_loc = {'line': __abs_line, 'col': __col, 'endCol': __end_col}
+                break
+            __results.append({'id': t['id'], 'status': 'error', 'actual': __filter_tb(traceback.format_exc()), 'errorLoc': __err_loc})
 finally:
     __sys.stdout = __real_stdout
     __ms = int((time.perf_counter() - __start) * 1000)
@@ -105,8 +127,9 @@ const prepareScript = (userCode, harnessCode) => {
 
 module.exports = {
     python: {
-        image:  'python:3.10-slim',
-        runCmd: 'python3 -',
+        image:       'python:3.10-slim',
+        runCmd:      'python3 -',
+        inputRunCmd: 'head -1 | base64 -d > /tmp/__in; cat > /tmp/__s.py && python3 /tmp/__s.py < /tmp/__in',
         template,
         prepareScript,
     }

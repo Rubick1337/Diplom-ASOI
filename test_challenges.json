@@ -1,0 +1,60 @@
+[
+  {
+    "name": "Сумма двух чисел",
+    "description": "Напишите функцию, которая принимает два целых числа a и b и возвращает их сумму.\n\nПример:\n- Вход: a=3, b=5\n- Выход: 8",
+    "difficulty": 1,
+    "funcName": "sum",
+    "timeLimitMs": 2000,
+    "sampleInput": "a=3, b=5",
+    "sampleOutput": "8",
+    "isHidden": false,
+    "topics": ["Математика"],
+    "parameters": [
+      { "name": "a", "dataType": "int", "order": 0 },
+      { "name": "b", "dataType": "int", "order": 1 }
+    ],
+    "testCases": [
+      { "title": "Тест 1: положительные", "expectedOutput": "8",  "testArgs": [{ "value": "3", "order": 0 }, { "value": "5", "order": 1 }] },
+      { "title": "Тест 2: нули",          "expectedOutput": "0",  "testArgs": [{ "value": "0", "order": 0 }, { "value": "0", "order": 1 }] },
+      { "title": "Тест 3: отрицательные", "expectedOutput": "-3", "testArgs": [{ "value": "-7", "order": 0 }, { "value": "4", "order": 1 }] }
+    ]
+  },
+  {
+    "name": "Переворот строки",
+    "description": "Напишите функцию, которая принимает строку s и возвращает её в обратном порядке.\n\nПример:\n- Вход: s=\"hello\"\n- Выход: \"olleh\"",
+    "difficulty": 2,
+    "funcName": "reverseString",
+    "timeLimitMs": 2000,
+    "sampleInput": "s=\"hello\"",
+    "sampleOutput": "\"olleh\"",
+    "isHidden": false,
+    "topics": ["Строки"],
+    "parameters": [
+      { "name": "s", "dataType": "string", "order": 0 }
+    ],
+    "testCases": [
+      { "title": "Тест 1: слово",        "expectedOutput": "\"olleh\"",  "testArgs": [{ "value": "hello",  "order": 0 }] },
+      { "title": "Тест 2: палиндром",    "expectedOutput": "\"abba\"",   "testArgs": [{ "value": "abba",   "order": 0 }] },
+      { "title": "Тест 3: один символ",  "expectedOutput": "\"z\"",      "testArgs": [{ "value": "z",      "order": 0 }] }
+    ]
+  },
+  {
+    "name": "Максимум в массиве",
+    "description": "Напишите функцию, которая принимает массив целых чисел nums и возвращает наибольший элемент.\n\nПример:\n- Вход: nums=[3, 7, 1, 9, 4]\n- Выход: 9",
+    "difficulty": 2,
+    "funcName": "findMax",
+    "timeLimitMs": 2000,
+    "sampleInput": "nums=[3, 7, 1, 9, 4]",
+    "sampleOutput": "9",
+    "isHidden": false,
+    "topics": ["Массивы"],
+    "parameters": [
+      { "name": "nums", "dataType": "array", "order": 0 }
+    ],
+    "testCases": [
+      { "title": "Тест 1: обычный массив",     "expectedOutput": "9",   "testArgs": [{ "value": "[3,7,1,9,4]",   "order": 0 }] },
+      { "title": "Тест 2: один элемент",       "expectedOutput": "42",  "testArgs": [{ "value": "[42]",          "order": 0 }] },
+      { "title": "Тест 3: отрицательные",      "expectedOutput": "-1",  "testArgs": [{ "value": "[-5,-1,-3,-9]", "order": 0 }] }
+    ]
+  }
+]

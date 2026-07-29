@@ -7,7 +7,7 @@ import {
     BarChart, Bar, XAxis, YAxis, CartesianGrid,
     Tooltip, ResponsiveContainer,
 } from 'recharts';
-import FilterPills from '@/features/Filterpills/Filterpills';
+import FilterPills from '@/shared/components/FilterPills/FilterPills';
 import DateRangePicker from '@/shared/components/DateRangePicker/DateRangePicker';
 import CustomSelect from '@/shared/components/CustomSelect/CustomSelect';
 import ReportActionModal from '@/features/ReportActionModal/ReportActionModal';

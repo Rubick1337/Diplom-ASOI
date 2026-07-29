@@ -1,16 +1,17 @@
 'use client';
 import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import $api from '@/http/apiClient';
-import { API_ENDPOINTS } from '@/http/apiEndpoints';
+import $api from '@/shared/api/apiClient';
+import { API_ENDPOINTS } from '@/shared/api/apiEndpoints';
 import Editor from '@monaco-editor/react';
 import {
     Settings, FileText, FlaskConical, Code2,
-    Plus, Trash2, Play, CheckCircle2, XCircle,
+    Plus, Play, CheckCircle2, XCircle,
     ChevronDown, ChevronUp, AlertTriangle, UserCheck, UserX, Send,
 } from 'lucide-react';
 import ChallengeService, { ExecuteResponse, Topic } from '@/shared/services/ChallengeService';
 import { useAppSelector } from '@/shared/store/hooks';
+import { useTheme } from '@/shared/context/ThemeContext';
 import Header from '@/widgets/Header/Header';
 import { ConfirmationModal } from '@/shared/components/ConfirmationModal/ConfirmationModal';
 import CustomSelect from '@/shared/components/CustomSelect/CustomSelect';
@@ -58,6 +59,7 @@ const PARAM_TYPE_LABELS: Record<LanguageValue, Record<ParamDataType, string>> = 
     csharp:       { int: 'int',     float: 'double', string: 'string', bool: 'bool',    array: 'int[]',      array2d: 'int[][]',  object: 'object'  },
     php:          { int: 'int',     float: 'float',  string: 'string', bool: 'bool',    array: 'array',      array2d: 'array[]',  object: 'array'   },
     coffeescript: { int: 'Number',  float: 'Number', string: 'String', bool: 'Boolean', array: 'Array',      array2d: 'Array 2D', object: 'Object'  },
+    java:         { int: 'int',     float: 'double', string: 'String', bool: 'boolean', array: 'int[]',      array2d: 'int[][]',  object: 'Object'  },
 };
 
 function toTsType(t: string)  { return t === 'int' || t === 'float' ? 'number' : t === 'string' ? 'string' : t === 'bool' ? 'boolean' : t === 'array' ? 'any[]' : t === 'array2d' ? 'any[][]' : 'any'; }
@@ -139,6 +141,7 @@ function ArgInput({
 export default function EditChallengePage({ id }: { id: number }) {
     const router      = useRouter();
     const currentUser = useAppSelector(s => s.auth.user);
+    const { theme }   = useTheme();
 
     const [loading, setLoading] = useState(true);
 
@@ -588,7 +591,7 @@ export default function EditChallengePage({ id }: { id: number }) {
                                                 onClick={() => removeParameter(i)}
                                                 title="Удалить параметр"
                                             >
-                                                <Trash2 size={13} />
+                                                <img src="/images/trash.png" alt="del" style={{width:'13px',height:'13px',verticalAlign:'middle'}} />
                                             </button>
                                         </div>
                                     ))}
@@ -661,7 +664,7 @@ export default function EditChallengePage({ id }: { id: number }) {
                                                         disabled={testCases.length <= 1}
                                                         title="Удалить тест"
                                                     >
-                                                        <Trash2 size={12} />
+                                                        <img src="/images/trash.png" alt="del" style={{width:'12px',height:'12px',verticalAlign:'middle'}} />
                                                     </button>
                                                     {isCollapsed ? <ChevronDown size={14} /> : <ChevronUp size={14} />}
                                                 </div>
@@ -749,10 +752,21 @@ export default function EditChallengePage({ id }: { id: number }) {
                                     language={verifyLang === 'coffeescript' ? 'javascript' : verifyLang === 'cpp' ? 'cpp' : verifyLang}
                                     value={verifyCode}
                                     onChange={v => { setVerifyCode(v ?? ''); setVerifyResult(null); }}
-                                    theme="vs-dark"
+                                    theme={theme === 'light' ? 'vs-warm' : 'vs-dark'}
                                     beforeMount={monaco => {
                                         monaco.languages.typescript.javascriptDefaults.setDiagnosticsOptions({ noSemanticValidation: true, noSyntaxValidation: true });
                                         monaco.languages.typescript.typescriptDefaults.setDiagnosticsOptions({ noSemanticValidation: true, noSyntaxValidation: true });
+                                        monaco.editor.defineTheme('vs-warm', {
+                                            base: 'vs',
+                                            inherit: true,
+                                            rules: [],
+                                            colors: {
+                                                'editor.background': '#f5f0e8',
+                                                'editor.lineHighlightBackground': '#ede8df',
+                                                'editorLineNumber.foreground': '#b0a898',
+                                                'editorGutter.background': '#f5f0e8',
+                                            },
+                                        });
                                     }}
                                     options={{
                                         fontSize: 13,

@@ -1,9 +1,18 @@
 const { spawn } = require('child_process');
+const crypto = require('crypto');
 const clangFormat = require('clang-format');
 const ChallengeRepositorySequelize = require('../../Data/repository/ChallengeRepositorySequelize');
 const DockerRunner = require('../../Data/DockerRunner/DockerRunner');
-const harnessConfigs = require('../../Data/config/harnessConfig');
+const harnessConfigs = require('../../Data/config/HarnessConfig');
 const ruff = require("@astral-sh/ruff-wasm-nodejs");
+const CacheUtils = require('../../Data/utils/cacheUtils');
+
+const TTL = {
+    CHALLENGE: 300,
+    CHALLENGE_LIST: 60,
+    TOPICS: 3600,
+    REPORT_REASONS: 3600,
+};
 
 class ChallengeService {
     constructor(challengeRepository, dockerRunner) {
@@ -108,7 +117,9 @@ class ChallengeService {
             parameters: Array.isArray(parameters) ? parameters : [],
         };
 
-        return await this.challengeRepository.createWithTestCases(challengeData, testCases || []);
+        const result = await this.challengeRepository.createWithTestCases(challengeData, testCases || []);
+        await CacheUtils.invalidateCache('challenge:list');
+        return result;
     }
 
     async getAllChallenges(query) {
@@ -140,12 +151,29 @@ class ChallengeService {
             orderDirection,
         };
 
-        return await this.challengeRepository.findManyWithTestCases(filter, options);
+        const queryHash = crypto
+            .createHash('md5')
+            .update(JSON.stringify({ filter, options }))
+            .digest('hex');
+        const cacheKey = CacheUtils.generateCacheKey('challenge', 'list', { hash: queryHash });
+
+        const cached = await CacheUtils.getCache(cacheKey);
+        if (cached) return cached;
+
+        const result = await this.challengeRepository.findManyWithTestCases(filter, options);
+        await CacheUtils.setCache(cacheKey, TTL.CHALLENGE_LIST, result);
+        return result;
     }
 
     async getChallengeById(id) {
+        const cacheKey = CacheUtils.generateCacheKey('challenge', 'byId', { id });
+        const cached = await CacheUtils.getCache(cacheKey);
+        if (cached) return cached;
+
         const challenge = await this.challengeRepository.findByIdWithTestCases(id);
         if (!challenge) throw new Error('Not found');
+
+        await CacheUtils.setCache(cacheKey, TTL.CHALLENGE, challenge);
         return challenge;
     }
 
@@ -179,12 +207,22 @@ class ChallengeService {
 
         const updated = await this.challengeRepository.updateWithTestCases(id, challengeData, testCases);
         if (!updated) throw new Error('Not found');
+
+        await Promise.all([
+            CacheUtils.invalidateCache('challenge:byId'),
+            CacheUtils.invalidateCache('challenge:list'),
+        ]);
         return updated;
     }
 
     async deleteChallenge(id) {
         const ok = await this.challengeRepository.delete(id);
         if (!ok) throw new Error('Not found');
+
+        await Promise.all([
+            CacheUtils.invalidateCache('challenge:byId'),
+            CacheUtils.invalidateCache('challenge:list'),
+        ]);
         return true;
     }
 
@@ -297,7 +335,19 @@ class ChallengeService {
             }
         }
 
-        return { ...finalResponse, xpGained };
+        let newAchievements = [];
+        if (userId && results.length > 0 && results.every(r => r.status === 'success')) {
+            try {
+                const AchievementService = require('./AchievementService');
+                newAchievements = await AchievementService.check(Number(userId), {
+                    difficulty: challenge.difficulty || 1,
+                    executionTimeMs: executionResult.executionTimeMs,
+                    language,
+                });
+            } catch (e) { console.error('Achievement check failed:', e.message); }
+        }
+
+        return { ...finalResponse, xpGained, newAchievements };
     }
 
     async verifyChallenge({ funcName, timeLimitMs, testCases, parameters = [] }, code, language) {
@@ -403,16 +453,30 @@ class ChallengeService {
         return val;
     }
     async getTopics() {
-        return await this.challengeRepository.findAllTopics();
+        const cacheKey = CacheUtils.generateCacheKey('topics', 'all', {});
+        const cached = await CacheUtils.getCache(cacheKey);
+        if (cached) return cached;
+        const result = await this.challengeRepository.findAllTopics();
+        await CacheUtils.setCache(cacheKey, TTL.TOPICS, result);
+        return result;
     }
 
     async createTopic(name) {
         const id = await this.challengeRepository.findOrCreateTopic(name);
+        await Promise.all([
+            CacheUtils.invalidateCache('topics'),
+            CacheUtils.invalidateCache('challenge:list'),
+        ]);
         return { id, name: name.trim() };
     }
 
     async getReportReasons() {
-        return await this.challengeRepository.findAllReportReasons();
+        const cacheKey = CacheUtils.generateCacheKey('reportReasons', 'all', {});
+        const cached = await CacheUtils.getCache(cacheKey);
+        if (cached) return cached;
+        const result = await this.challengeRepository.findAllReportReasons();
+        await CacheUtils.setCache(cacheKey, TTL.REPORT_REASONS, result);
+        return result;
     }
 
     async reportChallenge(userId, challengeId, reasonId, reasonText) {

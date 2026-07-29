@@ -4,12 +4,17 @@ const {
     User: UserModel,
     Challenge: ChallengeModel,
     HistoryChallenges: HistoryModel,
-    ReviewChallenges: ReviewModel,
-    ReportChallenge: ReportModel,
+    Review: ReviewModel,
+    Report: ReportModel,
     ReportReason: ReportReasonModel,
     Topic: TopicModel,
     ChallengeTopic: ChallengeTopicModel,
     Notification: NotificationModel,
+    Test: TestModel,
+    TestAttempt: TestAttemptModel,
+    ChallengeParameter: ChallengeParameterModel,
+    ChallengeTestCase: ChallengeTestCaseModel,
+    TestCaseArgument: TestCaseArgumentModel,
 } = require('../models');
 
 class AdminRepositorySequelize extends IAdminRepository {
@@ -160,46 +165,33 @@ class AdminRepositorySequelize extends IAdminRepository {
         }));
     }
 
-    async getHardestChallenges(limit = 10) {
+    async getLowestRatedChallenges(limit = 10) {
         const rows = await ChallengeModel.findAll({
             attributes: [
                 'name',
-                'difficulty',
-                [fn('COUNT', col('submissions.id')), 'attempts'],
-                [fn('SUM', literal(`CASE WHEN "submissions"."status" = 'success' THEN 1 ELSE 0 END`)), 'successes'],
+                [fn('COUNT', col('reviews.id')), 'reviewCount'],
+                [literal(`ROUND(AVG("reviews"."rating")::numeric, 1)`), 'avgRating'],
             ],
             include: [{
-                model: HistoryModel,
-                as: 'submissions',
+                model: ReviewModel,
+                as: 'reviews',
                 attributes: [],
                 required: true,
             }],
             where: { isHidden: false },
-            group: ['Challenge.id', 'Challenge.name', 'Challenge.difficulty'],
-            having: literal('COUNT("submissions"."id") > 0'),
-            order: [[
-                literal(`SUM(CASE WHEN "submissions"."status" = 'success' THEN 1 ELSE 0 END) * 1.0
-                         / NULLIF(COUNT("submissions"."id"), 0)`),
-                'ASC',
-            ]],
+            group: ['Challenge.id', 'Challenge.name'],
+            having: literal('COUNT("reviews"."id") >= 1'),
+            order: [[literal(`AVG("reviews"."rating")`), 'ASC']],
             limit,
             subQuery: false,
             raw: true,
         });
 
-        return rows.map(r => {
-            const attempts = Number(r.attempts);
-            const successes = Number(r.successes);
-            return {
-                name: r.name,
-                difficulty: Number(r.difficulty),
-                attempts,
-                successes,
-                successRate: attempts > 0
-                    ? Math.round((successes / attempts) * 1000) / 10
-                    : 0,
-            };
-        });
+        return rows.map(r => ({
+            name: r.name,
+            reviewCount: Number(r.reviewCount),
+            avgRating: parseFloat(r.avgRating) || 0,
+        }));
     }
 
     async getTopUsers(limit = 10) {
@@ -327,7 +319,7 @@ class AdminRepositorySequelize extends IAdminRepository {
     async getReportsByReason() {
         const rows = await ReportModel.findAll({
             attributes: [
-                [fn('COUNT', col('ReportChallenge.id')), 'total'],
+                [fn('COUNT', col('Report.id')), 'total'],
                 [literal('COALESCE("reason"."name", \'Иное\')'), 'reasonName'],
             ],
             include: [{
@@ -337,7 +329,7 @@ class AdminRepositorySequelize extends IAdminRepository {
                 required: false,
             }],
             group: [literal('"reason"."id"'), literal('"reason"."name"')],
-            order: [[fn('COUNT', col('ReportChallenge.id')), 'DESC']],
+            order: [[fn('COUNT', col('Report.id')), 'DESC']],
             limit: 10,
             subQuery: false,
             raw: true,
@@ -680,6 +672,150 @@ class AdminRepositorySequelize extends IAdminRepository {
                 count: Number(r.count),
             })),
         };
+    }
+
+    async getTestStats() {
+        const [
+            totalTests,
+            publishedTests,
+            totalAttempts,
+            completedAttempts,
+        ] = await Promise.all([
+            TestModel.count(),
+            TestModel.count({ where: { isPublished: true } }),
+            TestAttemptModel.count({ where: { status: { [Op.ne]: 'active' } } }),
+            TestAttemptModel.count({ where: { status: 'completed' } }),
+        ]);
+
+        const avgRow = await TestAttemptModel.findOne({
+            attributes: [[
+                literal(`ROUND(AVG(CASE WHEN "maxScore" > 0 THEN "score" * 100.0 / "maxScore" ELSE 0 END)::numeric, 1)`),
+                'avgPct',
+            ]],
+            where: { status: { [Op.ne]: 'active' }, score: { [Op.ne]: null } },
+            raw: true,
+        });
+        const avgScore = parseFloat(avgRow?.avgPct) || 0;
+
+        const byStatusRows = await TestAttemptModel.findAll({
+            attributes: [
+                'status',
+                [fn('COUNT', col('id')), 'total'],
+            ],
+            group: ['status'],
+            order: [[fn('COUNT', col('id')), 'DESC']],
+            raw: true,
+        });
+
+        const byTopicRows = await TopicModel.findAll({
+            attributes: [
+                'id',
+                'name',
+                [fn('COUNT', fn('DISTINCT', col('testsInTopic.id'))), 'totalTests'],
+                [fn('COUNT', col('testsInTopic->attempts.id')), 'totalAttempts'],
+                [
+                    literal(`ROUND(AVG(CASE WHEN "testsInTopic->attempts"."maxScore" > 0 THEN "testsInTopic->attempts"."score" * 100.0 / "testsInTopic->attempts"."maxScore" ELSE NULL END)::numeric, 1)`),
+                    'avgPct',
+                ],
+            ],
+            include: [{
+                model: TestModel,
+                as: 'testsInTopic',
+                attributes: [],
+                required: false,
+                where: { isPublished: true },
+                include: [{
+                    model: TestAttemptModel,
+                    as: 'attempts',
+                    attributes: [],
+                    required: false,
+                    where: { status: { [Op.ne]: 'active' }, score: { [Op.ne]: null } },
+                }],
+            }],
+            group: ['Topic.id', 'Topic.name'],
+            order: [[fn('COUNT', col('testsInTopic->attempts.id')), 'DESC']],
+            raw: true,
+            subQuery: false,
+        });
+
+        const lowestRatedRows = await TestModel.findAll({
+            attributes: [
+                'id',
+                'title',
+                [fn('COUNT', col('reviews.id')), 'reviewCount'],
+                [literal(`ROUND(AVG("reviews"."rating")::numeric, 1)`), 'avgRating'],
+            ],
+            include: [{
+                model: ReviewModel,
+                as: 'reviews',
+                attributes: [],
+                required: true,
+            }],
+            where: { isPublished: true },
+            group: ['Test.id', 'Test.title'],
+            having: literal('COUNT("reviews"."id") >= 1'),
+            order: [[literal(`AVG("reviews"."rating")`), 'ASC']],
+            limit: 10,
+            subQuery: false,
+            raw: true,
+        });
+
+        return {
+            totalTests,
+            publishedTests,
+            totalAttempts,
+            completedAttempts,
+            avgScore,
+            byStatus: byStatusRows.map(r => ({ status: r.status, total: Number(r.total) })),
+            byTopic: byTopicRows.map(r => ({
+                topic: r.name || 'Без темы',
+                totalTests: Number(r.totalTests),
+                totalAttempts: Number(r.totalAttempts),
+                avgPct: parseFloat(r.avgPct) || 0,
+            })),
+            lowestRated: lowestRatedRows.map(r => ({
+                id: r.id,
+                title: r.title,
+                reviewCount: Number(r.reviewCount),
+                avgRating: parseFloat(r.avgRating) || 0,
+            })),
+        };
+    }
+    async getChallengesForExport(ids) {
+        const rows = await ChallengeModel.findAll({
+            where: { id: ids },
+            include: [
+                { model: ChallengeParameterModel, as: 'parameters' },
+                {
+                    model: ChallengeTestCaseModel,
+                    as: 'testCases',
+                    include: [{ model: TestCaseArgumentModel, as: 'testArgs' }],
+                },
+                { model: TopicModel, as: 'topics', attributes: ['id', 'name'], through: { attributes: [] } },
+            ],
+        });
+
+        return rows.map(r => {
+            const d = r.toJSON();
+            return {
+                name:        d.name,
+                description: d.description,
+                difficulty:  d.difficulty,
+                mode:        d.mode,
+                funcName:    d.funcName,
+                timeLimitMs: d.timeLimitMs,
+                sampleInput: d.sampleInput,
+                sampleOutput:d.sampleOutput,
+                isHidden:    d.isHidden,
+                topics:      (d.topics || []).map(t => t.name),
+                parameters:  (d.parameters || []).map(p => ({ name: p.name, dataType: p.dataType, order: p.order })),
+                testCases:   (d.testCases || []).map(tc => ({
+                    title:          tc.title,
+                    expectedOutput: tc.expectedOutput,
+                    testArgs:       (tc.testArgs || []).map(a => ({ value: a.value, order: a.order })),
+                })),
+            };
+        });
     }
 }
 

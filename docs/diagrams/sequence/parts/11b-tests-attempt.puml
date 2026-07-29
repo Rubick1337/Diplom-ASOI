@@ -1,0 +1,40 @@
+@startuml
+title Tests Page — Прохождение теста
+
+actor User
+participant "TestsPage" as Page
+participant "TestController" as TC
+participant "TestAttempt" as TA
+participant "AttemptQuestion" as AQ
+participant "DockerRunner" as Docker
+
+User -> Page: click "Начать тест"
+Page -> TC: dispatch(startAttempt(testId, userId))
+TC -> TA: create(testId, userId, startedAt=now)
+TA --> TC: attempt{ id }
+TC -> AQ: bulkCreate(attemptId, questions[])
+AQ --> TC: attemptQuestions[]
+TC --> Page: attempt{ id, questions[], timeLimitSec }
+Page --> User: рендер формы прохождения (таймер + вопросы)
+
+User -> Page: выбирает ответы (single-choice / multiple-choice / matching)
+
+alt вопрос с кодом
+    User -> Page: вводит код → click "Запустить"
+    Page -> TC: dispatch(runCode(code, language, stdinInput?))
+    TC -> Docker: runInDocker(language, code)
+    Docker --> TC: stdout, stderr, exitCode
+    TC --> Page: { output, error }
+    Page --> User: вывод кода в консоли
+end
+
+User -> Page: click "Завершить тест"
+Page -> TC: dispatch(submitAttempt(attemptId, userId, answers[]))
+TC -> TA: findByPk(attemptId)
+TA --> TC: attempt
+TC -> TA: update(attemptId, { finishedAt=now, score, maxScore })
+TA --> TC: updatedAttempt
+TC --> Page: { score, maxScore, passed: boolean }
+Page --> User: рендер экрана результата (баллы, процент)
+
+@enduml

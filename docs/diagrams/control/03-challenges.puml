@@ -1,0 +1,57 @@
+@startuml
+title 03 Challenges — Control Classes
+
+class ChallengesPage <<boundary>> {
+  - page: int
+  - pageSize: int
+  - search: string
+  - topicId: int
+  - difficulty: string
+  - sort: string
+  + items: Challenge[]
+  + total: int
+  + totalPages: int
+  + topics: Topic[]
+}
+
+class ChallengeController <<control>> {
+  - page: int
+  - pageSize: int
+  - search: string
+  - topicId: int
+  - difficulty: string
+  - sort: string
+  + items: Challenge[]
+  + total: int
+  + totalPages: int
+  + topics: Topic[]
+}
+
+class Challenge <<entity>> {
+  - page: int
+  - pageSize: int
+  - search: string
+  - topicId: int
+  - difficulty: string
+  - sort: string
+  + id: int
+  + name: string
+  + difficulty: string
+  + topics: Topic[]
+  + solvedCount: int
+}
+
+class Topic <<entity>> {
+  + id: int
+  + name: string
+  + challengeCount: int
+}
+
+ChallengesPage ..> ChallengeController : getAllChallenges(page, pageSize, search, topicId, difficulty, sort)
+ChallengesPage ..> ChallengeController : getTopics()
+ChallengeController o-- Challenge : "1" findAll(page, pageSize, search, topicId, difficulty, sort) "0..*"
+ChallengeController o-- Topic : getTopics()
+ChallengeController ..> ChallengesPage : items[], total, totalPages
+ChallengeController ..> ChallengesPage : topics[]
+
+@enduml

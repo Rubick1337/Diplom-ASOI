@@ -102,3 +102,28 @@
 @media (max-width: 360px) {
     .insights-card { padding: 10px 8px; border-radius: 10px; }
 }
+
+/* LIGHT THEME */
+[data-theme="light"] .insights-card {
+    background: linear-gradient(180deg, rgba(255,255,255,0.9), #ffffff);
+    border-color: rgba(26,24,23,0.10);
+}
+[data-theme="light"] .insights-card:hover {
+    border-color: rgba(255,107,53,0.30);
+    box-shadow: 0 0 20px rgba(255,107,53,0.08);
+}
+[data-theme="light"] .heatmap-scroll::-webkit-scrollbar-track {
+    background: rgba(26,24,23,0.05);
+}
+[data-theme="light"] .heatmap-scroll::-webkit-scrollbar-thumb {
+    background: rgba(26,24,23,0.18);
+}
+[data-theme="light"] .heatmap-hour-label {
+    color: rgba(26,24,23,0.40);
+}
+[data-theme="light"] .heatmap-day-label {
+    color: rgba(26,24,23,0.40);
+}
+[data-theme="light"] .heatmap-legend__label {
+    color: rgba(26,24,23,0.40);
+}

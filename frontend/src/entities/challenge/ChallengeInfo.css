@@ -79,3 +79,24 @@
 .examples-block::-webkit-scrollbar-track {
     background: transparent;
 }
+
+/* LIGHT THEME */
+[data-theme="light"] .challenge-info-container {
+    background-color: #ede8df;
+    color: #1a1817;
+}
+[data-theme="light"] .challenge-section-label {
+    color: rgba(26,24,23,0.45);
+}
+[data-theme="light"] .info-text {
+    color: rgba(26,24,23,0.80);
+}
+[data-theme="light"] .examples-header {
+    color: #1a1817;
+}
+[data-theme="light"] .examples-block {
+    background-color: #ddd8ce;
+    border-color: rgba(26,24,23,0.12);
+    color: #0055aa;
+    box-shadow: none;
+}

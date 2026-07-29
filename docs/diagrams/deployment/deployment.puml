@@ -1,0 +1,36 @@
+@startuml
+title Диаграмма развертывания — GooseCode Platform
+
+node "Компьютер пользователя" as CLIENT {
+  component "Браузер\nNext.js SPA / React + Redux" as Browser
+}
+
+node "Внешние сервисы" as EXT {
+  component "Google OAuth2" as Google
+  component "GitHub OAuth2" as GitHub
+  component "SMTP-сервер\nGmail / Yandex" as SMTP
+}
+
+node "Сервер развертывания" as SERVER {
+  node "Docker Engine" as DOCKER {
+    node "app-net — Docker network" as NETWORK {
+      component "diplom-frontend\nNext.js 20-alpine\n:3000" as Frontend
+      component "diplom-backend\nNode.js / Express\n:8000" as Backend
+      database "diplom-db\nPostgreSQL 16\n:5432" as DB
+      database "diplom-redis\nRedis 7\n:6379" as Redis
+    }
+    component "Code Sandbox\nдинамический контейнер\nnode / python / gcc / dotnet / php\n--memory=128m --network none" as Sandbox
+  }
+}
+
+Browser --> Frontend : HTTP :3000
+Browser --> Backend : WebSocket
+Frontend --> Backend : HTTP REST :8000/api
+Backend --> DB : TCP :5432\nSequelize ORM
+Backend --> Redis : TCP :6379\nioredis
+Backend --> Sandbox : docker run
+Backend --> Google : HTTPS OAuth2
+Backend --> GitHub : HTTPS OAuth2
+Backend --> SMTP : SMTP :465/:587
+
+@enduml

@@ -1,0 +1,38 @@
+@startuml
+title Create Challenge Page — Форма и генерация ИИ
+
+actor Author
+participant "CreateChallengePage" as Page
+participant "ChallengeController" as CC
+participant "Topic" as Topic
+participant "AIService" as AI
+
+Author -> Page: открывает /challenge/create
+Page -> CC: dispatch(getTopics())
+CC -> Topic: getTopics()
+Topic --> CC: topics[]
+CC --> Page: topics[]
+Page --> Author: рендер формы
+
+Author -> Page: input[название, сложность, funcName, описание]
+Author -> Page: click "+ Добавить параметр"
+Author -> Page: click "+ Добавить тест-кейс"
+Author -> Page: select тема из списка → setSelectedTopicIds
+
+Author -> Page: input[новая тема] → click "+ Добавить тему"
+Page -> CC: dispatch(createTopic(name))
+CC -> Topic: createTopic(name)
+Topic --> CC: newTopic
+CC --> Page: новая тема
+Page --> Author: тема добавлена в список
+
+Author -> Page: click "Генерировать с ИИ"
+Page --> Author: открывается AI-панель
+Author -> Page: textarea[описание задачи] → click "Сгенерировать"
+Page -> CC: dispatch(generateChallenge(prompt))
+CC -> AI: generateChallenge(prompt)
+AI --> CC: name, difficulty, funcName, description, parameters[], testCases[], solution
+CC --> Page: сгенерированные данные
+Page --> Author: форма заполнена сгенерированными данными
+
+@enduml

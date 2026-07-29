@@ -34,18 +34,13 @@ export const login = createAsyncThunk<AuthResponse, { login: string; password: s
 
 export const registration = createAsyncThunk<
     AuthResponse,
-    { username: string; email: string; password: string; role: number },
+    { email: string; code: string },
     { rejectValue: string }
 >(
     'auth/registration',
     async (payload, { rejectWithValue }) => {
         try {
-            const res = await AuthService.registration(
-                payload.username,
-                payload.email,
-                payload.password,
-                payload.role
-            );
+            const res = await AuthService.registration(payload.email, payload.code);
             localStorage.setItem('token', res.accessToken);
             return res;
         } catch (error: any) {

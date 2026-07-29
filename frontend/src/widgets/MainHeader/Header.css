@@ -311,3 +311,68 @@ html {
 @media (max-width: 550px) {
     .brand-name { display: none; }
 }
+
+/* LIGHT THEME */
+[data-theme="light"] .site-header {
+    background: rgba(245,240,232,0.96);
+    border-bottom-color: rgba(26,24,23,0.12);
+    backdrop-filter: blur(8px);
+}
+[data-theme="light"] .main-site-header {
+    background: rgba(245,240,232,0.92);
+    border-bottom-color: rgba(26,24,23,0.12);
+    backdrop-filter: blur(8px);
+}
+[data-theme="light"] .main-site-header .nav-link {
+    color: rgba(26,24,23,0.75);
+}
+[data-theme="light"] .main-site-header .nav-link:hover {
+    color: #1a1817;
+}
+[data-theme="light"] .main-site-header .btn-dark {
+    background: rgba(26,24,23,0.06);
+    border-color: rgba(26,24,23,0.14);
+    color: #1a1817;
+}
+[data-theme="light"] .main-site-header .btn-dark:hover {
+    background: rgba(26,24,23,0.12);
+}
+[data-theme="light"] .main-site-header .burger {
+    background: rgba(26,24,23,0.06);
+    border-color: rgba(26,24,23,0.14);
+}
+[data-theme="light"] .main-site-header .burger span {
+    background: rgba(26,24,23,0.55);
+}
+[data-theme="light"] .main-site-header .mh-drawer {
+    background: #f5f0e8;
+    border-left-color: rgba(26,24,23,0.12);
+}
+[data-theme="light"] .main-site-header .mh-drawer__header {
+    border-bottom-color: rgba(26,24,23,0.1);
+}
+[data-theme="light"] .main-site-header .mh-drawer__title {
+    color: #1a1817;
+}
+[data-theme="light"] .main-site-header .mh-drawer__close {
+    background: rgba(26,24,23,0.06);
+    border-color: rgba(26,24,23,0.14);
+}
+[data-theme="light"] .main-site-header .mh-drawer__close span {
+    background: rgba(26,24,23,0.45);
+}
+[data-theme="light"] .main-site-header .mh-drawer__item {
+    color: rgba(26,24,23,0.7);
+}
+[data-theme="light"] .main-site-header .mh-drawer__item:hover {
+    background: rgba(26,24,23,0.05);
+    color: #1a1817;
+}
+[data-theme="light"] .main-site-header .mh-drawer__bottom {
+    border-top-color: rgba(26,24,23,0.1);
+}
+[data-theme="light"] .main-site-header .mh-drawer__btn--dark {
+    background: rgba(26,24,23,0.06);
+    border-color: rgba(26,24,23,0.14);
+    color: #1a1817;
+}

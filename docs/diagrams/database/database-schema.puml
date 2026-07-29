@@ -1,0 +1,378 @@
+@startuml
+title Диаграмма структуры базы данных — GooseCode
+
+' Условные обозначения:
+'   *  перед полем — NOT NULL
+'   без * — NULL (nullable)
+'   SERIAL = INTEGER autoincrement (PostgreSQL)
+'   TIMESTAMPTZ = TIMESTAMP WITH TIME ZONE
+
+' ─────────────────────────────────────────
+' Пользователи и роли
+' ─────────────────────────────────────────
+
+entity "Roles" as Roles {
+  * id : SERIAL <<PK>>
+  --
+  * name : VARCHAR(255)
+}
+
+entity "Users" as Users {
+  * id : SERIAL <<PK>>
+  --
+  * username    : VARCHAR(255)
+    password    : VARCHAR(255) NULL
+  * email       : VARCHAR(255) UNIQUE
+  * roleId      : INTEGER <<FK>> DEFAULT 3
+    refreshToken : VARCHAR(255) NULL
+    googleId    : VARCHAR(255) NULL UNIQUE
+    githubId    : VARCHAR(255) NULL UNIQUE
+  * experience  : INTEGER DEFAULT 0
+  * rating      : INTEGER DEFAULT 0
+}
+
+' ─────────────────────────────────────────
+' Задачи
+' ─────────────────────────────────────────
+
+entity "Topics" as Topics {
+  * id : SERIAL <<PK>>
+  --
+  * name : VARCHAR(255) UNIQUE
+}
+
+entity "Challenges" as Challenges {
+  * id              : SERIAL <<PK>>
+  --
+  * name            : VARCHAR(255) UNIQUE
+  * description     : TEXT
+  * difficulty      : INTEGER DEFAULT 1
+  * mode            : VARCHAR(255) DEFAULT 'harness'
+  * funcName        : VARCHAR(255)
+    timeLimitMs     : INTEGER NULL
+    createdByUserId : INTEGER NULL <<FK>>
+    sampleInput     : TEXT NULL DEFAULT ''
+    sampleOutput    : TEXT NULL DEFAULT ''
+  * isHidden        : BOOLEAN DEFAULT false
+}
+
+entity "ChallengeTopics" as ChallengeTopics {
+  * challengeId : INTEGER <<PK>> <<FK>>
+  * topicId     : INTEGER <<PK>> <<FK>>
+}
+
+entity "ChallengeParameters" as ChallengeParameters {
+  * id          : SERIAL <<PK>>
+  --
+  * challengeId : INTEGER <<FK>>
+  * name        : VARCHAR(255)
+  * dataType    : VARCHAR(255)
+}
+
+entity "ChallengeTestCases" as ChallengeTestCases {
+  * id             : SERIAL <<PK>>
+  --
+  * challengeId    : INTEGER <<FK>>
+  * title          : VARCHAR(255) DEFAULT 'Test Case'
+  * expectedOutput : TEXT
+}
+
+entity "TestCaseArguments" as TestCaseArguments {
+  * id         : SERIAL <<PK>>
+  --
+  * testCaseId : INTEGER <<FK>>
+  * value      : TEXT
+}
+
+entity "HistoryChallenges" as HistoryChallenges {
+  * id              : SERIAL <<PK>>
+  --
+  * userId          : INTEGER <<FK>>
+  * challengeId     : INTEGER <<FK>>
+  * code            : TEXT
+  * language        : VARCHAR(255)
+  * status          : VARCHAR(255) DEFAULT 'Pending'
+    executionTimeMs : INTEGER NULL
+    testsPassed     : INTEGER NULL
+    testsTotal      : INTEGER NULL
+  * createdAt       : TIMESTAMPTZ DEFAULT NOW()
+}
+
+' ─────────────────────────────────────────
+' Решения сообщества — комментарии и лайки
+' ─────────────────────────────────────────
+
+entity "SolutionComments" as SolutionComments {
+  * id         : SERIAL <<PK>>
+  --
+  * solutionId : INTEGER <<FK>>
+  * userId     : INTEGER <<FK>>
+  * content    : TEXT
+  * createdAt  : TIMESTAMPTZ DEFAULT NOW()
+  * updatedAt  : TIMESTAMPTZ
+}
+
+entity "SolutionVotes" as SolutionVotes {
+  * id         : SERIAL <<PK>>
+  --
+  * solutionId : INTEGER <<FK>>
+  * userId     : INTEGER <<FK>>
+  * vote       : SMALLINT
+  * createdAt  : TIMESTAMPTZ DEFAULT NOW()
+}
+
+' ─────────────────────────────────────────
+' Отзывы и жалобы
+' ─────────────────────────────────────────
+
+entity "Reviews" as Reviews {
+  * id          : SERIAL <<PK>>
+  --
+  * userId      : INTEGER <<FK>>
+    challengeId : INTEGER NULL <<FK>>
+    testId      : INTEGER NULL <<FK>>
+    content     : TEXT NULL
+  * rating      : INTEGER DEFAULT 5
+  * createdAt   : TIMESTAMPTZ DEFAULT NOW()
+}
+
+entity "ReportReasons" as ReportReasons {
+  * id   : SERIAL <<PK>>
+  --
+  * name : VARCHAR(100) UNIQUE
+}
+
+entity "Reports" as Reports {
+  * id           : SERIAL <<PK>>
+  --
+  * userId       : INTEGER <<FK>>
+    challengeId  : INTEGER NULL <<FK>>
+    testId       : INTEGER NULL <<FK>>
+    reasonId     : INTEGER NULL <<FK>>
+    reasonText   : TEXT NULL
+  * status       : VARCHAR(255) DEFAULT 'Pending'
+    resolvedById : INTEGER NULL <<FK>>
+    resolvedAt   : TIMESTAMPTZ NULL
+  * createdAt    : TIMESTAMPTZ DEFAULT NOW()
+}
+
+' ─────────────────────────────────────────
+' Уведомления
+' ─────────────────────────────────────────
+
+entity "Notifications" as Notifications {
+  * id        : SERIAL <<PK>>
+  --
+  * userId    : INTEGER <<FK>>
+  * title     : VARCHAR(255)
+  * message   : TEXT
+  * type      : VARCHAR(255) DEFAULT 'admin'
+  * isRead    : BOOLEAN DEFAULT false
+  * createdAt : TIMESTAMPTZ
+  * updatedAt : TIMESTAMPTZ
+}
+
+' ─────────────────────────────────────────
+' Достижения
+' ─────────────────────────────────────────
+
+entity "Achievements" as Achievements {
+  * id            : SERIAL <<PK>>
+  --
+  * title         : VARCHAR(255)
+  * desc          : TEXT
+  * rarity        : VARCHAR(20) DEFAULT 'common'
+    imageFilename : VARCHAR(255) NULL
+}
+
+entity "UserAchievements" as UserAchievements {
+  * id            : SERIAL <<PK>>
+  --
+  * userId        : INTEGER <<FK>>
+  * achievementId : INTEGER <<FK>>
+  * unlockedAt    : TIMESTAMPTZ DEFAULT NOW()
+}
+
+' ─────────────────────────────────────────
+' Тесты (опросники)
+' ─────────────────────────────────────────
+
+entity "Tests" as Tests {
+  * id                 : SERIAL <<PK>>
+  --
+  * title              : VARCHAR(255)
+    description        : TEXT NULL
+    timeLimitMinutes   : INTEGER NULL
+  * isPublished        : BOOLEAN DEFAULT false
+    createdBy          : INTEGER NULL <<FK>>
+    topicId            : INTEGER NULL <<FK>>
+    difficulty         : INTEGER NULL
+  * shuffleQuestions   : BOOLEAN DEFAULT false
+  * shuffleOptions     : BOOLEAN DEFAULT false
+    questionPoolSize   : INTEGER NULL
+  * showCorrectAnswers : BOOLEAN DEFAULT true
+  * createdAt          : TIMESTAMPTZ
+  * updatedAt          : TIMESTAMPTZ
+}
+
+entity "QuestionTypes" as QuestionTypes {
+  * id   : SERIAL <<PK>>
+  --
+  * name : VARCHAR(255) UNIQUE
+}
+
+entity "Questions" as Questions {
+  * id           : SERIAL <<PK>>
+  --
+  * testId       : INTEGER <<FK>>
+  * typeId       : INTEGER <<FK>>
+  * text         : TEXT
+  * points       : FLOAT DEFAULT 1
+  * order        : INTEGER DEFAULT 0
+    allowMultiple : BOOLEAN NULL DEFAULT false
+    caseSensitive : BOOLEAN NULL DEFAULT false
+    tolerance    : FLOAT NULL
+    codeLanguage : VARCHAR(255) NULL
+    starterCode  : TEXT NULL
+    funcName     : VARCHAR(255) NULL
+}
+
+entity "QuestionOptions" as QuestionOptions {
+  * id         : SERIAL <<PK>>
+  --
+  * questionId : INTEGER <<FK>>
+  * text       : TEXT
+  * isCorrect  : BOOLEAN DEFAULT false
+    matchPair  : TEXT NULL
+    blankIndex : INTEGER NULL
+  * order      : INTEGER DEFAULT 0
+}
+
+entity "QuestionTestCases" as QuestionTestCases {
+  * id             : SERIAL <<PK>>
+  --
+  * questionId     : INTEGER <<FK>>
+    input          : TEXT NULL
+  * expectedOutput : TEXT
+  * isHidden       : BOOLEAN DEFAULT false
+  * order          : INTEGER DEFAULT 0
+}
+
+' ─────────────────────────────────────────
+' Попытки прохождения тестов
+' ─────────────────────────────────────────
+
+entity "TestAttempts" as TestAttempts {
+  * id         : SERIAL <<PK>>
+  --
+  * testId     : INTEGER <<FK>>
+  * userId     : INTEGER <<FK>>
+  * startedAt  : TIMESTAMPTZ DEFAULT NOW()
+    finishedAt : TIMESTAMPTZ NULL
+  * status     : VARCHAR(255) DEFAULT 'active'
+    score      : FLOAT NULL
+  * maxScore   : FLOAT
+}
+
+entity "AttemptQuestions" as AttemptQuestions {
+  * id         : SERIAL <<PK>>
+  --
+  * attemptId  : INTEGER <<FK>>
+  * questionId : INTEGER <<FK>>
+  * position   : INTEGER
+}
+
+entity "AttemptAnswers" as AttemptAnswers {
+  * id           : SERIAL <<PK>>
+  --
+  * attemptId    : INTEGER <<FK>>
+  * questionId   : INTEGER <<FK>>
+    answerText   : TEXT NULL
+    codeAnswer   : TEXT NULL
+    isCorrect    : BOOLEAN NULL
+  * pointsEarned : FLOAT DEFAULT 0
+}
+
+entity "AnswerSelectedOptions" as AnswerSelectedOptions {
+  * id       : SERIAL <<PK>>
+  --
+  * answerId : INTEGER <<FK>>
+  * optionId : INTEGER <<FK>>
+}
+
+entity "AnswerMatchingPairs" as AnswerMatchingPairs {
+  * id        : SERIAL <<PK>>
+  --
+  * answerId  : INTEGER <<FK>>
+  * optionId  : INTEGER <<FK>>
+  * matchPair : TEXT
+}
+
+entity "AnswerTestCaseResults" as AnswerTestCaseResults {
+  * id             : SERIAL <<PK>>
+  --
+  * answerId       : INTEGER <<FK>>
+  * position       : INTEGER
+    input          : TEXT NULL
+  * expectedOutput : TEXT
+    actualOutput   : TEXT NULL
+  * passed         : BOOLEAN DEFAULT false
+  * isHidden       : BOOLEAN DEFAULT false
+  * timedOut       : BOOLEAN DEFAULT false
+    error          : TEXT NULL
+}
+
+' ─────────────────────────────────────────
+' Связи
+' ─────────────────────────────────────────
+
+Roles              ||--o{ Users               : roleId
+Users              ||--o{ Challenges          : createdByUserId
+Challenges         ||--|{ ChallengeTopics     : challengeId
+Topics             ||--|{ ChallengeTopics     : topicId
+Challenges         ||--o{ ChallengeParameters : challengeId
+Challenges         ||--o{ ChallengeTestCases  : challengeId
+ChallengeTestCases ||--o{ TestCaseArguments   : testCaseId
+Users              ||--o{ HistoryChallenges   : userId
+Challenges         ||--o{ HistoryChallenges   : challengeId
+
+HistoryChallenges  ||--o{ SolutionComments    : solutionId
+Users              ||--o{ SolutionComments    : userId
+HistoryChallenges  ||--o{ SolutionVotes       : solutionId
+Users              ||--o{ SolutionVotes       : userId
+
+Users              ||--o{ Reviews             : userId
+Challenges         ||--o{ Reviews             : challengeId
+Tests              ||--o{ Reviews             : testId
+
+Users              ||--o{ Reports             : userId
+Challenges         ||--o{ Reports             : challengeId
+Tests              ||--o{ Reports             : testId
+ReportReasons      ||--o{ Reports             : reasonId
+Users              ||--o{ Reports             : resolvedById
+
+Users              ||--o{ Notifications       : userId
+
+Users              ||--o{ UserAchievements    : userId
+Achievements       ||--o{ UserAchievements    : achievementId
+
+Users              ||--o{ Tests               : createdBy
+Topics             ||--o{ Tests               : topicId
+Tests              ||--o{ Questions           : testId
+QuestionTypes      ||--o{ Questions           : typeId
+Questions          ||--o{ QuestionOptions     : questionId
+Questions          ||--o{ QuestionTestCases   : questionId
+
+Tests              ||--o{ TestAttempts        : testId
+Users              ||--o{ TestAttempts        : userId
+TestAttempts       ||--o{ AttemptQuestions    : attemptId
+Questions          ||--o{ AttemptQuestions    : questionId
+TestAttempts       ||--o{ AttemptAnswers      : attemptId
+Questions          ||--o{ AttemptAnswers      : questionId
+AttemptAnswers     ||--o{ AnswerSelectedOptions  : answerId
+QuestionOptions    ||--o{ AnswerSelectedOptions  : optionId
+AttemptAnswers     ||--o{ AnswerMatchingPairs    : answerId
+QuestionOptions    ||--o{ AnswerMatchingPairs    : optionId
+AttemptAnswers     ||--o{ AnswerTestCaseResults  : answerId
+
+@enduml

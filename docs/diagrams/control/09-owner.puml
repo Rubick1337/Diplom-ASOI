@@ -1,0 +1,102 @@
+@startuml
+title 09 Owner — Control Classes
+
+class OwnerPage <<boundary>> {
+  - from: string
+  - to: string
+  - limit: int
+  - ratingBucket: int
+  - expBucket: int
+  - page: int
+  - status: string
+  - challenge: string
+  - reporter: string
+  - dateFrom: string
+  - dateTo: string
+  + overview: Overview
+  + activity: ActivityEntry[]
+  + heatmap: HeatmapEntry[]
+  + challengeStats: ChallengeStats
+  + topUsers: UserEntry[]
+  + distributions: Distributions
+  + reportsStats: ReportsStats
+  + reportsPage: ReportsPage
+}
+
+class AdminController <<control>> {
+  - from: string
+  - to: string
+  - limit: int
+  - ratingBucket: int
+  - expBucket: int
+  - page: int
+  - status: string
+  - challenge: string
+  - reporter: string
+  - dateFrom: string
+  - dateTo: string
+  + overview: Overview
+  + activity: ActivityEntry[]
+  + heatmap: HeatmapEntry[]
+  + challengeStats: ChallengeStats
+  + topUsers: UserEntry[]
+  + distributions: Distributions
+  + reportsStats: ReportsStats
+  + reportsPage: ReportsPage
+}
+
+class User <<entity>> {
+  - limit: int
+  - ratingBucket: int
+  - expBucket: int
+  + totalUsers: int
+  + topUsers: UserEntry[]
+  + distributions: Distributions
+  + overview: UserOverview
+}
+
+class Challenge <<entity>> {
+  + totalChallenges: int
+  + byDifficulty: DifficultyStat[]
+  + hardest: Challenge[]
+  + overview: ChallengeOverview
+}
+
+class HistoryChallenge <<entity>> {
+  - from: string
+  - to: string
+  + totalSubmissions: int
+  + activity: ActivityEntry[]
+  + heatmap: HeatmapEntry[]
+  + byLanguage: LanguageStat[]
+  + overview: HistoryOverview
+}
+
+class ReportChallenge <<entity>> {
+  - page: int
+  - limit: int
+  - status: string
+  - challenge: string
+  - reporter: string
+  - dateFrom: string
+  - dateTo: string
+  + byStatus: StatusStat[]
+  + byReason: ReasonStat[]
+  + items: ReportEntry[]
+  + total: int
+  + totalPages: int
+  + overview: ReportOverview
+}
+
+class Topic <<entity>> {
+  + byTopic: TopicStat[]
+}
+
+OwnerPage ..> AdminController : getOverview() / getActivity(from, to) /\ngetActivityHeatmap() / getChallengeStats() /\ngetTopUsers(limit) / getUserDistributions(ratingBucket, expBucket) /\ngetReportsStats() / getRecentReports(...)
+AdminController o-- User : "1" getOverview / getTopUsers(limit) / getUserDistributions "0..*"
+AdminController o-- Challenge : "1" getOverview / getChallengesByDifficulty /\ngetHardestChallenges "0..*"
+AdminController o-- HistoryChallenge : "1" getOverview / getActivity(from, to) /\ngetActivityHeatmap / getSubmissionsByLanguage "0..*"
+AdminController o-- ReportChallenge : "1" getOverview / getReportsByStatus /\ngetReportsByReason / getRecentReports "0..*"
+AdminController o-- Topic : getChallengesByTopic()
+
+@enduml

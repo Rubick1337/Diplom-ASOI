@@ -51,6 +51,11 @@
     margin-left: 52px;
 }
 
+.arena-mode .challenge-workspace,
+.competitive-arena .challenge-workspace {
+    margin-left: 0;
+}
+
 .workspace-header {
     display: flex;
     justify-content: space-between;
@@ -395,4 +400,59 @@
 .report-challenge-btn:hover {
     border-color: #ff5555;
     color: #ff5555;
+}
+
+/* LIGHT THEME */
+[data-theme="light"] .challenge-workspace {
+    background-color: #f5f0e8;
+    color: #1a1817;
+}
+[data-theme="light"] .workspace-header {
+    background-color: #ede8df;
+    border-bottom-color: rgba(26,24,23,0.12);
+}
+[data-theme="light"] .task-title { color: #1a1817; }
+[data-theme="light"] .rank-badge {
+    background-color: #ffffff;
+}
+[data-theme="light"] .author-row .label,
+[data-theme="light"] .author-info,
+[data-theme="light"] .stat-item {
+    color: rgba(26,24,23,0.55);
+}
+[data-theme="light"] .stat-item img {
+    filter: invert(1) brightness(0.2);
+    opacity: 0.7;
+}
+[data-theme="light"] .workspace-tabs-nav {
+    border-bottom-color: rgba(26,24,23,0.12);
+}
+[data-theme="light"] .tab-btn {
+    color: rgba(26,24,23,0.45);
+}
+[data-theme="light"] .tab-btn:hover {
+    color: #1a1817;
+}
+[data-theme="light"] .tab-btn.active {
+    color: #FF6B35;
+}
+[data-theme="light"] .count-badge {
+    background: rgba(26,24,23,0.07);
+    border-color: rgba(26,24,23,0.12);
+    color: rgba(26,24,23,0.50);
+}
+[data-theme="light"] .tab-btn.active .count-badge {
+    background: rgba(255,107,53,0.10);
+    color: #FF6B35;
+    border-color: rgba(255,107,53,0.35);
+}
+[data-theme="light"] .workspace-bottom {
+    border-top-color: rgba(26,24,23,0.10);
+}
+[data-theme="light"] .btn-back-ghost {
+    color: #FF6B35;
+}
+[data-theme="light"] .report-challenge-btn {
+    border-color: rgba(26,24,23,0.18);
+    color: rgba(26,24,23,0.45);
 }

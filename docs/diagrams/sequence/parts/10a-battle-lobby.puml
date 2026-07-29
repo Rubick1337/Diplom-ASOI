@@ -1,0 +1,47 @@
+@startuml
+title Battle Page — Лобби (вход и список комнат)
+
+actor User
+participant "BattlePage" as Page
+participant "ChallengeController" as CC
+participant "SocketServer" as Socket
+participant "RoomStore" as RS
+
+User -> Page: открывает /battle
+Page -> CC: dispatch(getAllChallenges(pageSize=20))
+CC --> Page: items[]
+
+Page -> Socket: emit check_my_room(userId, username)
+Socket -> RS: getAllRooms()
+RS --> Socket: rooms[]
+alt комната найдена (реконнект хоста)
+    Socket --> Page: my_room_found { code, hasPassword }
+    note over Page: phase → room
+else
+    Socket --> Page: my_room_not_found
+end
+
+alt sessionStorage[battleRoomId] существует
+    Page -> Socket: emit rejoin_battle(roomId, username)
+    Socket -> RS: getBattle(roomId)
+    RS --> Socket: battle
+    Socket -> RS: updateBattlePlayer(roomId, oldId, newId)
+    RS --> Socket: ok
+    Socket --> Page: battle_rejoined { challenges[], progress, opponent }
+    note over Page: phase → battle (восстанавливается из sessionStorage)
+end
+
+Page -> Socket: emit get_rooms(page=1, pageSize, search="")
+Socket -> RS: getAllRooms()
+RS --> Socket: rooms[]
+Socket --> Page: rooms_list { items[], total, totalPages }
+Page --> User: рендер списка комнат
+
+User -> Page: input[поиск] → setRoomsSearch
+Page -> Socket: emit get_rooms(page=1, pageSize, search)
+Socket -> RS: getAllRooms()
+RS --> Socket: rooms[]
+Socket --> Page: rooms_list { items[], total, totalPages }
+Page --> User: отфильтрованный список комнат
+
+@enduml

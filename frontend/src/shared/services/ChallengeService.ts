@@ -1,7 +1,7 @@
 'use client';
 
-import $api from '@/http/apiClient';
-import { API_ENDPOINTS } from '@/http/apiEndpoints';
+import $api from '@/shared/api/apiClient';
+import { API_ENDPOINTS } from '@/shared/api/apiEndpoints';
 import { Challenge, ChallengeTestCase, ChallengeParameter } from '@/shared/types/challenge';
 
 export interface TestResult {
@@ -40,9 +40,13 @@ export interface ChallengeListResult {
 }
 
 export interface SystemError {
-    type: 'runtime_error' | 'parse_error';
+    type: 'runtime_error' | 'parse_error' | 'time_limit_exceeded';
     message: string;
     details: string;
+    errorLine?: number | null;
+    errorCol?: number;
+    errorEndCol?: number | null;
+    userCodeLines?: number;
 }
 
 export interface GetReviewsParams {
@@ -60,6 +64,7 @@ export interface ExecuteResponse {
     executionTimeMs?: number;
     isTimeLimitExceeded?: boolean;
     xpGained?: number;
+    newAchievements?: Array<{ id: number; title: string; desc: string; rarity: string; imageFilename: string | null }>;
 }
 
 export interface GetSolutionsParams {

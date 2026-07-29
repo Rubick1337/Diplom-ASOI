@@ -48,6 +48,12 @@ const ICON_TOPIC = (
         <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
     </svg>
 );
+const ICON_TEST = (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+        <path d="M9 11l3 3L22 4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+);
 const ICON_OVERVIEW = (
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
         <rect x="3" y="3" width="7" height="7" rx="1" stroke="currentColor" strokeWidth="2"/>
@@ -56,32 +62,27 @@ const ICON_OVERVIEW = (
         <rect x="14" y="14" width="7" height="7" rx="1" stroke="currentColor" strokeWidth="2"/>
     </svg>
 );
-const ICON_USERS = (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-        <circle cx="9" cy="7" r="4" stroke="currentColor" strokeWidth="2"/>
-        <path d="M23 21v-2a4 4 0 0 0-3-3.87" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-        <path d="M16 3.13a4 4 0 0 1 0 7.75" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-    </svg>
-);
 
 const NAV_BY_ROLE: Record<string, NavItem[]> = {
     user: [
         { href: '/challenges',  label: 'Задачи',    desc: 'Все задачи',          icon: ICON_CODE },
+        { href: '/tests',       label: 'Тесты',     desc: 'Проверь знания',      icon: ICON_TEST },
         { href: '/profile',     label: 'Профиль',   desc: 'Мой профиль',         icon: ICON_PROFILE },
         { href: '/leaderboard', label: 'Лидерборд', desc: 'Таблица лидеров',     icon: ICON_LEADERBOARD },
         { href: '/battle',      label: 'Арена',     desc: 'Битвы и дуэли',       icon: ICON_BATTLE },
     ],
     admin: [
-        { href: '/admin?tab=reports', label: 'Репорты', desc: 'Жалобы и обработка',    icon: ICON_REPORT },
-        { href: '/admin?tab=manage',  label: 'Задачи',  desc: 'Управление задачами',   icon: ICON_CODE },
-        { href: '/admin?tab=topics',  label: 'Темы',    desc: 'Управление темами',     icon: ICON_TOPIC },
+        { href: '/admin?tab=reports',       label: 'Репорты',    desc: 'Жалобы и обработка',       icon: ICON_REPORT },
+        { href: '/admin?tab=manage',        label: 'Задачи',     desc: 'Управление задачами',      icon: ICON_CODE },
+        { href: '/admin?tab=topics',        label: 'Темы',       desc: 'Управление темами',        icon: ICON_TOPIC },
+        { href: '/admin?tab=achievements',  label: 'Достижения', desc: 'Управление достижениями',  icon: <img src="/images/Achivmnet.png" alt="Достижения" style={{ width: 18, height: 18, objectFit: 'contain', filter: 'grayscale(1)', opacity: 0.85 }} /> },
+        { href: '/admin?tab=tests',         label: 'Тесты',      desc: 'Управление тестами',       icon: ICON_TEST },
     ],
     owner: [
         { href: '/owner?tab=overview',   label: 'Обзор',          desc: 'Ключевые показатели', icon: ICON_OVERVIEW },
         { href: '/owner?tab=challenges', label: 'Задачи',         desc: 'Статистика задач',    icon: ICON_CODE },
-        { href: '/owner?tab=users',      label: 'Пользователи',   desc: 'Топ и рейтинг',       icon: ICON_USERS },
         { href: '/owner?tab=reports',    label: 'Репорты',        desc: 'Аналитика жалоб',     icon: ICON_REPORT },
+        { href: '/owner?tab=tests',      label: 'Тесты',          desc: 'Аналитика тестов',    icon: ICON_TEST },
     ],
 };
 
@@ -90,19 +91,34 @@ interface UserSidebarProps {
     setDrawerOpen?: (v: boolean | ((prev: boolean) => boolean)) => void;
 }
 
+const XP_PER_LEVEL = 500;
+
+const getAvatarColor = (name: string) => {
+    const colors = ['#FF6B35', '#F04949', '#4ade80', '#fbbf24', '#8b5cf6', '#3b82f6'];
+    let hash = 0;
+    for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
+    return colors[Math.abs(hash) % colors.length];
+};
+
 export default function UserSidebar({ drawerOpen: extOpen, setDrawerOpen: extSet }: UserSidebarProps = {}) {
     const pathname     = usePathname();
     const searchParams = useSearchParams();
     const router       = useRouter();
     const dispatch     = useDispatch<AppDispatch>();
     const user         = useSelector((s: RootState) => s.auth.user);
+
+    const currentXP    = user?.experience || 0;
+    const userLevel    = Math.floor(currentXP / XP_PER_LEVEL) + 1;
+    const xpPercent    = ((currentXP % XP_PER_LEVEL) / XP_PER_LEVEL) * 100;
+    const initials     = user?.username ? user.username.slice(0, 2).toUpperCase() : 'GC';
+    const avatarColor  = user?.username ? getAvatarColor(user.username) : '#333';
     const [intOpen, setIntOpen] = useState(false);
     const drawerOpen    = extOpen    ?? intOpen;
     const setDrawerOpen = extSet     ?? setIntOpen;
 
     const navItems: NavItem[] = NAV_BY_ROLE[user?.roleName ?? 'user'] ?? NAV_BY_ROLE['user'];
 
-    const currentTab = searchParams.get('tab');
+    const currentTab = searchParams?.get('tab');
     const isActive = (href: string) => {
         const [hPath, hQuery] = href.split('?');
         if (pathname !== hPath) return false;
@@ -175,6 +191,27 @@ export default function UserSidebar({ drawerOpen: extOpen, setDrawerOpen: extSet
                                 <span /><span /><span />
                             </button>
                         </div>
+
+                        {user && (
+                            <div className="usb-drawer__profile" onClick={() => go('/profile')}>
+                                <div
+                                    className="usb-drawer__avatar"
+                                    style={{ backgroundColor: avatarColor }}
+                                >
+                                    {initials}
+                                </div>
+                                <div className="usb-drawer__profile-info">
+                                    <span className="usb-drawer__profile-name">{user.username}</span>
+                                    <span className="usb-drawer__profile-level">LVL {userLevel}</span>
+                                    <div className="usb-drawer__xp-bg">
+                                        <div
+                                            className="usb-drawer__xp-fill"
+                                            style={{ width: `${xpPercent}%` }}
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        )}
 
                         <ul className="usb-drawer__list">
                             {navItems.map(item => (

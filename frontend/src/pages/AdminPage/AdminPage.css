@@ -198,3 +198,47 @@
         padding-top: 14px;
     }
 }
+
+/* LIGHT THEME */
+[data-theme="light"] .admin-analytics {
+    background: #f5f0e8;
+    color: #1a1817;
+}
+[data-theme="light"] .admin-manage-topbar {
+    background: #ffffff;
+    border-bottom-color: rgba(26,24,23,0.10);
+}
+[data-theme="light"] .admin-manage-topbar__title {
+    color: rgba(26,24,23,0.75);
+}
+[data-theme="light"] .admin-analytics__loader-text {
+    color: rgba(26,24,23,0.40);
+}
+[data-theme="light"] .admin-analytics__spinner {
+    border-color: rgba(26,24,23,0.12);
+    border-top-color: #FF6B35;
+}
+[data-theme="light"] .admin-analytics__footer {
+    border-top-color: rgba(26,24,23,0.10);
+    color: rgba(26,24,23,0.40);
+}
+[data-theme="light"] .overview-chart-scroll::-webkit-scrollbar-track,
+[data-theme="light"] .challenges-chart-wrap::-webkit-scrollbar-track,
+[data-theme="light"] .challenges-hardest-scroll::-webkit-scrollbar-track,
+[data-theme="light"] .users-chart-scroll::-webkit-scrollbar-track,
+[data-theme="light"] .users-picker-list::-webkit-scrollbar-track,
+[data-theme="light"] .users-card::-webkit-scrollbar-track,
+[data-theme="light"] .reports-chart-scroll::-webkit-scrollbar-track,
+[data-theme="light"] .reports-card::-webkit-scrollbar-track {
+    background: rgba(26,24,23,0.05);
+}
+[data-theme="light"] .overview-chart-scroll::-webkit-scrollbar-thumb,
+[data-theme="light"] .challenges-chart-wrap::-webkit-scrollbar-thumb,
+[data-theme="light"] .challenges-hardest-scroll::-webkit-scrollbar-thumb,
+[data-theme="light"] .users-chart-scroll::-webkit-scrollbar-thumb,
+[data-theme="light"] .users-picker-list::-webkit-scrollbar-thumb,
+[data-theme="light"] .users-card::-webkit-scrollbar-thumb,
+[data-theme="light"] .reports-chart-scroll::-webkit-scrollbar-thumb,
+[data-theme="light"] .reports-card::-webkit-scrollbar-thumb {
+    background: rgba(26,24,23,0.20);
+}

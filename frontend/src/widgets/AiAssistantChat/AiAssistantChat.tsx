@@ -3,7 +3,7 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import ReactMarkdown from 'react-markdown';
 import Image from 'next/image';
-import { API_ENDPOINTS } from '@/http/apiEndpoints';
+import { API_ENDPOINTS } from '@/shared/api/apiEndpoints';
 import './AiAssistantChat.css';
 
 interface TestResult {

@@ -4,7 +4,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import './LeaderboardPage.css';
 import Header from '@/widgets/Header/Header';
 import CustomSelect from '@/shared/components/CustomSelect/CustomSelect';
-import AdminApiService, { LeaderboardRow, LeaderboardPage } from '@/shared/services/AdminApiService';
+import AdminApiService, { LeaderboardRow, type LeaderboardPage } from '@/shared/services/AdminApiService';
 
 const PAGE_SIZES = [10, 20, 50];
 

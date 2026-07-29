@@ -3,6 +3,7 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 import Image from 'next/image';
 import './Header.css';
+import ThemeToggle from '@/widgets/ThemeToggle/ThemeToggle';
 
 type NavItem = { id: string; label: string };
 
@@ -63,7 +64,7 @@ export default function MainHeader() {
     ), [active]);
 
     return (
-        <header className="site-header">
+        <header className="site-header main-site-header">
             <div className="header-inner">
                 <a href="#hero" onClick={handleNav('hero')} className="brand">
                     <span className="brand-logo">
@@ -75,6 +76,7 @@ export default function MainHeader() {
                 <nav className="nav-desktop">{links}</nav>
 
                 <div className="header-actions">
+                    <ThemeToggle />
                     <button className="btn-dark" onClick={() => router.push('/auth/login')}>Войти</button>
                     <button className="btn-accent" onClick={() => router.push('/auth/register')}>Присоединиться</button>
                 </div>

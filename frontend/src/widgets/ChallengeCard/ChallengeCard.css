@@ -287,3 +287,56 @@
     color: #888;
     cursor: not-allowed;
 }
+
+/* LIGHT THEME */
+[data-theme="light"] .challenge-card {
+    background: linear-gradient(180deg, rgba(255,255,255,0.9), #ffffff);
+    border-color: rgba(26,24,23,0.10);
+    box-shadow: 0 4px 16px rgba(26,24,23,0.07);
+}
+[data-theme="light"] .challenge-card:hover {
+    border-color: rgba(240,73,73,0.35);
+    box-shadow: 0 0 24px rgba(240,73,73,0.14);
+}
+[data-theme="light"] .challenge-card-badge {
+    background: rgba(26,24,23,0.06);
+    border-color: rgba(26,24,23,0.12);
+}
+[data-theme="light"] .challenge-card-title {
+    color: #1a1817;
+}
+[data-theme="light"] .challenge-card-desc {
+    color: rgba(26,24,23,0.70);
+    opacity: 1;
+}
+[data-theme="light"] .challenge-card-meta {
+    color: rgba(26,24,23,0.70);
+    opacity: 1;
+}
+[data-theme="light"] .challenge-card-meta-value {
+    color: #1a1817;
+}
+[data-theme="light"] .challenge-card-meta-label {
+    color: rgba(26,24,23,0.55);
+}
+[data-theme="light"] .challenge-card-stats {
+    border-bottom-color: rgba(26,24,23,0.08);
+}
+[data-theme="light"] .stat-item {
+    color: rgba(26,24,23,0.65);
+}
+[data-theme="light"] .stat-item.author {
+    color: rgba(26,24,23,0.45);
+}
+[data-theme="light"] .challenge-card-difficulty-text {
+    color: #1a1817;
+}
+[data-theme="light"] .stat-image-icon {
+    filter: invert(1) brightness(0.2);
+}
+.icon-clock {
+    filter: invert(85%) sepia(80%) saturate(700%) hue-rotate(2deg) brightness(105%);
+}
+[data-theme="light"] .icon-clock {
+    filter: invert(1) brightness(0.2);
+}

@@ -35,39 +35,48 @@ export default function TerminalPanel({
             let colNum = 1;
             let msgLine: string;
 
-            const compilerErrMatch =
-                details.match(/code:(\d+):(\d+):\s*(?:error|warning):\s*(.+)/i) ||
-                details.match(/code\((\d+),(\d+)\):\s*(?:error|warning)\s+\w+:\s*(.+)/i);
-
-            const phpLineMatch = !compilerErrMatch && details.match(/on line (\d+)/i);
-
-            const nodeLineMatch = !compilerErrMatch && !phpLineMatch && details.match(/\[stdin\]:(\d+)/i);
-
-            const pyLineMatch = !compilerErrMatch && !phpLineMatch && !nodeLineMatch &&
-                details.match(/line (\d+)/i);
-
-            if (compilerErrMatch) {
-                lineNum = parseInt(compilerErrMatch[1]);
-                colNum = parseInt(compilerErrMatch[2]);
-                msgLine = compilerErrMatch[3].trim();
-
-                if (err.userCodeLines && lineNum > err.userCodeLines + 50) lineNum = 1;
-            } else {
-                const m = phpLineMatch || nodeLineMatch || pyLineMatch;
-                lineNum = m ? parseInt(m[1]) : 1;
-                if (err.userCodeLines && lineNum > err.userCodeLines) lineNum = 1;
-
+            if (err.errorLine) {
+                lineNum = err.errorLine;
+                colNum = err.errorCol || 1;
                 msgLine = details
                     .split('\n')
                     .map((l: string) => l.trim())
                     .find((l: string) =>
                         l.length > 0 &&
-                        !l.startsWith('at ') &&
                         !l.startsWith('File "') &&
-                        !l.startsWith('Traceback') &&
-                        !l.startsWith('#') &&
-                        !/^code:\s*In (function|method)/i.test(l)
+                        !l.startsWith('Traceback')
                     ) || err.message;
+            } else {
+                const compilerErrMatch =
+                    details.match(/code:(\d+):(\d+):\s*(?:error|warning):\s*(.+)/i) ||
+                    details.match(/code\((\d+),(\d+)\):\s*(?:error|warning)\s+\w+:\s*(.+)/i);
+
+                const phpLineMatch = !compilerErrMatch && details.match(/on line (\d+)/i);
+                const nodeLineMatch = !compilerErrMatch && !phpLineMatch && details.match(/\[stdin\]:(\d+)/i);
+                const pyLineMatch = !compilerErrMatch && !phpLineMatch && !nodeLineMatch &&
+                    details.match(/line (\d+)/i);
+
+                if (compilerErrMatch) {
+                    lineNum = parseInt(compilerErrMatch[1]);
+                    colNum = parseInt(compilerErrMatch[2]);
+                    msgLine = compilerErrMatch[3].trim();
+                    if (err.userCodeLines && lineNum > err.userCodeLines + 50) lineNum = 1;
+                } else {
+                    const m = phpLineMatch || nodeLineMatch || pyLineMatch;
+                    lineNum = m ? parseInt(m[1]) : 1;
+                    if (err.userCodeLines && lineNum > err.userCodeLines) lineNum = 1;
+                    msgLine = details
+                        .split('\n')
+                        .map((l: string) => l.trim())
+                        .find((l: string) =>
+                            l.length > 0 &&
+                            !l.startsWith('at ') &&
+                            !l.startsWith('File "') &&
+                            !l.startsWith('Traceback') &&
+                            !l.startsWith('#') &&
+                            !/^code:\s*In (function|method)/i.test(l)
+                        ) || err.message;
+                }
             }
 
             if (lineNum <= 0) lineNum = 1;
@@ -157,7 +166,7 @@ export default function TerminalPanel({
                 ) : (
                     <div className="problems-view">
                         {allProblems.length === 0 ? (
-                            <div className="empty-state success">✓ No problems detected.</div>
+                            <div className="empty-state success">No problems detected.</div>
                         ) : (
                             allProblems.map((prob: any) => {
                                 const config = severityMap[prob.severity as keyof typeof severityMap] || severityMap.Error;

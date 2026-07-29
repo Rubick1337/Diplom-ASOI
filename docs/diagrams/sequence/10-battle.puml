@@ -1,0 +1,176 @@
+@startuml
+title Диаграмма последовательности — Battle Page
+
+actor User
+participant "BattlePage" as Page
+participant "ChallengeController" as CC
+participant "SocketServer" as Socket
+participant "RoomStore" as RS
+
+User -> Page: открывает /battle
+Page -> CC: getAllChallenges(pageSize=20)
+CC --> Page: items[]
+
+Page -> Socket: emit check_my_room(userId, username)
+Socket -> RS: getAllRooms()
+RS --> Socket: rooms[]
+alt комната найдена (реконнект хоста)
+    Socket --> Page: my_room_found { code, hasPassword }
+    note over Page: phase → room
+else
+    Socket --> Page: my_room_not_found
+end
+note over Page: если sessionStorage[battleRoomId] → emit rejoin_battle
+
+alt rejoin_battle
+    Page -> Socket: emit rejoin_battle(roomId, username)
+    Socket -> RS: getBattle(roomId)
+    RS --> Socket: battle
+    Socket -> RS: updateBattlePlayer(roomId, oldId, newId)
+    RS --> Socket: ok
+    Socket --> Page: battle_rejoined { challenges[], progress, opponent }
+    note over Page: phase → battle (восстанавливается из sessionStorage)
+end
+
+note over Page: ЛОББИ
+
+Page -> Socket: emit get_rooms(page, pageSize, search)
+Socket -> RS: getAllRooms()
+RS --> Socket: rooms[]
+Socket --> Page: rooms_list { items[], total, totalPages }
+Page --> User: рендер списка комнат
+
+User -> Page: input[поиск] → setRoomsSearch
+Page -> Socket: emit get_rooms(page=1, pageSize, search)
+Socket -> RS: getAllRooms()
+RS --> Socket: rooms[]
+Socket --> Page: rooms_list { items[], total, totalPages }
+Page --> User: отфильтрованный список комнат
+
+User -> Page: click "Быстрый поиск"
+Page -> Socket: emit join_matchmaking(username, userId)
+Socket -> RS: getMatchmakingRooms()
+RS --> Socket: matchmakingRooms[]
+alt соперник уже ждёт
+    Socket -> RS: deleteRoom(code)
+    RS --> Socket: ok
+    Socket -> RS: setBattle(battleRoomId, battleData)
+    RS --> Socket: ok
+    Socket --> Page: match_found { roomId, players[] }
+    note over Page: phase → picking
+else
+    Socket -> RS: setRoom(code, roomData)
+    RS --> Socket: ok
+    Socket --> Page: waiting_for_opponent
+    note over Page: ожидание соперника
+    Socket --> Page: match_found { roomId, players[] }
+    note over Page: phase → picking
+end
+
+User -> Page: click "Отмена поиска"
+Page -> Socket: emit leave_matchmaking
+Socket -> RS: deleteRoom(myRoom.code)
+RS --> Socket: ok
+Socket --> Page: matchmaking_cancelled
+Page --> User: возврат в лобби
+
+User -> Page: click "Создать комнату"
+Page -> Socket: emit create_room(username, userId, password?)
+Socket -> RS: setRoom(code, roomData)
+RS --> Socket: ok
+Socket --> Page: room_created { code, hasPassword }
+Socket --> Page: rooms_updated (broadcast)
+note over Page: phase → room
+Page --> User: рендер экрана ожидания комнаты
+
+User -> Page: click на карточке комнаты (join)
+Page -> Socket: emit join_room(username, userId, code, password?)
+Socket -> RS: getRoom(code)
+RS --> Socket: room
+alt неверный пароль
+    Socket --> Page: room_error { message: "Неверный пароль" }
+    Page --> User: показывает поле ввода пароля
+else
+    Socket -> RS: deleteRoom(code)
+    RS --> Socket: ok
+    Socket -> RS: setBattle(battleRoomId, battleData)
+    RS --> Socket: ok
+    Socket --> Page: match_found { roomId, players[] }
+    Socket --> Page: rooms_updated (broadcast)
+    note over Page: phase → picking
+    Page --> User: рендер экрана выбора задач
+end
+
+note over Page: КОМНАТА (ожидание)
+
+Socket --> Page: player_joined_room { players[] }
+Page --> User: рендер имени гостя в RoomPhase
+
+User -> Page: click "Отменить комнату"
+Page -> Socket: emit cancel_room
+Socket -> RS: deleteRoom(myRoom.code)
+RS --> Socket: ok
+Socket --> Page: rooms_updated (broadcast)
+note over Page: phase → lobby
+Page --> User: возврат в лобби
+
+note over Page: ПИКИНГ
+
+User -> Page: click на задаче → handleSelectTask(id)
+Page -> CC: getChallengeById(id)
+CC --> Page: fullTask
+Page --> User: предпросмотр выбранной задачи
+Page -> Socket: emit select_battle_challenge(roomId, challenge)
+Socket -> RS: getBattle(roomId)
+RS --> Socket: battle
+Socket -> RS: setBattle(roomId, battle)
+RS --> Socket: ok
+Socket --> Page: challenge_selected_by_player { challengeId, playerId }
+Page --> User: отображает выбор своей / соперника задачи
+alt оба игрока выбрали задачи
+    Socket --> Page: battle_start { challenges[] }
+    note over Page: sessionStorage <- battlePhase, battleChallenges, phase → battle
+    Page --> User: рендер экрана битвы
+end
+
+note over Page: БИТВА
+
+User -> Page: редактирует код → запускает тесты (BattlePhase)
+note over Page: CodeEditor + DockerRunner через ChallengeController
+Page -> Socket: emit challenge_result(roomId, challengeId, passed, total, solved)
+Socket -> RS: updateBattleProgress(roomId, socketId, challengeId, progress)
+RS --> Socket: ok
+Socket --> Page: opponent_challenge_result { challengeId, passed, total, solved }
+Page --> User: обновляет прогресс-бар соперника
+alt игрок решил все задачи
+    Socket --> Page: battle_winner { winnerUsername }
+    note over Page: clearSession() — phase → finished
+    Page --> User: рендер экрана финала
+end
+
+User -> Page: input[сообщение] → click "Отправить" в чате
+Page -> Socket: emit send_battle_chat(roomId, username, message)
+Socket --> Page: receive_battle_chat { username, message, timestamp }
+Page --> User: новое сообщение в чате
+
+User -> Page: click "Сдаться"
+Page --> User: ConfirmationModal → подтверждение
+User -> Page: click "Подтвердить"
+Page -> Socket: emit surrender(roomId, username)
+Socket -> RS: getBattle(roomId)
+RS --> Socket: battle
+Socket --> Page: battle_winner { winnerUsername, isSurrender: true, surrenderedUsername }
+Socket -> RS: deleteBattle(roomId)
+RS --> Socket: ok
+note over Page: clearSession() — phase → finished
+Page --> User: рендер экрана финала
+
+note over Page: ФИНАЛ
+
+Page --> User: рендер победителя / проигравшего (FinishedPhase)
+
+User -> Page: click "Играть снова"
+note over Page: clearSession() — сброс всех состояний — phase → lobby
+Page --> User: возврат в лобби
+
+@enduml

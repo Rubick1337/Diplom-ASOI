@@ -3,13 +3,13 @@
 import React from 'react';
 import './OwnerTabs.css';
 
-export type OwnerTabId = 'overview' | 'challenges' | 'users' | 'reports';
+export type OwnerTabId = 'overview' | 'challenges' | 'reports' | 'tests';
 
 const TABS: { id: OwnerTabId; label: string; icon: string; desc: string }[] = [
-    { id: 'overview',   label: 'Обзор',       icon: '◈', desc: 'Ключевые показатели платформы' },
-    { id: 'challenges', label: 'Задачи',       icon: '◉', desc: 'Статистика по задачам' },
-    { id: 'users',      label: 'Пользователи', icon: '◎', desc: 'Топ пользователей и рейтинг' },
-    { id: 'reports',    label: 'Репорты',      icon: '◌', desc: 'Аналитика жалоб' },
+    { id: 'overview',   label: 'Обзор',   icon: '◈', desc: 'Ключевые показатели платформы' },
+    { id: 'challenges', label: 'Задачи',  icon: '◉', desc: 'Статистика по задачам' },
+    { id: 'reports',    label: 'Репорты', icon: '◌', desc: 'Аналитика жалоб' },
+    { id: 'tests',      label: 'Тесты',   icon: '◷', desc: 'Аналитика по тестам' },
 ];
 
 interface Props {

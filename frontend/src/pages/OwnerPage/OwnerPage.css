@@ -58,3 +58,20 @@
     .owner-analytics__main { margin-left: 0; padding-bottom: 64px; }
     .owner-analytics__content { padding: 12px; gap: 16px; }
 }
+
+/* LIGHT THEME */
+[data-theme="light"] .owner-analytics {
+    background: #f5f0e8;
+    color: #1a1817;
+}
+[data-theme="light"] .owner-analytics__loader-text {
+    color: rgba(26,24,23,0.40);
+}
+[data-theme="light"] .owner-analytics__spinner {
+    border-color: rgba(26,24,23,0.12);
+    border-top-color: #FF6B35;
+}
+[data-theme="light"] .owner-analytics__footer {
+    border-top-color: rgba(26,24,23,0.10);
+    color: rgba(26,24,23,0.40);
+}

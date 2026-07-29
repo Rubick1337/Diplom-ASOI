@@ -1,0 +1,129 @@
+@startuml
+title 11 Tests — Control Classes
+
+class TestsPage <<boundary>> {
+  - testId: int
+  - attemptId: int
+  - userId: int
+  - answers: Answer[]
+  - code: string
+  - language: string
+  - stdinInput: string
+  - content: string
+  - rating: int
+  - reasonId: int
+  - reasonText: string
+  + tests: TestCard[]
+  + test: TestDetail
+  + attempt: AttemptSession
+  + result: AttemptResult
+  + attemptDetail: AttemptDetail
+  + attempts: AttemptSummary[]
+  + reviews: ReviewPage
+  + codeOutput: CodeOutput
+  + reportReasons: Reason[]
+}
+
+class TestController <<control>> {
+  - testId: int
+  - attemptId: int
+  - userId: int
+  - answers: Answer[]
+  - code: string
+  - language: string
+  - stdinInput: string
+  - content: string
+  - rating: int
+  - reasonId: int
+  - reasonText: string
+  + tests: TestCard[]
+  + test: TestDetail
+  + attempt: AttemptSession
+  + result: AttemptResult
+  + attemptDetail: AttemptDetail
+  + attempts: AttemptSummary[]
+  + reviews: ReviewPage
+  + codeOutput: CodeOutput
+  + reportReasons: Reason[]
+}
+
+class Test <<entity>> {
+  - id: int
+  - isPublished: boolean
+  + id: int
+  + title: string
+  + description: string
+  + questionCount: int
+  + timeLimitSec: int
+  + topics: Topic[]
+  + questions: Question[]
+}
+
+class TestAttempt <<entity>> {
+  - testId: int
+  - userId: int
+  - attemptId: int
+  - finishedAt: datetime
+  - score: int
+  - maxScore: int
+  + id: int
+  + startedAt: datetime
+  + finishedAt: datetime
+  + score: int
+  + maxScore: int
+  + passed: boolean
+}
+
+class AttemptQuestion <<entity>> {
+  - attemptId: int
+  + id: int
+  + questions: Question[]
+}
+
+class AttemptAnswer <<entity>> {
+  - attemptId: int
+  - answers: Answer[]
+  + id: int
+  + isCorrect: boolean
+  + userAnswer: string
+  + correctAnswer: string
+}
+
+class ReviewModel <<entity>> {
+  - testId: int
+  - userId: int
+  - content: string
+  - rating: int
+  + id: int
+  + reviews: Review[]
+  + avgRating: float
+  + total: int
+}
+
+class ReportModel <<entity>> {
+  - testId: int
+  - userId: int
+  - reasonId: int
+  - reasonText: string
+  + id: int
+  + reasons: Reason[]
+}
+
+class DockerRunner <<entity>> {
+  - language: string
+  - code: string
+  + stdout: string
+  + stderr: string
+  + exitCode: int
+}
+
+TestsPage ..> TestController : getPublishedTests() / getPublishedTestById(testId) /\nstartAttempt(testId, userId) / submitAttempt(attemptId, userId, answers) /\nrunCode(code, language, stdinInput?) / getAttemptResult(attemptId, userId) /\ngetMyAttempts(testId, userId) / getReviews(testId) /\ncreateReview(testId, userId, content, rating) /\ngetReportReasons(testId) / createReport(testId, userId, reasonId, reasonText)
+TestController o-- Test : "1" findAll(isPublished=true) / findByPk(id, include=Questions) "0..*"
+TestController *-- TestAttempt : create(testId, userId) / findByPk / update(score) / findAll
+TestController *-- AttemptQuestion : bulkCreate(attemptId, questions)
+TestController *-- AttemptAnswer : bulkCreate(attemptId, answers)
+TestController o-- ReviewModel : "1" findAll(testId) / create "0..*"
+TestController o-- ReportModel : "1" getReportReasons / create "0..*"
+TestController ..> DockerRunner : runInDocker(language, code)
+
+@enduml

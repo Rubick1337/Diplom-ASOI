@@ -151,3 +151,36 @@
 @keyframes spin {
     to { transform: rotate(360deg); }
 }
+
+/* LIGHT THEME */
+[data-theme="light"] .test-case-item {
+    background: #ede8df;
+    border-color: rgba(26,24,23,0.12);
+}
+[data-theme="light"] .test-case-item:hover {
+    background: #e4ddd3;
+}
+[data-theme="light"] .test-case-details {
+    border-top-color: rgba(26,24,23,0.10);
+}
+[data-theme="light"] .detail-row .label {
+    color: rgba(26,24,23,0.45);
+}
+[data-theme="light"] .arrow-icon {
+    color: rgba(26,24,23,0.40);
+}
+[data-theme="light"] .value-box {
+    background: #ddd8ce;
+    border-color: rgba(26,24,23,0.12);
+    color: #1a1817;
+}
+[data-theme="light"] .diff-same {
+    color: rgba(26,24,23,0.40);
+}
+[data-theme="light"] .test-duration {
+    color: rgba(26,24,23,0.40);
+}
+[data-theme="light"] .spinner {
+    border-color: rgba(26,24,23,0.10);
+    border-top-color: #0070f3;
+}

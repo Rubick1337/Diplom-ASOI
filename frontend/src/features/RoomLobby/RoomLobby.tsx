@@ -81,7 +81,7 @@ export default function RoomLobby({ socket, roomCode, currentUser, onBattleStart
     if (error) return (
         <div className="room-lobby-error">
             <p>⚠️ {error}</p>
-            <button onClick={() => router.push('/battle')}>← Назад в арену</button>
+            <button onClick={() => router.push('/battle')} style={{display:'inline-flex',alignItems:'center',gap:'6px'}}><img src="/images/left-arrow.png" alt="←" className="icon-back" style={{width:'14px',height:'14px'}} />Назад в арену</button>
         </div>
     );
 
@@ -95,7 +95,7 @@ export default function RoomLobby({ socket, roomCode, currentUser, onBattleStart
 
                 {}
                 <div className="room-lobby-header">
-                    <button className="back-btn" onClick={handleLeave}>← Назад</button>
+                    <button className="back-btn" onClick={handleLeave}><img src="/images/left-arrow.png" alt="←" className="icon-back" style={{width:'14px',height:'14px'}} />Назад</button>
                     <h1>Лобби комнаты</h1>
                     <div className="room-lobby-status">
                         {players.length === 2

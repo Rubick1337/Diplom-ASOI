@@ -1,0 +1,44 @@
+@startuml
+title Challenges Page — Поиск, фильтры и пагинация
+
+actor User
+participant "ChallengesPage" as Page
+participant "ChallengeController" as CC
+participant "Challenge" as Challenge
+
+User -> Page: input[поиск] → setSearch
+Page -> CC: dispatch(getAllChallenges(page=1, pageSize, search, topicId, difficulty, sort))
+CC -> Challenge: findAll(page, pageSize, search, topicId, difficulty, sort)
+Challenge --> CC: items[], total
+CC --> Page: items[], total, totalPages
+Page --> User: обновлённый список задач
+
+User -> Page: select[тема] / select[сложность] / select[сортировка] → click "Применить"
+Page -> CC: dispatch(getAllChallenges(page=1, pageSize, search, topicId, difficulty, sort))
+CC -> Challenge: findAll(page, pageSize, search, topicId, difficulty, sort)
+Challenge --> CC: items[], total
+CC --> Page: items[], total, totalPages
+Page --> User: отфильтрованный список задач
+
+User -> Page: click пагинация → setPage(n)
+Page -> CC: dispatch(getAllChallenges(page=n, pageSize, search, topicId, difficulty, sort))
+CC -> Challenge: findAll(page, pageSize, search, topicId, difficulty, sort)
+Challenge --> CC: items[], total
+CC --> Page: items[], total, totalPages
+Page --> User: страница n списка задач
+
+User -> Page: click "Сбросить"
+Page -> CC: dispatch(getAllChallenges(page=1, pageSize, sort=newest))
+CC -> Challenge: findAll(page=1, pageSize, sort=newest)
+Challenge --> CC: items[], total
+CC --> Page: items[], total, totalPages
+Page --> User: сброшенный список задач
+
+User -> Page: input[type=range] сложность RandomChallenge → setDifficulty
+User -> Page: click "Перейти к задаче" в RandomChallenge
+Page --> User: переход на /challenges/:id
+
+User -> Page: click на карточке задачи
+Page --> User: переход на /challenges/:id
+
+@enduml

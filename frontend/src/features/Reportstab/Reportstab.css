@@ -368,6 +368,79 @@
     }
 }
 
+/* LIGHT THEME */
+[data-theme="light"] .reports-total-badge {
+    color: rgba(26,24,23,0.45);
+    background: rgba(26,24,23,0.05);
+    border-color: rgba(26,24,23,0.10);
+}
+[data-theme="light"] .reports-section__title {
+    color: #1a1817;
+}
+[data-theme="light"] .reports-section__filters {
+    background: #ffffff;
+    border-color: rgba(26,24,23,0.12);
+}
+[data-theme="light"] .reports-filters-card,
+[data-theme="light"] .reports-card {
+    background: linear-gradient(180deg, rgba(255,255,255,0.9), #ffffff);
+    border-color: rgba(26,24,23,0.10);
+}
+[data-theme="light"] .reports-card:hover {
+    border-color: rgba(255,107,53,0.30);
+    box-shadow: 0 0 20px rgba(255,107,53,0.08);
+}
+[data-theme="light"] .reports-filter-label {
+    color: rgba(26,24,23,0.40);
+}
+[data-theme="light"] .reports-filter-input {
+    background: #f5f0e8;
+    border-color: rgba(26,24,23,0.14);
+    color: #1a1817;
+}
+[data-theme="light"] .reports-filter-btn--ghost {
+    border-color: rgba(26,24,23,0.14);
+    color: rgba(26,24,23,0.55);
+}
+[data-theme="light"] .reports-filter-btn--ghost:hover {
+    border-color: rgba(26,24,23,0.28);
+    color: #1a1817;
+}
+[data-theme="light"] .reports-page-btn {
+    background: #ffffff;
+    border-color: rgba(26,24,23,0.14);
+    color: rgba(26,24,23,0.45);
+}
+[data-theme="light"] .reports-page-btn--active {
+    color: #1a1817 !important;
+}
+[data-theme="light"] .reports-page-ellipsis {
+    color: rgba(26,24,23,0.35);
+}
+[data-theme="light"] .reports-page-info {
+    color: rgba(26,24,23,0.30);
+}
+[data-theme="light"] .reports-empty {
+    color: rgba(26,24,23,0.30);
+}
+[data-theme="light"] .reports-row:hover {
+    background: rgba(26,24,23,0.03);
+}
+[data-theme="light"] .reports-card__label {
+    color: rgba(26,24,23,0.45);
+}
+[data-theme="light"] .reports-th {
+    color: rgba(26,24,23,0.40);
+    border-bottom-color: rgba(26,24,23,0.10);
+}
+[data-theme="light"] .reports-td {
+    border-bottom-color: rgba(26,24,23,0.06);
+    color: #1a1817;
+}
+[data-theme="light"] .reports-td--muted {
+    color: rgba(26,24,23,0.45);
+}
+
 .reports-action-btn { padding: 4px 10px; border-radius: 5px; border: none; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.15s; white-space: nowrap; margin-left: 4px; }
 .reports-action-btn--resolve { background: rgba(63,185,80,0.15); color: #3fb950; }
 .reports-action-btn--resolve:hover { background: rgba(63,185,80,0.3); }

@@ -1,8 +1,8 @@
 'use client';
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import $api from '@/http/apiClient';
-import { API_ENDPOINTS } from '@/http/apiEndpoints';
+import $api from '@/shared/api/apiClient';
+import { API_ENDPOINTS } from '@/shared/api/apiEndpoints';
 import './NotificationBell.css';
 
 interface Notif {
@@ -15,14 +15,29 @@ interface Notif {
     challengeId: number | null;
 }
 
+const BACKEND_BASE = (process.env.NEXT_PUBLIC_API_BASE_URL ?? 'http://localhost:9005/api').replace(/\/api$/, '');
+
 const TYPE_COLOR: Record<string, string> = {
-    report: '#FF6B35',
-    admin:  '#58a6ff',
+    report:      '#FF6B35',
+    admin:       '#58a6ff',
+    achievement: '#c084fc',
 };
 const TYPE_ICON: Record<string, string> = {
     report: '⚑',
     admin:  '🛡',
 };
+const RARITY_COLOR: Record<string, string> = {
+    common:    '#9ca3af',
+    uncommon:  '#4ade80',
+    rare:      '#60a5fa',
+    epic:      '#c084fc',
+    legendary: '#fbbf24',
+};
+
+interface AchPayload { desc: string; rarity: string; imageFilename: string | null; }
+function parseAch(msg: string): AchPayload | null {
+    try { return JSON.parse(msg); } catch { return null; }
+}
 
 function timeAgo(date: string): string {
     const normalized = date.endsWith('Z') || /[+-]\d{2}:?\d{2}$/.test(date) ? date : date + 'Z';
@@ -152,15 +167,40 @@ export default function NotificationBell() {
                                     style={{ '--accent': TYPE_COLOR[n.type] ?? '#FF6B35' } as React.CSSProperties}
                                 >
                                     <div className="nb-item__indicator" />
-                                    <div className="nb-item__icon-wrap" style={{ background: `${TYPE_COLOR[n.type] ?? '#FF6B35'}18`, color: TYPE_COLOR[n.type] ?? '#FF6B35' }}>
-                                        <span>{TYPE_ICON[n.type] ?? '🔔'}</span>
-                                    </div>
+                                    {n.type === 'achievement' ? (() => {
+                                        const ach = parseAch(n.message);
+                                        const color = ach ? (RARITY_COLOR[ach.rarity] ?? '#c084fc') : '#c084fc';
+                                        return (
+                                            <div className="nb-item__ach-icon" style={{ borderColor: `${color}50` }}>
+                                                {ach?.imageFilename
+                                                    ? <img src={`${BACKEND_BASE}/achievements/${ach.imageFilename}`} alt="" className="nb-item__ach-img" onError={e => { e.currentTarget.style.display = 'none'; }} />
+                                                    : <span>🏅</span>}
+                                            </div>
+                                        );
+                                    })() : (
+                                        <div className="nb-item__icon-wrap" style={{ background: `${TYPE_COLOR[n.type] ?? '#FF6B35'}18`, color: TYPE_COLOR[n.type] ?? '#FF6B35' }}>
+                                            <span>{TYPE_ICON[n.type] ?? '🔔'}</span>
+                                        </div>
+                                    )}
                                     <div className="nb-item__content">
                                         <div className="nb-item__top">
                                             <span className="nb-item__title">{n.title}</span>
                                             <span className="nb-item__time">{timeAgo(n.createdAt)}</span>
                                         </div>
                                         {(() => {
+                                            if (n.type === 'achievement') {
+                                                const ach = parseAch(n.message);
+                                                if (!ach) return <p className="nb-item__msg">{n.message}</p>;
+                                                const color = RARITY_COLOR[ach.rarity] ?? '#c084fc';
+                                                return (
+                                                    <>
+                                                        <p className="nb-item__msg">{ach.desc}</p>
+                                                        <span className="nb-item__ach-rarity" style={{ color, borderColor: `${color}40` }}>
+                                                            {ach.rarity}
+                                                        </span>
+                                                    </>
+                                                );
+                                            }
                                             const SPLIT = '\n\nКомментарий администратора: ';
                                             const idx = n.message.indexOf(SPLIT);
                                             if (idx === -1) return <p className="nb-item__msg">{n.message}</p>;

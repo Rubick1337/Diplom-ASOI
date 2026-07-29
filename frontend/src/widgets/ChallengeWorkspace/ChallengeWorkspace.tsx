@@ -28,6 +28,7 @@ import { ChallengeReviews } from '@/features/ChallengeReviews/ChallengeReviews';
 import LockedOverlay from '@/shared/components/LockedOverlay/LockedOverlay';
 import ReportModal from '@/features/ReportModal/ReportModal';
 import { addExperience } from '@/shared/store/slice/authSlice';
+import AchievementToastContainer, { AchievementToastData } from '@/widgets/AchievementToast/AchievementToast';
 
 const generateStarterCode = (language: string, funcName: string, params: any[] = []): string => {
     const pArray = params || [];
@@ -131,6 +132,7 @@ export default function ChallengeWorkspace({
         competitiveSystemError,
         reviews,
         xpGained,
+        newAchievements,
     } = useAppSelector((state: RootState) => state.challenges);
 
     const testResults = isCompetitive ? competitiveTestResults : reduxTestResults;
@@ -151,6 +153,8 @@ export default function ChallengeWorkspace({
     const [activeTab, setActiveTab] = useState<'solutions' | 'reviews'>('solutions');
     const [reportModalOpen, setReportModalOpen] = useState(false);
     const [xpToast, setXpToast] = useState<number | null>(null);
+    const [achToasts, setAchToasts] = useState<AchievementToastData[]>([]);
+    const shownAchIds = useRef<Set<number>>(new Set());
 
     const lastReportedAttempt = useRef<number>(0);
     const lastRunChallengeId = useRef<number>(0);
@@ -234,11 +238,18 @@ export default function ChallengeWorkspace({
 
             if (isSolved && !isCompetitive && !confettiShown.current && attempts > 0) {
                 confettiShown.current = true;
-                confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+                if (localStorage.getItem('confetti_disabled') !== '1') {
+                    confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
+                }
                 if (xpGained && xpGained > 0) {
                     dispatch(addExperience(xpGained));
                     setXpToast(xpGained);
                     setTimeout(() => setXpToast(null), 3000);
+                }
+                if (newAchievements?.length) {
+                    const fresh = (newAchievements as AchievementToastData[]).filter(a => !shownAchIds.current.has(a.id));
+                    fresh.forEach(a => shownAchIds.current.add(a.id));
+                    if (fresh.length) setAchToasts(prev => [...prev, ...fresh]);
                 }
             }
 
@@ -264,6 +275,7 @@ export default function ChallengeWorkspace({
 
     const handleRunTests = () => {
         if (!currentChallenge || isExecuting) return;
+        setLogs([]);
         setTestCases(prev => prev.map(t => ({ ...t, status: 'running', actual: undefined })));
 
         lastRunChallengeId.current = challengeId;
@@ -406,6 +418,11 @@ export default function ChallengeWorkspace({
                     onClose={() => setReportModalOpen(false)}
                 />
             )}
+
+            <AchievementToastContainer
+                achievements={achToasts}
+                onDismiss={id => setAchToasts(prev => prev.filter(a => a.id !== id))}
+            />
         </section>
     );
 }

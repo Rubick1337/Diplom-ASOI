@@ -1,4 +1,11 @@
 const AdminRepositorySequelize = require('../../Data/repository/AdminRepositorySequelize');
+const CacheUtils = require('../../Data/utils/cacheUtils');
+const ChallengeRepositorySequelize = require('../../Data/repository/ChallengeRepositorySequelize');
+const AIService = require('./AIService');
+
+const TTL_STATS = 300;
+const TTL_TOPICS = 3600;
+const TTL_LEADERBOARD = 120;
 
 class AdminService {
     constructor(adminRepository) {
@@ -6,37 +13,69 @@ class AdminService {
     }
 
     async getOverview() {
-        return await this.adminRepository.getOverview();
+        const key = CacheUtils.generateCacheKey('admin', 'overview', {});
+        const cached = await CacheUtils.getCache(key);
+        if (cached) return cached;
+        const result = await this.adminRepository.getOverview();
+        await CacheUtils.setCache(key, TTL_STATS, result);
+        return result;
     }
 
     async getActivity({ from, to }) {
-        return await this.adminRepository.getActivity(from, to);
+        const key = CacheUtils.generateCacheKey('admin', 'activity', { from, to });
+        const cached = await CacheUtils.getCache(key);
+        if (cached) return cached;
+        const result = await this.adminRepository.getActivity(from, to);
+        await CacheUtils.setCache(key, TTL_STATS, result);
+        return result;
     }
 
     async getChallengeStats() {
-        const [byTopic, byDifficulty, byLanguage, hardest] = await Promise.all([
+        const key = CacheUtils.generateCacheKey('admin', 'challengeStats', {});
+        const cached = await CacheUtils.getCache(key);
+        if (cached) return cached;
+        const [byTopic, byDifficulty, byLanguage, lowestRated] = await Promise.all([
             this.adminRepository.getChallengesByTopic(),
             this.adminRepository.getChallengesByDifficulty(),
             this.adminRepository.getSubmissionsByLanguage(),
-            this.adminRepository.getHardestChallenges(),
+            this.adminRepository.getLowestRatedChallenges(),
         ]);
-        return { byTopic, byDifficulty, byLanguage, hardest };
+        const result = { byTopic, byDifficulty, byLanguage, lowestRated };
+        await CacheUtils.setCache(key, TTL_STATS, result);
+        return result;
     }
 
     async getTopUsers({ limit }) {
-        return await this.adminRepository.getTopUsers(Number(limit) || 10);
+        const n = Number(limit) || 10;
+        const key = CacheUtils.generateCacheKey('admin', 'topUsers', { limit: n });
+        const cached = await CacheUtils.getCache(key);
+        if (cached) return cached;
+        const result = await this.adminRepository.getTopUsers(n);
+        await CacheUtils.setCache(key, TTL_STATS, result);
+        return result;
     }
 
     async getLeaderboard(params = {}) {
-        return await this.adminRepository.getLeaderboard(params);
+        const { page = 1, limit = 20, search = '', sortBy = 'solved', sortDir = 'DESC' } = params;
+        const key = CacheUtils.generateCacheKey('admin', 'leaderboard', { page, limit, search, sortBy, sortDir });
+        const cached = await CacheUtils.getCache(key);
+        if (cached) return cached;
+        const result = await this.adminRepository.getLeaderboard(params);
+        await CacheUtils.setCache(key, TTL_LEADERBOARD, result);
+        return result;
     }
 
     async getReportsStats() {
+        const key = CacheUtils.generateCacheKey('admin', 'reportsStats', {});
+        const cached = await CacheUtils.getCache(key);
+        if (cached) return cached;
         const [byStatus, byReason] = await Promise.all([
             this.adminRepository.getReportsByStatus(),
             this.adminRepository.getReportsByReason(),
         ]);
-        return { byStatus, byReason };
+        const result = { byStatus, byReason };
+        await CacheUtils.setCache(key, TTL_STATS, result);
+        return result;
     }
 
     async getRecentReports(params = {}) {
@@ -48,15 +87,30 @@ class AdminService {
     }
 
     async getActivityHeatmap() {
-        return await this.adminRepository.getActivityHeatmap();
+        const key = CacheUtils.generateCacheKey('admin', 'activityHeatmap', {});
+        const cached = await CacheUtils.getCache(key);
+        if (cached) return cached;
+        const result = await this.adminRepository.getActivityHeatmap();
+        await CacheUtils.setCache(key, TTL_STATS, result);
+        return result;
     }
 
     async getChallengeFunnel() {
-        return await this.adminRepository.getChallengeFunnel();
+        const key = CacheUtils.generateCacheKey('admin', 'challengeFunnel', {});
+        const cached = await CacheUtils.getCache(key);
+        if (cached) return cached;
+        const result = await this.adminRepository.getChallengeFunnel();
+        await CacheUtils.setCache(key, TTL_STATS, result);
+        return result;
     }
 
     async getUserDistributions({ ratingBucket = 50, expBucket = 100 } = {}) {
-        return await this.adminRepository.getUserDistributions(ratingBucket, expBucket);
+        const key = CacheUtils.generateCacheKey('admin', 'userDistributions', { ratingBucket, expBucket });
+        const cached = await CacheUtils.getCache(key);
+        if (cached) return cached;
+        const result = await this.adminRepository.getUserDistributions(ratingBucket, expBucket);
+        await CacheUtils.setCache(key, TTL_STATS, result);
+        return result;
     }
 
     async updateReportStatus(id, status, adminId, adminMessage) {
@@ -83,26 +137,149 @@ class AdminService {
     async getChallengesManage(params) {
         return await this.adminRepository.getChallengesManage(params);
     }
+
     async updateChallengeAdmin(id, data) {
-        return await this.adminRepository.updateChallengeAdmin(id, data);
+        const result = await this.adminRepository.updateChallengeAdmin(id, data);
+        await Promise.all([
+            CacheUtils.invalidateCache('challenge:byId'),
+            CacheUtils.invalidateCache('challenge:list'),
+            CacheUtils.invalidateCache('admin'),
+        ]);
+        return result;
     }
+
     async toggleChallengeHidden(id, isHidden) {
-        return await this.adminRepository.toggleChallengeHidden(id, isHidden);
+        const result = await this.adminRepository.toggleChallengeHidden(id, isHidden);
+        await Promise.all([
+            CacheUtils.invalidateCache('challenge:byId'),
+            CacheUtils.invalidateCache('challenge:list'),
+        ]);
+        return result;
     }
+
     async deleteChallengeAdmin(id) {
-        return await this.adminRepository.deleteChallengeAdmin(id);
+        const result = await this.adminRepository.deleteChallengeAdmin(id);
+        await Promise.all([
+            CacheUtils.invalidateCache('challenge:byId'),
+            CacheUtils.invalidateCache('challenge:list'),
+            CacheUtils.invalidateCache('admin'),
+        ]);
+        return result;
     }
 
-    async getChallengeDetail(challengeId)              { return await this.adminRepository.getChallengeDetail(challengeId); }
-    async updateChallengeDifficulty(id, difficulty)    { return await this.adminRepository.updateChallengeDifficulty(id, difficulty); }
-    async createNotification(userId, data)             { return await this.adminRepository.createNotification(userId, data); }
-    async getUserNotifications(userId)                 { return await this.adminRepository.getUserNotifications(userId); }
-    async markNotificationRead(id, userId)             { return await this.adminRepository.markNotificationRead(id, userId); }
+    async getChallengeDetail(challengeId)           { return await this.adminRepository.getChallengeDetail(challengeId); }
 
-    async getAllTopics()         { return await this.adminRepository.getAllTopics(); }
-    async createTopic(name)     { return await this.adminRepository.createTopic(name); }
-    async updateTopic(id, name) { return await this.adminRepository.updateTopic(id, name); }
-    async deleteTopic(id)       { return await this.adminRepository.deleteTopic(id); }
+    async updateChallengeDifficulty(id, difficulty) {
+        const result = await this.adminRepository.updateChallengeDifficulty(id, difficulty);
+        await Promise.all([
+            CacheUtils.invalidateCache('challenge:byId'),
+            CacheUtils.invalidateCache('challenge:list'),
+        ]);
+        return result;
+    }
+
+    async createNotification(userId, data)  { return await this.adminRepository.createNotification(userId, data); }
+    async getUserNotifications(userId)      { return await this.adminRepository.getUserNotifications(userId); }
+    async markNotificationRead(id, userId)  { return await this.adminRepository.markNotificationRead(id, userId); }
+
+    async getAllTopics() {
+        const key = CacheUtils.generateCacheKey('topics', 'all', {});
+        const cached = await CacheUtils.getCache(key);
+        if (cached) return cached;
+        const result = await this.adminRepository.getAllTopics();
+        await CacheUtils.setCache(key, TTL_TOPICS, result);
+        return result;
+    }
+
+    async createTopic(name) {
+        const result = await this.adminRepository.createTopic(name);
+        await Promise.all([
+            CacheUtils.invalidateCache('topics'),
+            CacheUtils.invalidateCache('challenge:list'),
+        ]);
+        return result;
+    }
+
+    async updateTopic(id, name) {
+        const result = await this.adminRepository.updateTopic(id, name);
+        await Promise.all([
+            CacheUtils.invalidateCache('topics'),
+            CacheUtils.invalidateCache('challenge:list'),
+        ]);
+        return result;
+    }
+
+    async deleteTopic(id) {
+        const result = await this.adminRepository.deleteTopic(id);
+        await Promise.all([
+            CacheUtils.invalidateCache('topics'),
+            CacheUtils.invalidateCache('challenge:list'),
+        ]);
+        return result;
+    }
+
+    async exportChallenges(ids) {
+        if (!Array.isArray(ids) || ids.length === 0) throw new Error('Список ID задач не может быть пустым');
+        return await this.adminRepository.getChallengesForExport(ids);
+    }
+
+    async importChallenges(challenges) {
+        if (!Array.isArray(challenges) || challenges.length === 0) throw new Error('Список задач пуст');
+        const repo = new ChallengeRepositorySequelize();
+        const results = [];
+
+        for (const ch of challenges) {
+            try {
+                const topicIds = [];
+                if (Array.isArray(ch.topics)) {
+                    for (const name of ch.topics) {
+                        if (name?.trim()) {
+                            const id = await repo.findOrCreateTopic(name.trim());
+                            topicIds.push(id);
+                        }
+                    }
+                }
+                const challengeData = {
+                    name:            ch.name,
+                    description:     ch.description,
+                    topicIds,
+                    difficulty:      ch.difficulty ? Number(ch.difficulty) : 1,
+                    mode:            ch.mode || 'harness',
+                    funcName:        ch.funcName,
+                    timeLimitMs:     ch.timeLimitMs || 2000,
+                    createdByUserId: null,
+                    sampleInput:     ch.sampleInput  || '',
+                    sampleOutput:    ch.sampleOutput || '',
+                    isHidden:        ch.isHidden ?? false,
+                    parameters:      Array.isArray(ch.parameters) ? ch.parameters : [],
+                };
+                const created = await repo.createWithTestCases(challengeData, ch.testCases || []);
+                results.push({ name: ch.name, status: 'created', id: created.id });
+            } catch (e) {
+                results.push({ name: ch.name, status: 'error', error: e.message });
+            }
+        }
+
+        await Promise.all([
+            CacheUtils.invalidateCache('challenge:byId'),
+            CacheUtils.invalidateCache('challenge:list'),
+            CacheUtils.invalidateCache('admin'),
+        ]);
+        return results;
+    }
+
+    async generateChallengesAI(prompt, count) {
+        return await AIService.generateChallengesBatch(prompt, count);
+    }
+
+    async getTestStats() {
+        const key = CacheUtils.generateCacheKey('admin', 'testStats', {});
+        const cached = await CacheUtils.getCache(key);
+        if (cached) return cached;
+        const result = await this.adminRepository.getTestStats();
+        await CacheUtils.setCache(key, TTL_STATS, result);
+        return result;
+    }
 }
 
 module.exports = AdminService;

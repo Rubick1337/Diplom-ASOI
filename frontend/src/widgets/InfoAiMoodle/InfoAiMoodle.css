@@ -133,3 +133,13 @@
         display: none;
     }
 }
+
+/* LIGHT THEME */
+[data-theme="light"] .hl-item {
+    background: #ddd8ce;
+    border-color: rgba(26,24,23,0.14);
+}
+[data-theme="light"] .hl-desc {
+    color: rgba(26,24,23,0.7);
+    opacity: 1;
+}

@@ -1,0 +1,45 @@
+@startuml
+title Диаграмма последовательности — Login Page
+
+actor User
+participant "LoginPage" as Page
+participant "UserController" as UC
+participant "User" as UserModel
+participant "TokenService" as Token
+
+User -> Page: открывает /auth/login
+Page --> User: рендер формы входа
+
+User -> Page: input[login, password]
+
+User -> Page: click "Войти"
+Page -> UC: login(login, password)
+UC -> UserModel: findOne(email)
+UserModel --> UC: user | null
+alt пользователь не найден по email
+    UC -> UserModel: findOne(username)
+    UserModel --> UC: user | null
+end
+UC -> UserModel: bcrypt.compare(password, hash)
+UserModel --> UC: isMatch: boolean
+UC -> Token: generateTokens(userId, role)
+Token --> UC: { accessToken, refreshToken }
+UC -> UserModel: setRefreshToken(userId, refreshToken)
+UserModel --> UC: ok
+UC --> Page: accessToken, user{ id, role }
+
+alt role === admin
+    Page --> User: переход на /admin
+else role === owner
+    Page --> User: переход на /owner
+else
+    Page --> User: переход на /challenges
+end
+
+User -> Page: click "Войти через Google"
+Page --> User: редирект на Google OAuth
+
+User -> Page: click "Войти через GitHub"
+Page --> User: редирект на GitHub OAuth
+
+@enduml

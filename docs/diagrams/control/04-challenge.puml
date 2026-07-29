@@ -1,0 +1,110 @@
+@startuml
+title 04 Challenge Workspace — Control Classes
+
+class ChallengeWorkspace <<boundary>> {
+  - challengeId: int
+  - code: string
+  - language: string
+  - userId: int
+  - content: string
+  - rating: int
+  - reasonId: int
+  - reasonText: string
+  - page: int
+  + name: string
+  + description: string
+  + funcName: string
+  + parameters: Parameter[]
+  + testCases: TestCase[]
+  + testResults: TestResult[]
+  + reviews: Review[]
+  + avgRating: float
+  + solutions: HistoryEntry[]
+}
+
+class ChallengeController <<control>> {
+  - challengeId: int
+  - code: string
+  - language: string
+  - userId: int
+  - content: string
+  - rating: int
+  - reasonId: int
+  - reasonText: string
+  + testResults: TestResult[]
+  + reviews: Review[]
+  + avgRating: float
+  + solutions: HistoryEntry[]
+  + totalPages: int
+}
+
+class UserController <<control>> {
+  - userId: int
+  - xpGained: int
+  + experience: int
+  + rating: int
+}
+
+class Challenge <<entity>> {
+  - id: int
+  + name: string
+  + description: string
+  + funcName: string
+  + timeLimitMs: int
+  + parameters: Parameter[]
+  + testCases: TestCase[]
+  + topics: Topic[]
+}
+
+class HistoryChallenge <<entity>> {
+  - userId: int
+  - challengeId: int
+  - status: string
+  - language: string
+  - code: string
+  - testsPassed: int
+  - executionTimeMs: int
+  + id: int
+  + items: HistoryEntry[]
+  + totalPages: int
+}
+
+class ReportChallenge <<entity>> {
+  - challengeId: int
+  - userId: int
+  - reasonId: int
+  - reasonText: string
+  + id: int
+  + success: boolean
+}
+
+class ReviewChallenge <<entity>> {
+  - challengeId: int
+  - userId: int
+  - content: string
+  - rating: int
+  + id: int
+  + reviews: Review[]
+  + avgRating: float
+}
+
+class DockerRunner <<control>> {
+  - language: string
+  - harness: string
+  - code: string
+  - timeLimitMs: int
+  + testResults: TestResult[]
+  + stdout: string
+  + stderr: string
+}
+
+ChallengeWorkspace ..> ChallengeController : getChallengeById(id) / execute / getReviews /\naddReview / getSolutions / createReport
+ChallengeWorkspace ..> UserController : addExperience(xpGained)
+ChallengeController o-- Challenge : findByIdWithTestCases(id)
+ChallengeController *-- DockerRunner : runInDocker(language, harness+code, timeLimitMs)
+ChallengeController o-- HistoryChallenge : "1" saveHistory / findAll(status=success) "0..*"
+ChallengeController o-- ReportChallenge : create(challengeId, userId, reasonId, reasonText)
+ChallengeController o-- ReviewChallenge : "1" findAll(challengeId) / create "0..*"
+UserController o-- Challenge : addExperience(xpGained)
+
+@enduml

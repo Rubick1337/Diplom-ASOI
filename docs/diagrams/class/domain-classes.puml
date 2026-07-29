@@ -1,0 +1,375 @@
+@startuml
+title Диаграмма классов — Доменные классы GooseCode
+
+class Role {
+  +INTEGER id
+  +STRING name
+}
+
+class User {
+  +INTEGER id
+  +STRING username
+  +STRING email
+  +STRING password
+  +INTEGER roleId
+  +STRING refreshToken
+  +STRING googleId
+  +STRING githubId
+  +INTEGER experience
+  +INTEGER rating
+  +register(username, email, password)
+  +login(email, password)
+  +logout(refreshToken)
+  +refresh(refreshToken)
+  +updateUser(id, data)
+  +loginWithGoogle(profile)
+  +loginWithGithub(profile)
+  +generateTokens(payload)
+  +validateAccessToken(token)
+  +validateRefreshToken(token)
+}
+
+class Challenge {
+  +INTEGER id
+  +STRING name
+  +TEXT description
+  +INTEGER difficulty
+  +STRING mode
+  +STRING funcName
+  +INTEGER timeLimitMs
+  +INTEGER createdByUserId
+  +TEXT sampleInput
+  +TEXT sampleOutput
+  +BOOLEAN isHidden
+  +create(data)
+  +getAll(query)
+  +getById(id)
+  +update(id, data)
+  +delete(id)
+  +execute(challengeId, code, language, userId)
+  +verify(data, code, language)
+  +formatCode(code, language)
+  +getCommunitySolutions(challengeId, userId, options)
+}
+
+class Topic {
+  +INTEGER id
+  +STRING name
+  +getAll()
+  +create(name)
+  +update(id, name)
+  +delete(id)
+}
+
+class ChallengeTopic {
+  +INTEGER challengeId
+  +INTEGER topicId
+}
+
+class ChallengeParameter {
+  +INTEGER id
+  +INTEGER challengeId
+  +STRING name
+  +STRING dataType
+}
+
+class ChallengeTestCase {
+  +INTEGER id
+  +INTEGER challengeId
+  +STRING title
+  +TEXT expectedOutput
+}
+
+class TestCaseArgument {
+  +INTEGER id
+  +INTEGER testCaseId
+  +TEXT value
+}
+
+class HistoryChallenges {
+  +INTEGER id
+  +INTEGER userId
+  +INTEGER challengeId
+  +TEXT code
+  +STRING language
+  +STRING status
+  +INTEGER executionTimeMs
+  +INTEGER testsPassed
+  +INTEGER testsTotal
+  +DATE createdAt
+  +createSubmission(data)
+  +getUserHistory(userId, challengeId)
+  +hasSolved(userId, challengeId)
+  +awardExperience(userId, xp)
+}
+
+class Review {
+  +INTEGER id
+  +INTEGER userId
+  +INTEGER challengeId
+  +INTEGER testId
+  +TEXT content
+  +INTEGER rating
+  +DATE createdAt
+  +leaveReview(userId, targetId, content, rating)
+  +getReviews(targetId, query)
+  +getAverageRating(targetId)
+}
+
+class ReportReason {
+  +INTEGER id
+  +STRING name
+  +getAll()
+}
+
+class Report {
+  +INTEGER id
+  +INTEGER userId
+  +INTEGER challengeId
+  +INTEGER testId
+  +INTEGER reasonId
+  +TEXT reasonText
+  +STRING status
+  +INTEGER resolvedById
+  +DATE resolvedAt
+  +DATE createdAt
+  +create(userId, data)
+  +getRecent(params)
+  +updateStatus(id, status, adminId, message)
+  +getStats()
+}
+
+class Notification {
+  +INTEGER id
+  +INTEGER userId
+  +STRING title
+  +TEXT message
+  +STRING type
+  +BOOLEAN isRead
+  +INTEGER challengeId
+  +DATE createdAt
+  +DATE updatedAt
+  +create(userId, data)
+  +getByUser(userId)
+  +markRead(id, userId)
+  +delete(id, userId)
+}
+
+class Achievement {
+  +INTEGER id
+  +STRING title
+  +TEXT desc
+  +STRING rarity
+  +STRING imageFilename
+  +getAll()
+  +getUserAchievements(userId)
+  +create(data)
+  +update(id, data)
+  +delete(id)
+  +checkAndAward(userId, event)
+}
+
+class UserAchievement {
+  +INTEGER id
+  +INTEGER userId
+  +INTEGER achievementId
+  +DATE unlockedAt
+}
+
+class Test {
+  +INTEGER id
+  +STRING title
+  +TEXT description
+  +INTEGER timeLimitMinutes
+  +BOOLEAN isPublished
+  +INTEGER createdBy
+  +INTEGER topicId
+  +INTEGER difficulty
+  +BOOLEAN shuffleQuestions
+  +BOOLEAN shuffleOptions
+  +INTEGER questionPoolSize
+  +BOOLEAN showCorrectAnswers
+  +DATE createdAt
+  +DATE updatedAt
+  +create(data)
+  +getAll(query)
+  +getById(id)
+  +update(id, data)
+  +delete(id)
+  +publish(id)
+}
+
+class QuestionType {
+  +INTEGER id
+  +STRING name
+  +STRING label
+  +BOOLEAN isMoodleCompatible
+  +getAll()
+}
+
+class Question {
+  +INTEGER id
+  +INTEGER testId
+  +INTEGER typeId
+  +TEXT text
+  +FLOAT points
+  +INTEGER order
+  +BOOLEAN allowMultiple
+  +BOOLEAN caseSensitive
+  +FLOAT tolerance
+  +STRING codeLanguage
+  +TEXT starterCode
+  +STRING funcName
+  +create(data)
+  +update(id, data)
+  +delete(id)
+  +checkAnswer(answer)
+}
+
+class QuestionOption {
+  +INTEGER id
+  +INTEGER questionId
+  +TEXT text
+  +BOOLEAN isCorrect
+  +TEXT matchPair
+  +INTEGER blankIndex
+  +INTEGER order
+}
+
+class QuestionTestCase {
+  +INTEGER id
+  +INTEGER questionId
+  +TEXT input
+  +TEXT expectedOutput
+  +BOOLEAN isHidden
+  +INTEGER order
+}
+
+class TestAttempt {
+  +INTEGER id
+  +INTEGER testId
+  +INTEGER userId
+  +DATE startedAt
+  +DATE finishedAt
+  +STRING status
+  +FLOAT score
+  +FLOAT maxScore
+  +start(testId, userId)
+  +submit(attemptId)
+  +timeout(attemptId)
+  +getResult(attemptId)
+}
+
+class AttemptQuestion {
+  +INTEGER id
+  +INTEGER attemptId
+  +INTEGER questionId
+  +INTEGER position
+}
+
+class AttemptAnswer {
+  +INTEGER id
+  +INTEGER attemptId
+  +INTEGER questionId
+  +TEXT answerText
+  +TEXT codeAnswer
+  +BOOLEAN isCorrect
+  +FLOAT pointsEarned
+  +save(data)
+  +evaluate(answer, question)
+}
+
+class AnswerSelectedOption {
+  +INTEGER id
+  +INTEGER answerId
+  +INTEGER optionId
+}
+
+class AnswerMatchingPair {
+  +INTEGER id
+  +INTEGER answerId
+  +INTEGER optionId
+  +TEXT matchPair
+}
+
+class AnswerTestCaseResult {
+  +INTEGER id
+  +INTEGER answerId
+  +INTEGER position
+  +TEXT input
+  +TEXT expectedOutput
+  +TEXT actualOutput
+  +BOOLEAN passed
+  +BOOLEAN isHidden
+  +BOOLEAN timedOut
+  +TEXT error
+}
+
+class SolutionComment {
+  +INTEGER id
+  +INTEGER solutionId
+  +INTEGER userId
+  +TEXT content
+  +DATE createdAt
+  +DATE updatedAt
+  +create(solutionId, userId, content)
+  +getAll(solutionId, query)
+  +delete(id, userId)
+}
+
+class SolutionVote {
+  +INTEGER id
+  +INTEGER solutionId
+  +INTEGER userId
+  +INTEGER vote
+  +DATE createdAt
+  +upsert(solutionId, userId, vote)
+  +remove(solutionId, userId)
+  +getScore(solutionId)
+}
+
+' ─── Associations ────────────────────────────────────────────────
+
+Role        "1"    *--  "0..*" User               : has
+User        "1"    *--  "0..*" Challenge           : creates
+Challenge   "0..*" ---  "0..*" Topic               : (ChallengeTopic)
+Challenge   "1"    *--  "0..*" ChallengeParameter
+Challenge   "1"    *--  "0..*" ChallengeTestCase
+ChallengeTestCase "1" *-- "0..*" TestCaseArgument
+
+User        "1"    *--  "0..*" HistoryChallenges
+Challenge   "1"    *--  "0..*" HistoryChallenges
+
+User        "1"    *--  "0..*" Review
+Challenge   "1"    *--  "0..*" Review
+Test        "1"    *--  "0..*" Review
+
+User         "1"   *--  "0..*" Report
+Challenge    "1"   *--  "0..*" Report
+ReportReason "1"   *--  "0..*" Report              : categorizes
+User         "1"   *--  "0..*" Notification
+
+User         "1"   *--  "0..*" UserAchievement
+Achievement  "1"   *--  "0..*" UserAchievement
+
+Test         "1"   *--  "0..*" Question            : contains
+QuestionType "1"   *--  "0..*" Question            : types
+Question     "1"   *--  "0..*" QuestionOption
+Question     "1"   *--  "0..*" QuestionTestCase
+
+Test         "1"   *--  "0..*" TestAttempt
+User         "1"   *--  "0..*" TestAttempt
+
+TestAttempt  "1"   *--  "0..*" AttemptQuestion
+TestAttempt  "1"   *--  "0..*" AttemptAnswer
+
+AttemptAnswer "1"  *--  "0..*" AnswerSelectedOption
+AttemptAnswer "1"  *--  "0..*" AnswerMatchingPair
+AttemptAnswer "1"  *--  "0..*" AnswerTestCaseResult
+
+HistoryChallenges "1" *-- "0..*" SolutionComment : solutionId
+User              "1" *-- "0..*" SolutionComment : userId
+HistoryChallenges "1" *-- "0..*" SolutionVote    : solutionId
+User              "1" *-- "0..*" SolutionVote    : userId
+
+@enduml

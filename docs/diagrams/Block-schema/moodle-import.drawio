@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="app.diagrams.net" version="21.0.0">
+  <diagram id="moodle-import" name="Импорт теста из Moodle XML">
+    <mxGraphModel dx="1422" dy="762" grid="1" gridSize="10" guides="1"
+                  page="1" pageScale="1" pageWidth="900" pageHeight="2000">
+      <root>
+        <mxCell id="0" /><mxCell id="1" parent="0" />
+
+        <!-- Терминалы: x=270, w=160, h=50 -->
+        <!-- Прямоугольники: x=240, w=220, h=60 -->
+        <!-- Ромбы: x=250, w=200, h=90 -->
+        <!-- Правая колонка: x=510, w=220, h=60 -->
+
+        <mxCell id="n1" value="Начало" style="rounded=1;arcSize=50;whiteSpace=wrap;html=1;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="270" y="20" width="160" height="50" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n2" value="Распарсить XML-файл" style="shape=mxgraph.flowchart.predefined_process;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="240" y="100" width="220" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n3" value="XML валидный&#xa;и есть вопросы?" style="rhombus;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="250" y="190" width="200" height="90" as="geometry" />
+        </mxCell>
+
+        <!-- Ошибка (правая ветка) -->
+        <mxCell id="n4" value="Вернуть ошибку валидации" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="510" y="205" width="220" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="n5" value="Конец" style="rounded=1;arcSize=50;whiteSpace=wrap;html=1;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="545" y="295" width="160" height="50" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n6" value="Загрузить типы вопросов из БД" style="shape=mxgraph.flowchart.predefined_process;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="240" y="310" width="220" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n7" value="Создать новый тест в БД" style="shape=mxgraph.flowchart.predefined_process;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="240" y="400" width="220" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n8" value="Для каждого вопроса" style="shape=mxgraph.flowchart.loop_limit;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="240" y="490" width="220" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n9" value="Определить тип вопроса" style="shape=mxgraph.flowchart.predefined_process;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="240" y="580" width="220" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- Цепочка условий типов -->
+        <mxCell id="n10" value="Тип: Множественный&#xa;выбор?" style="rhombus;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="250" y="670" width="200" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="n11" value="Распарсить: multichoice" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="510" y="685" width="220" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n12" value="Тип: Да / Нет?" style="rhombus;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="250" y="790" width="200" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="n13" value="Распарсить: truefalse" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="510" y="805" width="220" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n14" value="Тип: Короткий или&#xa;Числовой ответ?" style="rhombus;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="250" y="910" width="200" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="n15" value="Распарсить: shortanswer / numerical" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="510" y="925" width="220" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n16" value="Тип: Заполни&#xa;пропуск?" style="rhombus;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="250" y="1030" width="200" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="n17" value="Распарсить: cloze" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="510" y="1045" width="220" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n18" value="Тип: Сопоставление?" style="rhombus;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="250" y="1150" width="200" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="n19" value="Распарсить: matching" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="510" y="1165" width="220" height="60" as="geometry" />
+        </mxCell>
+
+        <!-- else -->
+        <mxCell id="n20" value="Прочие типы → без вариантов ответов" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="240" y="1270" width="220" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n21" value="Сохранить вопрос в БД" style="shape=mxgraph.flowchart.predefined_process;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="240" y="1360" width="220" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n22" value="Есть варианты&#xa;ответов?" style="rhombus;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="250" y="1450" width="200" height="90" as="geometry" />
+        </mxCell>
+        <!-- Правая ветка сохранения вариантов -->
+        <mxCell id="n23" value="Сохранить варианты ответов в БД" style="shape=mxgraph.flowchart.predefined_process;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="510" y="1465" width="220" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n24" value="Конец цикла по вопросам" style="shape=mxgraph.flowchart.loop_limit;whiteSpace=wrap;html=1;flipV=1;" vertex="1" parent="1">
+          <mxGeometry x="240" y="1570" width="220" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n25" value="Вернуть результат импорта" style="shape=parallelogram;perimeter=parallelogramPerimeter;whiteSpace=wrap;html=1;fixedSize=1;" vertex="1" parent="1">
+          <mxGeometry x="240" y="1660" width="220" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="n26" value="Конец" style="rounded=1;arcSize=50;whiteSpace=wrap;html=1;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="270" y="1750" width="160" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- ===== РЁБРА ===== -->
+
+        <mxCell id="e1" edge="1" source="n1" target="n2" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e2" edge="1" source="n2" target="n3" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- n3 Нет → n4 → n5 (правая ветка) -->
+        <mxCell id="e3" value="Нет" edge="1" source="n3" target="n4" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points"><mxPoint x="505" y="235"/></Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e4" edge="1" source="n4" target="n5" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- n3 Да → n6 -->
+        <mxCell id="e5" value="Да" edge="1" source="n3" target="n6" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e6" edge="1" source="n6" target="n7" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e7" edge="1" source="n7" target="n8" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e8" edge="1" source="n8" target="n9" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+        <mxCell id="e9" edge="1" source="n9" target="n10" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- Цепочка типов: Да → правый блок, Нет → вниз -->
+        <mxCell id="e10" value="Да" edge="1" source="n10" target="n11" parent="1">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="480" y="715"/></Array></mxGeometry>
+        </mxCell>
+        <mxCell id="e11" value="Нет" edge="1" source="n10" target="n12" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <mxCell id="e12" value="Да" edge="1" source="n12" target="n13" parent="1">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="480" y="835"/></Array></mxGeometry>
+        </mxCell>
+        <mxCell id="e13" value="Нет" edge="1" source="n12" target="n14" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <mxCell id="e14" value="Да" edge="1" source="n14" target="n15" parent="1">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="480" y="955"/></Array></mxGeometry>
+        </mxCell>
+        <mxCell id="e15" value="Нет" edge="1" source="n14" target="n16" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <mxCell id="e16" value="Да" edge="1" source="n16" target="n17" parent="1">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="480" y="1075"/></Array></mxGeometry>
+        </mxCell>
+        <mxCell id="e17" value="Нет" edge="1" source="n16" target="n18" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <mxCell id="e18" value="Да" edge="1" source="n18" target="n19" parent="1">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="480" y="1195"/></Array></mxGeometry>
+        </mxCell>
+        <mxCell id="e19" value="Нет" edge="1" source="n18" target="n20" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- Правые блоки → шина x=770 → слияние в n21 справа (y=1390) -->
+        <mxCell id="e20" edge="1" source="n11" target="n21" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points"><mxPoint x="770" y="715"/><mxPoint x="770" y="1390"/><mxPoint x="460" y="1390"/></Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e21" edge="1" source="n13" target="n21" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points"><mxPoint x="770" y="835"/><mxPoint x="770" y="1390"/><mxPoint x="460" y="1390"/></Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e22" edge="1" source="n15" target="n21" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points"><mxPoint x="770" y="955"/><mxPoint x="770" y="1390"/><mxPoint x="460" y="1390"/></Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e23" edge="1" source="n17" target="n21" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points"><mxPoint x="770" y="1075"/><mxPoint x="770" y="1390"/><mxPoint x="460" y="1390"/></Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e24" edge="1" source="n19" target="n21" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points"><mxPoint x="770" y="1195"/><mxPoint x="770" y="1390"/><mxPoint x="460" y="1390"/></Array>
+          </mxGeometry>
+        </mxCell>
+        <!-- n20 → n21 прямо вниз -->
+        <mxCell id="e25" edge="1" source="n20" target="n21" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <mxCell id="e26" edge="1" source="n21" target="n22" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- n22 Да → n23, n23 возвращается к n24 ниже n22 -->
+        <mxCell id="e27" value="Да" edge="1" source="n22" target="n23" parent="1">
+          <mxGeometry relative="1" as="geometry"><Array as="points"><mxPoint x="505" y="1495"/></Array></mxGeometry>
+        </mxCell>
+        <mxCell id="e28" edge="1" source="n23" target="n24" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="620" y="1555"/>
+              <mxPoint x="350" y="1555"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <!-- n22 Нет → n24 -->
+        <mxCell id="e29" value="Нет" edge="1" source="n22" target="n24" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <!-- FOR END → возврат к n8 по левому краю x=120 -->
+        <mxCell id="e30" value="Следующий вопрос" edge="1" source="n24" target="n8" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="120" y="1600"/>
+              <mxPoint x="120" y="520"/>
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <!-- FOR END → n25 -->
+        <mxCell id="e31" value="Все вопросы обработаны" edge="1" source="n24" target="n25" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+        <mxCell id="e32" edge="1" source="n25" target="n26" parent="1"><mxGeometry relative="1" as="geometry"/></mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

@@ -1,0 +1,636 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<xmi:XMI xmi:version="2.1"
+         xmlns:uml="http://www.omg.org/spec/UML/20090901"
+         xmlns:xmi="http://www.omg.org/spec/XMI/20090901">
+
+  <xmi:Documentation exporter="GooseCode" exporterVersion="2.0"/>
+
+  <uml:Model xmi:type="uml:Model" xmi:id="MODEL_GooseCode" name="GooseCode">
+    <packagedElement xmi:type="uml:Package" xmi:id="PKG_Domain" name="Domain">
+
+      <!-- Primitive Types -->
+      <packagedElement xmi:type="uml:PrimitiveType" xmi:id="PT_Integer" name="INTEGER"/>
+      <packagedElement xmi:type="uml:PrimitiveType" xmi:id="PT_String"  name="STRING"/>
+      <packagedElement xmi:type="uml:PrimitiveType" xmi:id="PT_Text"    name="TEXT"/>
+      <packagedElement xmi:type="uml:PrimitiveType" xmi:id="PT_Boolean" name="BOOLEAN"/>
+      <packagedElement xmi:type="uml:PrimitiveType" xmi:id="PT_Float"   name="FLOAT"/>
+      <packagedElement xmi:type="uml:PrimitiveType" xmi:id="PT_Date"    name="DATE"/>
+
+      <!-- в•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђ
+           Role
+      в•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђ -->
+      <packagedElement xmi:type="uml:Class" xmi:id="C_Role" name="Role">
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_Role_id"   name="id"   visibility="public" type="PT_Integer"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_Role_name" name="name" visibility="public" type="PT_String"/>
+      </packagedElement>
+
+      <!-- в•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђ
+           User
+      в•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђ -->
+      <packagedElement xmi:type="uml:Class" xmi:id="C_User" name="User">
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_User_id"           name="id"           visibility="public" type="PT_Integer"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_User_username"     name="username"     visibility="public" type="PT_String"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_User_email"        name="email"        visibility="public" type="PT_String"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_User_password"     name="password"     visibility="public" type="PT_String"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_User_roleId"       name="roleId"       visibility="public" type="PT_Integer"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_User_refreshToken" name="refreshToken" visibility="public" type="PT_String"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_User_googleId"     name="googleId"     visibility="public" type="PT_String"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_User_githubId"     name="githubId"     visibility="public" type="PT_String"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_User_experience"   name="experience"   visibility="public" type="PT_Integer"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_User_rating"       name="rating"       visibility="public" type="PT_Integer"/>
+        <ownedOperation xmi:type="uml:Operation" xmi:id="O_User_register" name="register" visibility="public">
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_User_reg_username" name="username" type="PT_String"  direction="in"/>
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_User_reg_email"    name="email"    type="PT_String"  direction="in"/>
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_User_reg_password" name="password" type="PT_String"  direction="in"/>
+        </ownedOperation>
+        <ownedOperation xmi:type="uml:Operation" xmi:id="O_User_login" name="login" visibility="public">
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_User_login_email"    name="email"    type="PT_String" direction="in"/>
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_User_login_password" name="password" type="PT_String" direction="in"/>
+        </ownedOperation>
+        <ownedOperation xmi:type="uml:Operation" xmi:id="O_User_logout" name="logout" visibility="public">
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_User_logout_token" name="refreshToken" type="PT_String" direction="in"/>
+        </ownedOperation>
+        <ownedOperation xmi:type="uml:Operation" xmi:id="O_User_refresh" name="refresh" visibility="public">
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_User_refresh_token" name="refreshToken" type="PT_String" direction="in"/>
+        </ownedOperation>
+        <ownedOperation xmi:type="uml:Operation" xmi:id="O_User_updateUser" name="updateUser" visibility="public">
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_User_upd_id"   name="id"   type="PT_Integer" direction="in"/>
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_User_upd_data" name="data" type="PT_String"  direction="in"/>
+        </ownedOperation>
+        <ownedOperation xmi:type="uml:Operation" xmi:id="O_User_loginWithGoogle" name="loginWithGoogle" visibility="public">
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_User_google_profile" name="profile" type="PT_String" direction="in"/>
+        </ownedOperation>
+        <ownedOperation xmi:type="uml:Operation" xmi:id="O_User_loginWithGithub" name="loginWithGithub" visibility="public">
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_User_github_profile" name="profile" type="PT_String" direction="in"/>
+        </ownedOperation>
+        <ownedOperation xmi:type="uml:Operation" xmi:id="O_User_generateTokens" name="generateTokens" visibility="public">
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_User_gen_payload" name="payload" type="PT_String" direction="in"/>
+        </ownedOperation>
+        <ownedOperation xmi:type="uml:Operation" xmi:id="O_User_validateAccessToken" name="validateAccessToken" visibility="public">
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_User_valAccess_token" name="token" type="PT_String" direction="in"/>
+        </ownedOperation>
+        <ownedOperation xmi:type="uml:Operation" xmi:id="O_User_validateRefreshToken" name="validateRefreshToken" visibility="public">
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_User_valRefresh_token" name="token" type="PT_String" direction="in"/>
+        </ownedOperation>
+      </packagedElement>
+
+      <!-- в•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђ
+           Challenge
+      в•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђ -->
+      <packagedElement xmi:type="uml:Class" xmi:id="C_Challenge" name="Challenge">
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_Ch_id"              name="id"              visibility="public" type="PT_Integer"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_Ch_name"            name="name"            visibility="public" type="PT_String"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_Ch_description"     name="description"     visibility="public" type="PT_Text"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_Ch_difficulty"      name="difficulty"      visibility="public" type="PT_Integer"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_Ch_mode"            name="mode"            visibility="public" type="PT_String"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_Ch_funcName"        name="funcName"        visibility="public" type="PT_String"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_Ch_timeLimitMs"     name="timeLimitMs"     visibility="public" type="PT_Integer"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_Ch_createdByUserId" name="createdByUserId" visibility="public" type="PT_Integer"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_Ch_sampleInput"     name="sampleInput"     visibility="public" type="PT_Text"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_Ch_sampleOutput"    name="sampleOutput"    visibility="public" type="PT_Text"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_Ch_isHidden"        name="isHidden"        visibility="public" type="PT_Boolean"/>
+        <ownedOperation xmi:type="uml:Operation" xmi:id="O_Ch_create" name="create" visibility="public">
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_Ch_create_data" name="data" type="PT_String" direction="in"/>
+        </ownedOperation>
+        <ownedOperation xmi:type="uml:Operation" xmi:id="O_Ch_getAll" name="getAll" visibility="public">
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_Ch_getAll_query" name="query" type="PT_String" direction="in"/>
+        </ownedOperation>
+        <ownedOperation xmi:type="uml:Operation" xmi:id="O_Ch_getById" name="getById" visibility="public">
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_Ch_getById_id" name="id" type="PT_Integer" direction="in"/>
+        </ownedOperation>
+        <ownedOperation xmi:type="uml:Operation" xmi:id="O_Ch_update" name="update" visibility="public">
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_Ch_upd_id"   name="id"   type="PT_Integer" direction="in"/>
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_Ch_upd_data" name="data" type="PT_String"  direction="in"/>
+        </ownedOperation>
+        <ownedOperation xmi:type="uml:Operation" xmi:id="O_Ch_delete" name="delete" visibility="public">
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_Ch_del_id" name="id" type="PT_Integer" direction="in"/>
+        </ownedOperation>
+        <ownedOperation xmi:type="uml:Operation" xmi:id="O_Ch_execute" name="execute" visibility="public">
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_Ch_exec_challengeId" name="challengeId" type="PT_Integer" direction="in"/>
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_Ch_exec_code"        name="code"        type="PT_Text"    direction="in"/>
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_Ch_exec_language"    name="language"    type="PT_String"  direction="in"/>
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_Ch_exec_userId"      name="userId"      type="PT_Integer" direction="in"/>
+        </ownedOperation>
+        <ownedOperation xmi:type="uml:Operation" xmi:id="O_Ch_verify" name="verify" visibility="public">
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_Ch_verify_data"     name="data"     type="PT_String" direction="in"/>
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_Ch_verify_code"     name="code"     type="PT_Text"   direction="in"/>
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_Ch_verify_language" name="language" type="PT_String" direction="in"/>
+        </ownedOperation>
+        <ownedOperation xmi:type="uml:Operation" xmi:id="O_Ch_formatCode" name="formatCode" visibility="public">
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_Ch_fmt_code"     name="code"     type="PT_Text"   direction="in"/>
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_Ch_fmt_language" name="language" type="PT_String" direction="in"/>
+        </ownedOperation>
+        <ownedOperation xmi:type="uml:Operation" xmi:id="O_Ch_getCommunitySolutions" name="getCommunitySolutions" visibility="public">
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_Ch_cs_challengeId" name="challengeId" type="PT_Integer" direction="in"/>
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_Ch_cs_userId"      name="userId"      type="PT_Integer" direction="in"/>
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_Ch_cs_options"     name="options"     type="PT_String"  direction="in"/>
+        </ownedOperation>
+      </packagedElement>
+
+      <!-- в•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђ
+           Topic
+      в•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђ -->
+      <packagedElement xmi:type="uml:Class" xmi:id="C_Topic" name="Topic">
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_Topic_id"   name="id"   visibility="public" type="PT_Integer"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_Topic_name" name="name" visibility="public" type="PT_String"/>
+        <ownedOperation xmi:type="uml:Operation" xmi:id="O_Topic_getAll" name="getAll" visibility="public"/>
+        <ownedOperation xmi:type="uml:Operation" xmi:id="O_Topic_create" name="create" visibility="public">
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_Topic_create_name" name="name" type="PT_String" direction="in"/>
+        </ownedOperation>
+        <ownedOperation xmi:type="uml:Operation" xmi:id="O_Topic_update" name="update" visibility="public">
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_Topic_upd_id"   name="id"   type="PT_Integer" direction="in"/>
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_Topic_upd_name" name="name" type="PT_String"  direction="in"/>
+        </ownedOperation>
+        <ownedOperation xmi:type="uml:Operation" xmi:id="O_Topic_delete" name="delete" visibility="public">
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_Topic_del_id" name="id" type="PT_Integer" direction="in"/>
+        </ownedOperation>
+      </packagedElement>
+
+      <!-- в•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђ
+           ChallengeTopic
+      в•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђ -->
+      <packagedElement xmi:type="uml:Class" xmi:id="C_ChallengeTopic" name="ChallengeTopic">
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_CT_challengeId" name="challengeId" visibility="public" type="PT_Integer"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_CT_topicId"     name="topicId"     visibility="public" type="PT_Integer"/>
+      </packagedElement>
+
+      <!-- в•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђ
+           ChallengeParameter
+      в•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђ -->
+      <packagedElement xmi:type="uml:Class" xmi:id="C_ChallengeParameter" name="ChallengeParameter">
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_CP_id"          name="id"          visibility="public" type="PT_Integer"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_CP_challengeId" name="challengeId" visibility="public" type="PT_Integer"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_CP_name"        name="name"        visibility="public" type="PT_String"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_CP_dataType"    name="dataType"    visibility="public" type="PT_String"/>
+      </packagedElement>
+
+      <!-- в•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђ
+           ChallengeTestCase
+      в•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђ -->
+      <packagedElement xmi:type="uml:Class" xmi:id="C_ChallengeTestCase" name="ChallengeTestCase">
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_CTC_id"             name="id"             visibility="public" type="PT_Integer"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_CTC_challengeId"    name="challengeId"    visibility="public" type="PT_Integer"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_CTC_title"          name="title"          visibility="public" type="PT_String"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_CTC_expectedOutput" name="expectedOutput" visibility="public" type="PT_Text"/>
+      </packagedElement>
+
+      <!-- в•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђ
+           TestCaseArgument
+      в•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђ -->
+      <packagedElement xmi:type="uml:Class" xmi:id="C_TestCaseArgument" name="TestCaseArgument">
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_TCA_id"         name="id"         visibility="public" type="PT_Integer"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_TCA_testCaseId" name="testCaseId" visibility="public" type="PT_Integer"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_TCA_value"      name="value"      visibility="public" type="PT_Text"/>
+      </packagedElement>
+
+      <!-- в•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђ
+           HistoryChallenges
+      в•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђ -->
+      <packagedElement xmi:type="uml:Class" xmi:id="C_HistoryChallenges" name="HistoryChallenges">
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_HC_id"              name="id"              visibility="public" type="PT_Integer"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_HC_userId"          name="userId"          visibility="public" type="PT_Integer"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_HC_challengeId"     name="challengeId"     visibility="public" type="PT_Integer"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_HC_code"            name="code"            visibility="public" type="PT_Text"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_HC_language"        name="language"        visibility="public" type="PT_String"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_HC_status"          name="status"          visibility="public" type="PT_String"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_HC_executionTimeMs" name="executionTimeMs" visibility="public" type="PT_Integer"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_HC_testsPassed"     name="testsPassed"     visibility="public" type="PT_Integer"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_HC_testsTotal"      name="testsTotal"      visibility="public" type="PT_Integer"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_HC_createdAt"       name="createdAt"       visibility="public" type="PT_Date"/>
+        <ownedOperation xmi:type="uml:Operation" xmi:id="O_HC_createSubmission" name="createSubmission" visibility="public">
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_HC_cs_data" name="data" type="PT_String" direction="in"/>
+        </ownedOperation>
+        <ownedOperation xmi:type="uml:Operation" xmi:id="O_HC_getUserHistory" name="getUserHistory" visibility="public">
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_HC_gh_userId"      name="userId"      type="PT_Integer" direction="in"/>
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_HC_gh_challengeId" name="challengeId" type="PT_Integer" direction="in"/>
+        </ownedOperation>
+        <ownedOperation xmi:type="uml:Operation" xmi:id="O_HC_hasSolved" name="hasSolved" visibility="public">
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_HC_hs_userId"      name="userId"      type="PT_Integer" direction="in"/>
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_HC_hs_challengeId" name="challengeId" type="PT_Integer" direction="in"/>
+        </ownedOperation>
+        <ownedOperation xmi:type="uml:Operation" xmi:id="O_HC_awardExperience" name="awardExperience" visibility="public">
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_HC_ae_userId" name="userId" type="PT_Integer" direction="in"/>
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_HC_ae_xp"     name="xp"     type="PT_Integer" direction="in"/>
+        </ownedOperation>
+      </packagedElement>
+
+      <!-- в•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђ
+           Review
+      в•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђ -->
+      <packagedElement xmi:type="uml:Class" xmi:id="C_Review" name="Review">
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_Rev_id"          name="id"          visibility="public" type="PT_Integer"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_Rev_userId"      name="userId"      visibility="public" type="PT_Integer"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_Rev_challengeId" name="challengeId" visibility="public" type="PT_Integer"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_Rev_testId"      name="testId"      visibility="public" type="PT_Integer"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_Rev_content"     name="content"     visibility="public" type="PT_Text"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_Rev_rating"      name="rating"      visibility="public" type="PT_Integer"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_Rev_createdAt"   name="createdAt"   visibility="public" type="PT_Date"/>
+        <ownedOperation xmi:type="uml:Operation" xmi:id="O_Rev_leaveReview" name="leaveReview" visibility="public">
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_Rev_lr_userId"   name="userId"   type="PT_Integer" direction="in"/>
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_Rev_lr_targetId" name="targetId" type="PT_Integer" direction="in"/>
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_Rev_lr_content"  name="content"  type="PT_Text"    direction="in"/>
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_Rev_lr_rating"   name="rating"   type="PT_Integer" direction="in"/>
+        </ownedOperation>
+        <ownedOperation xmi:type="uml:Operation" xmi:id="O_Rev_getReviews" name="getReviews" visibility="public">
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_Rev_gr_targetId" name="targetId" type="PT_Integer" direction="in"/>
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_Rev_gr_query"    name="query"    type="PT_String"  direction="in"/>
+        </ownedOperation>
+        <ownedOperation xmi:type="uml:Operation" xmi:id="O_Rev_getAverageRating" name="getAverageRating" visibility="public">
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_Rev_gar_targetId" name="targetId" type="PT_Integer" direction="in"/>
+        </ownedOperation>
+      </packagedElement>
+
+      <!-- в•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђ
+           ReportReason
+      в•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђ -->
+      <packagedElement xmi:type="uml:Class" xmi:id="C_ReportReason" name="ReportReason">
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_RR_id"   name="id"   visibility="public" type="PT_Integer"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_RR_name" name="name" visibility="public" type="PT_String"/>
+        <ownedOperation xmi:type="uml:Operation" xmi:id="O_RR_getAll" name="getAll" visibility="public"/>
+      </packagedElement>
+
+      <!-- в•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђ
+           Report
+      в•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђ -->
+      <packagedElement xmi:type="uml:Class" xmi:id="C_Report" name="Report">
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_Rep_id"           name="id"           visibility="public" type="PT_Integer"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_Rep_userId"       name="userId"       visibility="public" type="PT_Integer"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_Rep_challengeId"  name="challengeId"  visibility="public" type="PT_Integer"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_Rep_testId"       name="testId"       visibility="public" type="PT_Integer"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_Rep_reasonId"     name="reasonId"     visibility="public" type="PT_Integer"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_Rep_reasonText"   name="reasonText"   visibility="public" type="PT_Text"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_Rep_status"       name="status"       visibility="public" type="PT_String"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_Rep_resolvedById" name="resolvedById" visibility="public" type="PT_Integer"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_Rep_resolvedAt"   name="resolvedAt"   visibility="public" type="PT_Date"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_Rep_createdAt"    name="createdAt"    visibility="public" type="PT_Date"/>
+        <ownedOperation xmi:type="uml:Operation" xmi:id="O_Rep_create" name="create" visibility="public">
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_Rep_cr_userId" name="userId" type="PT_Integer" direction="in"/>
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_Rep_cr_data"   name="data"   type="PT_String"  direction="in"/>
+        </ownedOperation>
+        <ownedOperation xmi:type="uml:Operation" xmi:id="O_Rep_getRecent" name="getRecent" visibility="public">
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_Rep_gr_params" name="params" type="PT_String" direction="in"/>
+        </ownedOperation>
+        <ownedOperation xmi:type="uml:Operation" xmi:id="O_Rep_updateStatus" name="updateStatus" visibility="public">
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_Rep_us_id"      name="id"      type="PT_Integer" direction="in"/>
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_Rep_us_status"  name="status"  type="PT_String"  direction="in"/>
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_Rep_us_adminId" name="adminId" type="PT_Integer" direction="in"/>
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_Rep_us_message" name="message" type="PT_String"  direction="in"/>
+        </ownedOperation>
+        <ownedOperation xmi:type="uml:Operation" xmi:id="O_Rep_getStats" name="getStats" visibility="public"/>
+      </packagedElement>
+
+      <!-- в•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђ
+           Notification
+      в•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђ -->
+      <packagedElement xmi:type="uml:Class" xmi:id="C_Notification" name="Notification">
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_Notif_id"          name="id"          visibility="public" type="PT_Integer"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_Notif_userId"      name="userId"      visibility="public" type="PT_Integer"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_Notif_title"       name="title"       visibility="public" type="PT_String"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_Notif_message"     name="message"     visibility="public" type="PT_Text"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_Notif_type"        name="type"        visibility="public" type="PT_String"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_Notif_isRead"      name="isRead"      visibility="public" type="PT_Boolean"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_Notif_challengeId" name="challengeId" visibility="public" type="PT_Integer"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_Notif_createdAt"   name="createdAt"   visibility="public" type="PT_Date"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_Notif_updatedAt"   name="updatedAt"   visibility="public" type="PT_Date"/>
+        <ownedOperation xmi:type="uml:Operation" xmi:id="O_Notif_create" name="create" visibility="public">
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_Notif_cr_userId" name="userId" type="PT_Integer" direction="in"/>
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_Notif_cr_data"   name="data"   type="PT_String"  direction="in"/>
+        </ownedOperation>
+        <ownedOperation xmi:type="uml:Operation" xmi:id="O_Notif_getByUser" name="getByUser" visibility="public">
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_Notif_gbu_userId" name="userId" type="PT_Integer" direction="in"/>
+        </ownedOperation>
+        <ownedOperation xmi:type="uml:Operation" xmi:id="O_Notif_markRead" name="markRead" visibility="public">
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_Notif_mr_id"     name="id"     type="PT_Integer" direction="in"/>
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_Notif_mr_userId" name="userId" type="PT_Integer" direction="in"/>
+        </ownedOperation>
+        <ownedOperation xmi:type="uml:Operation" xmi:id="O_Notif_delete" name="delete" visibility="public">
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_Notif_del_id"     name="id"     type="PT_Integer" direction="in"/>
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_Notif_del_userId" name="userId" type="PT_Integer" direction="in"/>
+        </ownedOperation>
+      </packagedElement>
+
+      <!-- в•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђ
+           Achievement
+      в•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђ -->
+      <packagedElement xmi:type="uml:Class" xmi:id="C_Achievement" name="Achievement">
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_Ach_id"            name="id"            visibility="public" type="PT_Integer"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_Ach_title"         name="title"         visibility="public" type="PT_String"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_Ach_desc"          name="desc"          visibility="public" type="PT_Text"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_Ach_rarity"        name="rarity"        visibility="public" type="PT_String"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_Ach_imageFilename" name="imageFilename" visibility="public" type="PT_String"/>
+        <ownedOperation xmi:type="uml:Operation" xmi:id="O_Ach_getAll" name="getAll" visibility="public"/>
+        <ownedOperation xmi:type="uml:Operation" xmi:id="O_Ach_getUserAchievements" name="getUserAchievements" visibility="public">
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_Ach_gua_userId" name="userId" type="PT_Integer" direction="in"/>
+        </ownedOperation>
+        <ownedOperation xmi:type="uml:Operation" xmi:id="O_Ach_create" name="create" visibility="public">
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_Ach_cr_data" name="data" type="PT_String" direction="in"/>
+        </ownedOperation>
+        <ownedOperation xmi:type="uml:Operation" xmi:id="O_Ach_update" name="update" visibility="public">
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_Ach_upd_id"   name="id"   type="PT_Integer" direction="in"/>
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_Ach_upd_data" name="data" type="PT_String"  direction="in"/>
+        </ownedOperation>
+        <ownedOperation xmi:type="uml:Operation" xmi:id="O_Ach_delete" name="delete" visibility="public">
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_Ach_del_id" name="id" type="PT_Integer" direction="in"/>
+        </ownedOperation>
+        <ownedOperation xmi:type="uml:Operation" xmi:id="O_Ach_checkAndAward" name="checkAndAward" visibility="public">
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_Ach_ca_userId" name="userId" type="PT_Integer" direction="in"/>
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_Ach_ca_event"  name="event"  type="PT_String"  direction="in"/>
+        </ownedOperation>
+      </packagedElement>
+
+      <!-- в•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђ
+           UserAchievement
+      в•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђ -->
+      <packagedElement xmi:type="uml:Class" xmi:id="C_UserAchievement" name="UserAchievement">
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_UA_id"            name="id"            visibility="public" type="PT_Integer"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_UA_userId"        name="userId"        visibility="public" type="PT_Integer"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_UA_achievementId" name="achievementId" visibility="public" type="PT_Integer"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_UA_unlockedAt"    name="unlockedAt"    visibility="public" type="PT_Date"/>
+      </packagedElement>
+
+      <!-- в•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђ
+           Test
+      в•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђ -->
+      <packagedElement xmi:type="uml:Class" xmi:id="C_Test" name="Test">
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_Test_id"                 name="id"                 visibility="public" type="PT_Integer"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_Test_title"              name="title"              visibility="public" type="PT_String"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_Test_description"        name="description"        visibility="public" type="PT_Text"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_Test_timeLimitMinutes"   name="timeLimitMinutes"   visibility="public" type="PT_Integer"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_Test_isPublished"        name="isPublished"        visibility="public" type="PT_Boolean"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_Test_createdBy"          name="createdBy"          visibility="public" type="PT_Integer"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_Test_topicId"            name="topicId"            visibility="public" type="PT_Integer"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_Test_difficulty"         name="difficulty"         visibility="public" type="PT_Integer"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_Test_shuffleQuestions"   name="shuffleQuestions"   visibility="public" type="PT_Boolean"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_Test_shuffleOptions"     name="shuffleOptions"     visibility="public" type="PT_Boolean"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_Test_questionPoolSize"   name="questionPoolSize"   visibility="public" type="PT_Integer"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_Test_showCorrectAnswers" name="showCorrectAnswers" visibility="public" type="PT_Boolean"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_Test_createdAt"          name="createdAt"          visibility="public" type="PT_Date"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_Test_updatedAt"          name="updatedAt"          visibility="public" type="PT_Date"/>
+        <ownedOperation xmi:type="uml:Operation" xmi:id="O_Test_create" name="create" visibility="public">
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_Test_cr_data" name="data" type="PT_String" direction="in"/>
+        </ownedOperation>
+        <ownedOperation xmi:type="uml:Operation" xmi:id="O_Test_getAll" name="getAll" visibility="public">
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_Test_ga_query" name="query" type="PT_String" direction="in"/>
+        </ownedOperation>
+        <ownedOperation xmi:type="uml:Operation" xmi:id="O_Test_getById" name="getById" visibility="public">
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_Test_gbi_id" name="id" type="PT_Integer" direction="in"/>
+        </ownedOperation>
+        <ownedOperation xmi:type="uml:Operation" xmi:id="O_Test_update" name="update" visibility="public">
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_Test_upd_id"   name="id"   type="PT_Integer" direction="in"/>
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_Test_upd_data" name="data" type="PT_String"  direction="in"/>
+        </ownedOperation>
+        <ownedOperation xmi:type="uml:Operation" xmi:id="O_Test_delete" name="delete" visibility="public">
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_Test_del_id" name="id" type="PT_Integer" direction="in"/>
+        </ownedOperation>
+        <ownedOperation xmi:type="uml:Operation" xmi:id="O_Test_publish" name="publish" visibility="public">
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_Test_pub_id" name="id" type="PT_Integer" direction="in"/>
+        </ownedOperation>
+      </packagedElement>
+
+      <!-- в•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђ
+           QuestionType
+      в•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђ -->
+      <packagedElement xmi:type="uml:Class" xmi:id="C_QuestionType" name="QuestionType">
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_QT_id"                 name="id"                 visibility="public" type="PT_Integer"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_QT_name"               name="name"               visibility="public" type="PT_String"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_QT_label"              name="label"              visibility="public" type="PT_String"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_QT_isMoodleCompatible" name="isMoodleCompatible" visibility="public" type="PT_Boolean"/>
+        <ownedOperation xmi:type="uml:Operation" xmi:id="O_QT_getAll" name="getAll" visibility="public"/>
+      </packagedElement>
+
+      <!-- в•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђ
+           Question
+      в•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђ -->
+      <packagedElement xmi:type="uml:Class" xmi:id="C_Question" name="Question">
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_Q_id"            name="id"            visibility="public" type="PT_Integer"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_Q_testId"        name="testId"        visibility="public" type="PT_Integer"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_Q_typeId"        name="typeId"        visibility="public" type="PT_Integer"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_Q_text"          name="text"          visibility="public" type="PT_Text"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_Q_points"        name="points"        visibility="public" type="PT_Float"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_Q_order"         name="order"         visibility="public" type="PT_Integer"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_Q_allowMultiple" name="allowMultiple" visibility="public" type="PT_Boolean"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_Q_caseSensitive" name="caseSensitive" visibility="public" type="PT_Boolean"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_Q_tolerance"     name="tolerance"     visibility="public" type="PT_Float"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_Q_codeLanguage"  name="codeLanguage"  visibility="public" type="PT_String"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_Q_starterCode"   name="starterCode"   visibility="public" type="PT_Text"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_Q_funcName"      name="funcName"      visibility="public" type="PT_String"/>
+        <ownedOperation xmi:type="uml:Operation" xmi:id="O_Q_create" name="create" visibility="public">
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_Q_cr_data" name="data" type="PT_String" direction="in"/>
+        </ownedOperation>
+        <ownedOperation xmi:type="uml:Operation" xmi:id="O_Q_update" name="update" visibility="public">
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_Q_upd_id"   name="id"   type="PT_Integer" direction="in"/>
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_Q_upd_data" name="data" type="PT_String"  direction="in"/>
+        </ownedOperation>
+        <ownedOperation xmi:type="uml:Operation" xmi:id="O_Q_delete" name="delete" visibility="public">
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_Q_del_id" name="id" type="PT_Integer" direction="in"/>
+        </ownedOperation>
+        <ownedOperation xmi:type="uml:Operation" xmi:id="O_Q_checkAnswer" name="checkAnswer" visibility="public">
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_Q_ca_answer" name="answer" type="PT_String" direction="in"/>
+        </ownedOperation>
+      </packagedElement>
+
+      <!-- в•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђ
+           QuestionOption
+      в•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђ -->
+      <packagedElement xmi:type="uml:Class" xmi:id="C_QuestionOption" name="QuestionOption">
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_QO_id"         name="id"         visibility="public" type="PT_Integer"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_QO_questionId" name="questionId" visibility="public" type="PT_Integer"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_QO_text"       name="text"       visibility="public" type="PT_Text"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_QO_isCorrect"  name="isCorrect"  visibility="public" type="PT_Boolean"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_QO_matchPair"  name="matchPair"  visibility="public" type="PT_Text"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_QO_blankIndex" name="blankIndex" visibility="public" type="PT_Integer"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_QO_order"      name="order"      visibility="public" type="PT_Integer"/>
+      </packagedElement>
+
+      <!-- в•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђ
+           QuestionTestCase
+      в•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђ -->
+      <packagedElement xmi:type="uml:Class" xmi:id="C_QuestionTestCase" name="QuestionTestCase">
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_QTC_id"             name="id"             visibility="public" type="PT_Integer"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_QTC_questionId"     name="questionId"     visibility="public" type="PT_Integer"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_QTC_input"          name="input"          visibility="public" type="PT_Text"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_QTC_expectedOutput" name="expectedOutput" visibility="public" type="PT_Text"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_QTC_isHidden"       name="isHidden"       visibility="public" type="PT_Boolean"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_QTC_order"          name="order"          visibility="public" type="PT_Integer"/>
+      </packagedElement>
+
+      <!-- в•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђ
+           TestAttempt
+      в•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђ -->
+      <packagedElement xmi:type="uml:Class" xmi:id="C_TestAttempt" name="TestAttempt">
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_TA_id"         name="id"         visibility="public" type="PT_Integer"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_TA_testId"     name="testId"     visibility="public" type="PT_Integer"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_TA_userId"     name="userId"     visibility="public" type="PT_Integer"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_TA_startedAt"  name="startedAt"  visibility="public" type="PT_Date"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_TA_finishedAt" name="finishedAt" visibility="public" type="PT_Date"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_TA_status"     name="status"     visibility="public" type="PT_String"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_TA_score"      name="score"      visibility="public" type="PT_Float"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_TA_maxScore"   name="maxScore"   visibility="public" type="PT_Float"/>
+        <ownedOperation xmi:type="uml:Operation" xmi:id="O_TA_start" name="start" visibility="public">
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_TA_st_testId" name="testId" type="PT_Integer" direction="in"/>
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_TA_st_userId" name="userId" type="PT_Integer" direction="in"/>
+        </ownedOperation>
+        <ownedOperation xmi:type="uml:Operation" xmi:id="O_TA_submit" name="submit" visibility="public">
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_TA_sub_attemptId" name="attemptId" type="PT_Integer" direction="in"/>
+        </ownedOperation>
+        <ownedOperation xmi:type="uml:Operation" xmi:id="O_TA_timeout" name="timeout" visibility="public">
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_TA_to_attemptId" name="attemptId" type="PT_Integer" direction="in"/>
+        </ownedOperation>
+        <ownedOperation xmi:type="uml:Operation" xmi:id="O_TA_getResult" name="getResult" visibility="public">
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_TA_gr_attemptId" name="attemptId" type="PT_Integer" direction="in"/>
+        </ownedOperation>
+      </packagedElement>
+
+      <!-- в•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђ
+           AttemptQuestion
+      в•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђ -->
+      <packagedElement xmi:type="uml:Class" xmi:id="C_AttemptQuestion" name="AttemptQuestion">
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_AQ_id"         name="id"         visibility="public" type="PT_Integer"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_AQ_attemptId"  name="attemptId"  visibility="public" type="PT_Integer"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_AQ_questionId" name="questionId" visibility="public" type="PT_Integer"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_AQ_position"   name="position"   visibility="public" type="PT_Integer"/>
+      </packagedElement>
+
+      <!-- в•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђ
+           AttemptAnswer
+      в•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђ -->
+      <packagedElement xmi:type="uml:Class" xmi:id="C_AttemptAnswer" name="AttemptAnswer">
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_AA_id"           name="id"           visibility="public" type="PT_Integer"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_AA_attemptId"    name="attemptId"    visibility="public" type="PT_Integer"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_AA_questionId"   name="questionId"   visibility="public" type="PT_Integer"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_AA_answerText"   name="answerText"   visibility="public" type="PT_Text"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_AA_codeAnswer"   name="codeAnswer"   visibility="public" type="PT_Text"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_AA_isCorrect"    name="isCorrect"    visibility="public" type="PT_Boolean"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_AA_pointsEarned" name="pointsEarned" visibility="public" type="PT_Float"/>
+        <ownedOperation xmi:type="uml:Operation" xmi:id="O_AA_save" name="save" visibility="public">
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_AA_save_data" name="data" type="PT_String" direction="in"/>
+        </ownedOperation>
+        <ownedOperation xmi:type="uml:Operation" xmi:id="O_AA_evaluate" name="evaluate" visibility="public">
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_AA_eval_answer"   name="answer"   type="PT_String" direction="in"/>
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_AA_eval_question" name="question" type="PT_String" direction="in"/>
+        </ownedOperation>
+      </packagedElement>
+
+      <!-- в•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђ
+           AnswerSelectedOption
+      в•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђ -->
+      <packagedElement xmi:type="uml:Class" xmi:id="C_AnswerSelectedOption" name="AnswerSelectedOption">
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_ASO_id"       name="id"       visibility="public" type="PT_Integer"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_ASO_answerId" name="answerId" visibility="public" type="PT_Integer"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_ASO_optionId" name="optionId" visibility="public" type="PT_Integer"/>
+      </packagedElement>
+
+      <!-- в•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђ
+           AnswerMatchingPair
+      в•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђ -->
+      <packagedElement xmi:type="uml:Class" xmi:id="C_AnswerMatchingPair" name="AnswerMatchingPair">
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_AMP_id"        name="id"        visibility="public" type="PT_Integer"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_AMP_answerId"  name="answerId"  visibility="public" type="PT_Integer"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_AMP_optionId"  name="optionId"  visibility="public" type="PT_Integer"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_AMP_matchPair" name="matchPair" visibility="public" type="PT_Text"/>
+      </packagedElement>
+
+      <!-- в•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђ
+           AnswerTestCaseResult
+      в•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђв•ђ -->
+      <packagedElement xmi:type="uml:Class" xmi:id="C_AnswerTestCaseResult" name="AnswerTestCaseResult">
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_ATCR_id"             name="id"             visibility="public" type="PT_Integer"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_ATCR_answerId"       name="answerId"       visibility="public" type="PT_Integer"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_ATCR_position"       name="position"       visibility="public" type="PT_Integer"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_ATCR_input"          name="input"          visibility="public" type="PT_Text"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_ATCR_expectedOutput" name="expectedOutput" visibility="public" type="PT_Text"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_ATCR_actualOutput"   name="actualOutput"   visibility="public" type="PT_Text"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_ATCR_passed"         name="passed"         visibility="public" type="PT_Boolean"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_ATCR_isHidden"       name="isHidden"       visibility="public" type="PT_Boolean"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_ATCR_timedOut"       name="timedOut"       visibility="public" type="PT_Boolean"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_ATCR_error"          name="error"          visibility="public" type="PT_Text"/>
+      </packagedElement>
+
+      <!-- ══════════════════════════════════════════════════════════
+           SolutionComment
+      ══════════════════════════════════════════════════════════ -->
+      <packagedElement xmi:type="uml:Class" xmi:id="C_SolutionComment" name="SolutionComment">
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_SC_id"         name="id"         visibility="public" type="PT_Integer"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_SC_solutionId" name="solutionId" visibility="public" type="PT_Integer"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_SC_userId"     name="userId"     visibility="public" type="PT_Integer"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_SC_content"    name="content"    visibility="public" type="PT_Text"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_SC_createdAt"  name="createdAt"  visibility="public" type="PT_Date"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_SC_updatedAt"  name="updatedAt"  visibility="public" type="PT_Date"/>
+        <ownedOperation xmi:type="uml:Operation" xmi:id="O_SC_create" name="create" visibility="public">
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_SC_cr_solutionId" name="solutionId" type="PT_Integer" direction="in"/>
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_SC_cr_userId"     name="userId"     type="PT_Integer" direction="in"/>
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_SC_cr_content"    name="content"    type="PT_Text"    direction="in"/>
+        </ownedOperation>
+        <ownedOperation xmi:type="uml:Operation" xmi:id="O_SC_getAll" name="getAll" visibility="public">
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_SC_ga_solutionId" name="solutionId" type="PT_Integer" direction="in"/>
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_SC_ga_query"      name="query"      type="PT_String"  direction="in"/>
+        </ownedOperation>
+        <ownedOperation xmi:type="uml:Operation" xmi:id="O_SC_delete" name="delete" visibility="public">
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_SC_del_id"     name="id"     type="PT_Integer" direction="in"/>
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_SC_del_userId" name="userId" type="PT_Integer" direction="in"/>
+        </ownedOperation>
+      </packagedElement>
+
+      <!-- ══════════════════════════════════════════════════════════
+           SolutionVote
+      ══════════════════════════════════════════════════════════ -->
+      <packagedElement xmi:type="uml:Class" xmi:id="C_SolutionVote" name="SolutionVote">
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_SV_id"         name="id"         visibility="public" type="PT_Integer"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_SV_solutionId" name="solutionId" visibility="public" type="PT_Integer"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_SV_userId"     name="userId"     visibility="public" type="PT_Integer"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_SV_vote"       name="vote"       visibility="public" type="PT_Integer"/>
+        <ownedAttribute xmi:type="uml:Property" xmi:id="A_SV_createdAt"  name="createdAt"  visibility="public" type="PT_Date"/>
+        <ownedOperation xmi:type="uml:Operation" xmi:id="O_SV_upsert" name="upsert" visibility="public">
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_SV_up_solutionId" name="solutionId" type="PT_Integer" direction="in"/>
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_SV_up_userId"     name="userId"     type="PT_Integer" direction="in"/>
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_SV_up_vote"       name="vote"       type="PT_Integer" direction="in"/>
+        </ownedOperation>
+        <ownedOperation xmi:type="uml:Operation" xmi:id="O_SV_remove" name="remove" visibility="public">
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_SV_rm_solutionId" name="solutionId" type="PT_Integer" direction="in"/>
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_SV_rm_userId"     name="userId"     type="PT_Integer" direction="in"/>
+        </ownedOperation>
+        <ownedOperation xmi:type="uml:Operation" xmi:id="O_SV_getScore" name="getScore" visibility="public">
+          <ownedParameter xmi:type="uml:Parameter" xmi:id="P_SV_gs_solutionId" name="solutionId" type="PT_Integer" direction="in"/>
+        </ownedOperation>
+      </packagedElement>
+
+      <!-- ══════════════════════════════════════════════════════════
+           Associations — SolutionComment, SolutionVote
+      ══════════════════════════════════════════════════════════ -->
+      <packagedElement xmi:type="uml:Association" xmi:id="A_HistChall_SolutionComment"
+                       name="HistoryChallenges-SolutionComment">
+        <memberEnd xmi:idref="A_SC_solutionId"/>
+        <ownedEnd xmi:type="uml:Property" xmi:id="AE_HistChall_SC"
+                  type="C_HistoryChallenges" association="A_HistChall_SolutionComment"
+                  aggregation="composite" lower="1" upper="1"/>
+      </packagedElement>
+
+      <packagedElement xmi:type="uml:Association" xmi:id="A_User_SolutionComment"
+                       name="User-SolutionComment">
+        <memberEnd xmi:idref="A_SC_userId"/>
+        <ownedEnd xmi:type="uml:Property" xmi:id="AE_User_SC"
+                  type="C_User" association="A_User_SolutionComment"
+                  aggregation="composite" lower="1" upper="1"/>
+      </packagedElement>
+
+      <packagedElement xmi:type="uml:Association" xmi:id="A_HistChall_SolutionVote"
+                       name="HistoryChallenges-SolutionVote">
+        <memberEnd xmi:idref="A_SV_solutionId"/>
+        <ownedEnd xmi:type="uml:Property" xmi:id="AE_HistChall_SV"
+                  type="C_HistoryChallenges" association="A_HistChall_SolutionVote"
+                  aggregation="composite" lower="1" upper="1"/>
+      </packagedElement>
+
+      <packagedElement xmi:type="uml:Association" xmi:id="A_User_SolutionVote"
+                       name="User-SolutionVote">
+        <memberEnd xmi:idref="A_SV_userId"/>
+        <ownedEnd xmi:type="uml:Property" xmi:id="AE_User_SV"
+                  type="C_User" association="A_User_SolutionVote"
+                  aggregation="composite" lower="1" upper="1"/>
+      </packagedElement>
+
+    </packagedElement>
+  </uml:Model>
+
+</xmi:XMI>
+

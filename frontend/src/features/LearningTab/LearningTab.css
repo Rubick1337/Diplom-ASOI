@@ -712,3 +712,156 @@
     color: #444;
     font-size: 14px;
 }
+
+/* LIGHT THEME */
+[data-theme="light"] .lt-overview {
+    background: #ede8df;
+    border-color: rgba(26,24,23,0.10);
+}
+[data-theme="light"] .lt-overview-title,
+[data-theme="light"] .lt-section-title {
+    color: rgba(26,24,23,0.50);
+}
+[data-theme="light"] .lt-progress-bar {
+    background: rgba(26,24,23,0.10);
+}
+[data-theme="light"] .lt-ov-lbl {
+    color: rgba(26,24,23,0.50);
+}
+[data-theme="light"] .lt-term-card {
+    background: #ddd8ce;
+    border-color: color-mix(in srgb, var(--term-color) 30%, rgba(26,24,23,0.12));
+}
+[data-theme="light"] .lt-term-bar {
+    background: #ede8df;
+    border-bottom-color: rgba(26,24,23,0.10);
+}
+[data-theme="light"] .lt-term-title {
+    color: rgba(26,24,23,0.45);
+}
+[data-theme="light"] .lt-cmd {
+    color: rgba(26,24,23,0.70);
+}
+[data-theme="light"] .lt-cmd-topic {
+    color: rgba(26,24,23,0.55);
+}
+[data-theme="light"] .lt-cmd-section {
+    color: rgba(26,24,23,0.40);
+}
+[data-theme="light"] .lt-out-text {
+    color: rgba(26,24,23,0.55);
+}
+[data-theme="light"] .lt-term-ch-name,
+[data-theme="light"] .lt-pill-name {
+    color: rgba(26,24,23,0.70);
+}
+[data-theme="light"] .lt-term-arrow {
+    color: rgba(26,24,23,0.30);
+}
+[data-theme="light"] .lt-term-concept {
+    color: rgba(26,24,23,0.60);
+    background: #ede8df;
+    border-color: rgba(26,24,23,0.12);
+}
+[data-theme="light"] .lt-challenge-pill {
+    background: rgba(26,24,23,0.04);
+    border-color: rgba(26,24,23,0.12);
+}
+[data-theme="light"] .lt-challenge-pill:hover {
+    background: rgba(26,24,23,0.08);
+    border-color: rgba(26,24,23,0.20);
+}
+[data-theme="light"] .lt-concept-tag {
+    color: rgba(26,24,23,0.60);
+    background: rgba(26,24,23,0.05);
+    border-color: rgba(26,24,23,0.12);
+}
+[data-theme="light"] .lt-related,
+[data-theme="light"] .lt-no-guide {
+    color: rgba(26,24,23,0.45);
+}
+[data-theme="light"] .lt-topic-item {
+    background: #ede8df;
+    border-color: rgba(26,24,23,0.10);
+}
+[data-theme="light"] .lt-topic-header:hover {
+    background: rgba(26,24,23,0.04);
+}
+[data-theme="light"] .lt-topic-header.expanded {
+    background: rgba(26,24,23,0.05);
+}
+[data-theme="light"] .lt-topic-name {
+    color: rgba(26,24,23,0.80);
+}
+[data-theme="light"] .lt-topic-frac {
+    color: rgba(26,24,23,0.45);
+}
+[data-theme="light"] .lt-topic-bar-bg {
+    background: rgba(26,24,23,0.10);
+}
+[data-theme="light"] .lt-topic-chevron {
+    color: rgba(26,24,23,0.35);
+}
+[data-theme="light"] .lt-topic-body.open .lt-topic-body-inner {
+    border-top-color: rgba(26,24,23,0.10);
+}
+[data-theme="light"] .lt-guide-step {
+    color: rgba(26,24,23,0.60);
+}
+[data-theme="light"] .lt-why-wrap {
+    border-top-color: rgba(26,24,23,0.10);
+}
+[data-theme="light"] .lt-why-label {
+    color: rgba(26,24,23,0.45);
+}
+[data-theme="light"] .lt-score-row {
+    border-top-color: rgba(26,24,23,0.10);
+}
+[data-theme="light"] .lt-score-label {
+    color: rgba(26,24,23,0.40);
+}
+[data-theme="light"] .lt-score-bar-bg {
+    background: rgba(26,24,23,0.10);
+}
+[data-theme="light"] .lt-factor-text {
+    color: rgba(26,24,23,0.55);
+}
+[data-theme="light"] .lt-pref-input {
+    background: #ddd8ce;
+    border-color: rgba(26,24,23,0.16);
+    color: #1a1817;
+}
+[data-theme="light"] .lt-pref-input::placeholder {
+    color: rgba(26,24,23,0.35);
+}
+[data-theme="light"] .lt-gen-btn-pref,
+[data-theme="light"] .lt-pref-cancel,
+[data-theme="light"] .lt-regen-btn {
+    border-color: rgba(26,24,23,0.14);
+    color: rgba(26,24,23,0.50);
+}
+[data-theme="light"] .lt-gen-btn-pref:hover,
+[data-theme="light"] .lt-pref-cancel:hover {
+    color: rgba(26,24,23,0.70);
+    border-color: rgba(26,24,23,0.24);
+}
+[data-theme="light"] .lt-guide-loading {
+    color: rgba(26,24,23,0.45);
+}
+[data-theme="light"] .lt-guide-spinner {
+    border-color: rgba(26,24,23,0.12);
+    border-top-color: #FF6B35;
+}
+[data-theme="light"] .lt-spinner {
+    border-color: rgba(26,24,23,0.12);
+    border-top-color: #FF6B35;
+}
+[data-theme="light"] .lt-empty {
+    color: rgba(26,24,23,0.35);
+}
+[data-theme="light"] .lt-comment {
+    color: rgba(26,24,23,0.45);
+}
+[data-theme="light"] .lt-sub-lbl {
+    color: rgba(26,24,23,0.45);
+}

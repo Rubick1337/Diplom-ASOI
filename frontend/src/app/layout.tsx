@@ -4,6 +4,7 @@ import "./globals.css";
 import Footer from "@/widgets/Footer/Footer";
 import ReduxProvider from "@/app/ReduxProvider";
 import AuthInit from "@/app/AuthInit";
+import { ThemeProvider } from "@/shared/context/ThemeContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -27,15 +28,21 @@ export default function RootLayout({
 }>) {
 
   return (
-    <html lang="en">
+    <html lang="en" data-theme="dark" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: `(function(){var t=localStorage.getItem('gc-theme');document.documentElement.setAttribute('data-theme',t==='light'?'light':'dark');})();` }} />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        suppressHydrationWarning
       >
-      <ReduxProvider>
-          <AuthInit />
-          {children}
-      </ReduxProvider>
+      <ThemeProvider>
+        <ReduxProvider>
+            <AuthInit />
+            {children}
+        </ReduxProvider>
         <Footer />
+      </ThemeProvider>
       </body>
     </html>
   );

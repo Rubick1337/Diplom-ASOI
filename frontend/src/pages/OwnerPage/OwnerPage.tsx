@@ -9,20 +9,19 @@ import {
     fetchAdminOverview,
     fetchAdminActivity,
     fetchAdminChallengeStats,
-    fetchAdminTopUsers,
     fetchAdminReportsStats,
     fetchAdminHeatmap,
-    fetchAdminDistributions,
+    fetchAdminTestStats,
 } from '@/shared/store/slice/adminSlice';
 import { fetchAdminReportsPage } from '@/shared/store/slice/adminManageSlice';
 
 import OwnerHeader from '@/widgets/OwnerHeader/OwnerHeader';
-import OverviewTab from '@/features/Overviewtab/Overviewtab';
+import OverviewTab from '@/widgets/Overviewtab/Overviewtab';
 import ChallengesTab from '@/features/Challengestab/Challengestab';
-import UsersTab from '@/features/Userstab/UsersTab';
 import ReportsTab from '@/features/Reportstab/Reportstab';
+import TestsTab from '@/features/Teststab/Teststab';
 
-type OwnerTabId = 'overview' | 'challenges' | 'users' | 'reports';
+type OwnerTabId = 'overview' | 'challenges' | 'reports' | 'tests';
 
 const PIE_COLORS = ['#00e5b0', '#38bdf8', '#c084fc', '#fbbf24', '#fb7185', '#67e8f9', '#86efac', '#fca5a5'];
 
@@ -31,13 +30,13 @@ const daysAgo = (n: number) => new Date(Date.now() - n * 86400000).toISOString()
 
 export default function OwnerPage() {
     const dispatch = useAppDispatch();
-    const { overview, activity, challengeStats, topUsers, reportsStats, heatmap, distributions, isLoading } =
+    const { overview, activity, challengeStats, reportsStats, heatmap, testStats, isLoading } =
         useAppSelector(s => s.admin);
     const { reportsPage } = useAppSelector(s => s.adminManage);
 
     const searchParams = useSearchParams();
-    const rawTab = searchParams.get('tab');
-    const tab: OwnerTabId = (rawTab === 'challenges' || rawTab === 'users' || rawTab === 'reports') ? rawTab : 'overview';
+    const rawTab = searchParams?.get('tab');
+    const tab: OwnerTabId = (rawTab === 'challenges' || rawTab === 'reports' || rawTab === 'tests') ? rawTab : 'overview';
     const [periodIdx, setPeriodIdx]   = useState(1);
     const [customFrom, setCustomFrom] = useState(daysAgo(30));
     const [customTo, setCustomTo]     = useState(today());
@@ -55,9 +54,7 @@ export default function OwnerPage() {
     const [selTopics, setSelTopics] = useState<Set<string>>(new Set());
     useEffect(() => { if (allTopics.length > 0) setSelTopics(new Set(allTopics)); }, [allTopics.join(',')]);
 
-    const [diffRange, setDiffRange]     = useState<[number, number]>([1, 10]);
-    const [ratingBucket, setRatingBucket] = useState(50);
-    const [expBucket, setExpBucket]       = useState(100);
+    const [diffRange, setDiffRange] = useState<[number, number]>([1, 10]);
 
     const allStatuses = useMemo(() => reportsStats?.byStatus.map((r: any) => r.status) ?? [], [reportsStats]);
     const [selStatuses, setSelStatuses] = useState<Set<string>>(new Set());
@@ -91,11 +88,10 @@ export default function OwnerPage() {
         dispatch(fetchAdminOverview());
         dispatch(fetchAdminActivity({ from, to }));
         dispatch(fetchAdminChallengeStats());
-        dispatch(fetchAdminTopUsers(50));
         dispatch(fetchAdminReportsStats());
         dispatch(fetchAdminReportsPage());
         dispatch(fetchAdminHeatmap());
-        dispatch(fetchAdminDistributions());
+        dispatch(fetchAdminTestStats());
     }, [dispatch, getRange]);
 
     useEffect(() => { loadAll(); }, [loadAll]);
@@ -250,26 +246,8 @@ export default function OwnerPage() {
         y = bc((challengeStats.byTopic ?? []).map((r: any) => ({ label: r.topic, value: r.submissions })), y + 5, [100, 149, 237] as [number,number,number]);
         y = np(y + 4, 50); st('По сложности', y);
         tbl(['Сложность', 'Задач', 'Решений'], (challengeStats.byDifficulty ?? []).map((r: any) => [r.difficulty, r.total, r.submissions]), y + 5);
-        y = np(getY() + 8, 60); st('Самые сложные задачи (топ 10)', y);
-        tbl(['Задача', 'Сложность', 'Попыток', 'Успешных', '% Успеха'], (challengeStats.hardest ?? []).map((r: any) => [r.name, r.difficulty, r.attempts, r.successes, `${r.successRate}%`]), y + 5);
-    };
-
-    const buildUsersSection = (h: any, st: any, tbl: any, np: any, bc: any, getY: any) => {
-        h('Аналитика — Пользователи');
-        if ((topUsers ?? []).length > 0) {
-            st('Топ пользователей', 33);
-            tbl(['#', 'Пользователь', 'Решено', 'Попыток', '% Успеха', 'Рейтинг', 'Опыт'], topUsers.map((u: any) => [u.rank, u.username, u.solved, u.submissions, `${u.successRate}%`, u.rating, u.experience]), 37);
-        }
-        if (distributions) {
-            let y = np(getY() + 6, 65); st('Распределение по рейтингу', y);
-            tbl(['Диапазон рейтинга', 'Пользователей'], (distributions.rating ?? []).map((r: any) => [r.label, r.count]), y + 5);
-            y = np(getY() + 6, 65); st('График: рейтинг', y);
-            y = bc((distributions.rating ?? []).map((r: any) => ({ label: r.label, value: r.count })), y + 5, [192, 132, 252] as [number,number,number]);
-            y = np(y + 4, 65); st('Распределение по опыту', y);
-            tbl(['Диапазон опыта', 'Пользователей'], (distributions.experience ?? []).map((r: any) => [r.label, r.count]), y + 5);
-            y = np(getY() + 6, 65); st('График: опыт', y);
-            bc((distributions.experience ?? []).map((r: any) => ({ label: r.label, value: r.count })), y + 5, [251, 191, 36] as [number,number,number]);
-        }
+        y = np(getY() + 8, 60); st('Низкий рейтинг задач — топ 10 (по средней оценке)', y);
+        tbl(['Задача', 'Отзывов', 'Ср. оценка'], (challengeStats.lowestRated ?? []).map((r: any) => [r.name, r.reviewCount, `${r.avgRating} ★`]), y + 5);
     };
 
     const buildReportsSection = (h: any, st: any, tbl: any, np: any, bc: any, getY: any) => {
@@ -283,6 +261,25 @@ export default function OwnerPage() {
         tbl(['Причина', 'Количество'], (reportsStats.byReason ?? []).map((r: any) => [r.reason, r.total]), y + 5);
         y = np(getY() + 8, 60); st('Последние жалобы', y);
         tbl(['Дата', 'Автор', 'Задача', 'Причина', 'Статус'], (reportsStats.recent ?? []).slice(0, 20).map((r: any) => [new Date(r.createdAt).toLocaleDateString('ru-RU'), r.reporter, r.challenge, r.reason, r.status]), y + 5);
+    };
+
+    const buildTestsSection = (h: any, st: any, tbl: any, np: any, bc: any, getY: any) => {
+        h('Аналитика — Тесты');
+        if (!testStats) return;
+        st('Ключевые показатели тестов', 33);
+        tbl(['Показатель', 'Значение'], [
+            ['Всего тестов',            testStats.totalTests],
+            ['Опубликовано',            testStats.publishedTests],
+            ['Попыток (завершённых)',   testStats.totalAttempts],
+            ['Из них завершено',        testStats.completedAttempts],
+            ['Средний балл',            `${testStats.avgScore}%`],
+        ], 37);
+        let y = np(getY() + 6, 65); st('Попытки по статусу', y);
+        tbl(['Статус', 'Количество'], (testStats.byStatus ?? []).map(r => [r.status, r.total]), y + 5);
+        y = np(getY() + 6, 65); st('По темам', y);
+        tbl(['Тема', 'Тестов', 'Попыток', 'Средний балл %'], (testStats.byTopic ?? []).map(r => [r.topic, r.totalTests, r.totalAttempts, `${r.avgPct}%`]), y + 5);
+        y = np(getY() + 8, 60); st('Низкий рейтинг тестов (по средней оценке)', y);
+        tbl(['Тест', 'Отзывов', 'Ср. оценка'], (testStats.lowestRated ?? []).map(r => [r.title, r.reviewCount, `${r.avgRating} ★`]), y + 5);
     };
 
     const addPageNumbers = (pdf: any, PW: number, PH: number) => {
@@ -299,8 +296,8 @@ export default function OwnerPage() {
             const { pdf, PW, PH, getY, header, sectionTitle, table, needPage, barChart, lineChart } = await pdfHelpers();
             if (tab === 'overview')   buildOverviewSection(header, sectionTitle, table, needPage, barChart, lineChart, getY);
             if (tab === 'challenges') buildChallengesSection(header, sectionTitle, table, needPage, barChart, getY);
-            if (tab === 'users')      buildUsersSection(header, sectionTitle, table, needPage, barChart, getY);
             if (tab === 'reports')    buildReportsSection(header, sectionTitle, table, needPage, barChart, getY);
+            if (tab === 'tests')      buildTestsSection(header, sectionTitle, table, needPage, barChart, getY);
             addPageNumbers(pdf, PW, PH);
             pdf.save(`tab_${tab}_${today()}.pdf`);
         } catch (e: any) {
@@ -315,8 +312,8 @@ export default function OwnerPage() {
             const { pdf, PW, PH, getY, header, sectionTitle, table, needPage, barChart, lineChart } = await pdfHelpers();
             buildOverviewSection(header, sectionTitle, table, needPage, barChart, lineChart, getY); pdf.addPage();
             buildChallengesSection(header, sectionTitle, table, needPage, barChart, getY); pdf.addPage();
-            buildUsersSection(header, sectionTitle, table, needPage, barChart, getY); pdf.addPage();
-            buildReportsSection(header, sectionTitle, table, needPage, barChart, getY);
+            buildReportsSection(header, sectionTitle, table, needPage, barChart, getY); pdf.addPage();
+            buildTestsSection(header, sectionTitle, table, needPage, barChart, getY);
             addPageNumbers(pdf, PW, PH);
             pdf.save(`full_report_${today()}.pdf`);
         } catch (e: any) {
@@ -386,19 +383,6 @@ export default function OwnerPage() {
                                 setDiffRange={setDiffRange}
                             />
                         )}
-                        {tab === 'users' && (
-                            <UsersTab
-                                topUsers={topUsers}
-                                distributions={distributions}
-                                ratingBucket={ratingBucket}
-                                expBucket={expBucket}
-                                onBucketChange={(rb, eb) => {
-                                    setRatingBucket(rb);
-                                    setExpBucket(eb);
-                                    dispatch(fetchAdminDistributions({ ratingBucket: rb, expBucket: eb }));
-                                }}
-                            />
-                        )}
                         {tab === 'reports' && (
                             <ReportsTab
                                 reportsStats={reportsStats}
@@ -415,6 +399,9 @@ export default function OwnerPage() {
                                 onUpdateReport={() => {}}
                                 readOnly
                             />
+                        )}
+                        {tab === 'tests' && (
+                            <TestsTab testStats={testStats} />
                         )}
                         <div className="owner-analytics__footer">
                             <span>ОТЧЁТ СГЕНЕРИРОВАН {new Date().toLocaleString('ru-RU').toUpperCase()}</span>

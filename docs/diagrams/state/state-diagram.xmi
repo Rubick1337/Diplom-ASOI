@@ -1,0 +1,554 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xmi:XMI xmi:version="2.1"
+  xmlns:xmi="http://schema.omg.org/spec/XMI/2.1"
+  xmlns:uml="http://schema.omg.org/spec/UML/2.1.2">
+
+  <xmi:Documentation exporter="Enterprise Architect" exporterVersion="6.5"/>
+
+  <!--
+  ╔══════════════════════════════════════════════════════════════╗
+  ║  Холст: 1900 × 1600  px                                     ║
+  ║                                                              ║
+  ║  Главная — центр (950, 900).                                 ║
+  ║  Кольцо 1 (r≈380) — состояния прямо из Главной:             ║
+  ║    Авторизация (СВ), Профиль (В), Таблица лидеров (ЮВ),     ║
+  ║    Тесты (Ю), Битва (ЮЗ), Панель адм. (З),                  ║
+  ║    Панель владельца (СЗ), Список задач (С)                   ║
+  ║  Кольцо 2 — состояния 2-го уровня:                          ║
+  ║    Задача, Создание, Редактирование (выше Список задач)      ║
+  ║    Регистрация (правее Авторизация)                          ║
+  ║    Прохождение теста, Результат (ниже/правее Тесты)          ║
+  ╚══════════════════════════════════════════════════════════════╝
+  -->
+
+  <uml:Model xmi:type="uml:Model" name="GooseCode_StateMachine" visibility="public">
+    <packagedElement xmi:type="uml:Package" xmi:id="pkg_sm" name="GooseCode State Machine" visibility="public">
+      <packagedElement xmi:type="uml:StateMachine" xmi:id="SM_GooseCode" name="GooseCode Platform" visibility="public">
+        <region xmi:type="uml:Region" xmi:id="RGN" name="Region">
+
+          <subvertex xmi:type="uml:Pseudostate" xmi:id="PS_Init" name="Initial" kind="initial"/>
+          <subvertex xmi:type="uml:FinalState"  xmi:id="FS_End"  name="Final"/>
+
+          <!-- ─── Главная ─── -->
+          <subvertex xmi:type="uml:State" xmi:id="ST_Main" name="Главная">
+            <entry xmi:type="uml:OpaqueBehavior" xmi:id="e_m1" name="loadPageContent"><body>loadPageContent</body></entry>
+            <entry xmi:type="uml:OpaqueBehavior" xmi:id="e_m2" name="LinkLogin; LinkChallenges; LinkBattle; LinkTests; LinkLeaderboard"><body>LinkLogin; LinkChallenges; LinkBattle; LinkTests; LinkLeaderboard</body></entry>
+          </subvertex>
+
+          <!-- ─── КОЛЬЦО 1 ─── -->
+
+          <!-- С: Список задач -->
+          <subvertex xmi:type="uml:State" xmi:id="ST_Chs" name="Список задач">
+            <entry xmi:type="uml:OpaqueBehavior" xmi:id="e_chs" name="loadChallengeList"><body>loadChallengeList</body></entry>
+            <doActivity xmi:type="uml:OpaqueBehavior" xmi:id="d_chs" name="displayFiltersAndSearch"><body>displayFiltersAndSearch</body></doActivity>
+          </subvertex>
+
+          <!-- СВ: Авторизация -->
+          <subvertex xmi:type="uml:State" xmi:id="ST_Login" name="Авторизация">
+            <entry xmi:type="uml:OpaqueBehavior" xmi:id="e_lg" name="displayLoginForm"><body>displayLoginForm</body></entry>
+            <doActivity xmi:type="uml:OpaqueBehavior" xmi:id="d_lg" name="waitForCredentials"><body>waitForCredentials</body></doActivity>
+            <exit xmi:type="uml:OpaqueBehavior" xmi:id="x_lg" name="validateCredentials"><body>validateCredentials</body></exit>
+          </subvertex>
+
+          <!-- В: Профиль -->
+          <subvertex xmi:type="uml:State" xmi:id="ST_Profile" name="Профиль">
+            <entry xmi:type="uml:OpaqueBehavior" xmi:id="e_pr1" name="loadProfileData"><body>loadProfileData</body></entry>
+            <entry xmi:type="uml:OpaqueBehavior" xmi:id="e_pr2" name="loadAchievements"><body>loadAchievements</body></entry>
+            <doActivity xmi:type="uml:OpaqueBehavior" xmi:id="d_pr" name="displayStats"><body>displayStats</body></doActivity>
+          </subvertex>
+
+          <!-- ЮВ: Таблица лидеров -->
+          <subvertex xmi:type="uml:State" xmi:id="ST_Lb" name="Таблица лидеров">
+            <entry xmi:type="uml:OpaqueBehavior" xmi:id="e_lb" name="loadLeaderboard"><body>loadLeaderboard</body></entry>
+          </subvertex>
+
+          <!-- Ю: Тесты -->
+          <subvertex xmi:type="uml:State" xmi:id="ST_Tests" name="Тесты">
+            <entry xmi:type="uml:OpaqueBehavior" xmi:id="e_ts" name="loadTestList"><body>loadTestList</body></entry>
+            <doActivity xmi:type="uml:OpaqueBehavior" xmi:id="d_ts" name="displayAvailableTests"><body>displayAvailableTests</body></doActivity>
+          </subvertex>
+
+          <!-- ЮЗ: Битва -->
+          <subvertex xmi:type="uml:State" xmi:id="ST_Battle" name="Битва">
+            <entry xmi:type="uml:OpaqueBehavior" xmi:id="e_bt1" name="initBattleRoom"><body>initBattleRoom</body></entry>
+            <entry xmi:type="uml:OpaqueBehavior" xmi:id="e_bt2" name="connectWebSocket"><body>connectWebSocket</body></entry>
+            <doActivity xmi:type="uml:OpaqueBehavior" xmi:id="d_bt" name="syncCodeInRealTime"><body>syncCodeInRealTime</body></doActivity>
+            <exit xmi:type="uml:OpaqueBehavior" xmi:id="x_bt" name="saveResult"><body>saveResult</body></exit>
+          </subvertex>
+
+          <!-- З: Панель администратора -->
+          <subvertex xmi:type="uml:State" xmi:id="ST_Admin" name="Панель администратора">
+            <entry xmi:type="uml:OpaqueBehavior" xmi:id="e_ad1" name="loadAdminData"><body>loadAdminData</body></entry>
+            <entry xmi:type="uml:OpaqueBehavior" xmi:id="e_ad2" name="loadDashboard"><body>loadDashboard</body></entry>
+            <doActivity xmi:type="uml:OpaqueBehavior" xmi:id="d_ad" name="displayOverview"><body>displayOverview</body></doActivity>
+          </subvertex>
+
+          <!-- СЗ: Панель владельца -->
+          <subvertex xmi:type="uml:State" xmi:id="ST_Owner" name="Панель владельца">
+            <entry xmi:type="uml:OpaqueBehavior" xmi:id="e_ow1" name="loadOwnerStats"><body>loadOwnerStats</body></entry>
+            <entry xmi:type="uml:OpaqueBehavior" xmi:id="e_ow2" name="loadMyChallenges"><body>loadMyChallenges</body></entry>
+            <doActivity xmi:type="uml:OpaqueBehavior" xmi:id="d_ow" name="displayAnalytics"><body>displayAnalytics</body></doActivity>
+          </subvertex>
+
+          <!-- от Профиля: вкладки -->
+          <subvertex xmi:type="uml:State" xmi:id="ST_PrHistory" name="История задач">
+            <entry xmi:type="uml:OpaqueBehavior" xmi:id="e_prh" name="loadChallengeHistory"><body>loadChallengeHistory</body></entry>
+            <doActivity xmi:type="uml:OpaqueBehavior" xmi:id="d_prh" name="displayHistoryList"><body>displayHistoryList</body></doActivity>
+          </subvertex>
+
+          <subvertex xmi:type="uml:State" xmi:id="ST_PrTestHistory" name="История тестов">
+            <entry xmi:type="uml:OpaqueBehavior" xmi:id="e_prth" name="loadTestHistory"><body>loadTestHistory</body></entry>
+            <doActivity xmi:type="uml:OpaqueBehavior" xmi:id="d_prth" name="displayTestHistoryList"><body>displayTestHistoryList</body></doActivity>
+          </subvertex>
+
+          <subvertex xmi:type="uml:State" xmi:id="ST_PrReports" name="Жалобы профиля">
+            <entry xmi:type="uml:OpaqueBehavior" xmi:id="e_prr" name="loadUserReports"><body>loadUserReports</body></entry>
+            <doActivity xmi:type="uml:OpaqueBehavior" xmi:id="d_prr" name="displayReportsList"><body>displayReportsList</body></doActivity>
+          </subvertex>
+
+          <subvertex xmi:type="uml:State" xmi:id="ST_PrAnalysis" name="Статистика профиля">
+            <entry xmi:type="uml:OpaqueBehavior" xmi:id="e_pra" name="loadAnalysisData"><body>loadAnalysisData</body></entry>
+            <doActivity xmi:type="uml:OpaqueBehavior" xmi:id="d_pra" name="displayCharts"><body>displayCharts</body></doActivity>
+          </subvertex>
+
+          <subvertex xmi:type="uml:State" xmi:id="ST_PrLearning" name="Обучение">
+            <entry xmi:type="uml:OpaqueBehavior" xmi:id="e_prl" name="loadLearningPlan"><body>loadLearningPlan</body></entry>
+            <doActivity xmi:type="uml:OpaqueBehavior" xmi:id="d_prl" name="displayRecommendations"><body>displayRecommendations</body></doActivity>
+          </subvertex>
+
+          <subvertex xmi:type="uml:State" xmi:id="ST_PrAchievements" name="Достижения профиля">
+            <entry xmi:type="uml:OpaqueBehavior" xmi:id="e_pach" name="loadUserAchievements"><body>loadUserAchievements</body></entry>
+            <doActivity xmi:type="uml:OpaqueBehavior" xmi:id="d_pach" name="displayAchievementsList"><body>displayAchievementsList</body></doActivity>
+          </subvertex>
+
+          <!-- ─── КОЛЬЦО 2 ─── -->
+
+          <!-- выше Список задач: Задача -->
+          <subvertex xmi:type="uml:State" xmi:id="ST_Ch" name="Задача">
+            <entry xmi:type="uml:OpaqueBehavior" xmi:id="e_ch1" name="loadChallenge"><body>loadChallenge</body></entry>
+            <entry xmi:type="uml:OpaqueBehavior" xmi:id="e_ch2" name="initCodeEditor"><body>initCodeEditor</body></entry>
+            <doActivity xmi:type="uml:OpaqueBehavior" xmi:id="d_ch" name="waitForCodeInput"><body>waitForCodeInput</body></doActivity>
+            <exit xmi:type="uml:OpaqueBehavior" xmi:id="x_ch" name="saveProgress"><body>saveProgress</body></exit>
+          </subvertex>
+
+          <!-- левее Задачи: Создание задачи -->
+          <subvertex xmi:type="uml:State" xmi:id="ST_Create" name="Создание задачи">
+            <entry xmi:type="uml:OpaqueBehavior" xmi:id="e_cr" name="displayCreateForm"><body>displayCreateForm</body></entry>
+            <doActivity xmi:type="uml:OpaqueBehavior" xmi:id="d_cr" name="waitForInput"><body>waitForInput</body></doActivity>
+            <exit xmi:type="uml:OpaqueBehavior" xmi:id="x_cr" name="validateAndSaveChallenge"><body>validateAndSaveChallenge</body></exit>
+          </subvertex>
+
+          <!-- правее Задачи: Редактирование задачи -->
+          <subvertex xmi:type="uml:State" xmi:id="ST_Edit" name="Редактирование задачи">
+            <entry xmi:type="uml:OpaqueBehavior" xmi:id="e_ed1" name="loadChallenge"><body>loadChallenge</body></entry>
+            <entry xmi:type="uml:OpaqueBehavior" xmi:id="e_ed2" name="displayEditForm"><body>displayEditForm</body></entry>
+            <doActivity xmi:type="uml:OpaqueBehavior" xmi:id="d_ed" name="waitForInput"><body>waitForInput</body></doActivity>
+            <exit xmi:type="uml:OpaqueBehavior" xmi:id="x_ed" name="validateAndUpdateChallenge"><body>validateAndUpdateChallenge</body></exit>
+          </subvertex>
+
+          <!-- правее Авторизации: Регистрация -->
+          <subvertex xmi:type="uml:State" xmi:id="ST_Reg" name="Регистрация">
+            <entry xmi:type="uml:OpaqueBehavior" xmi:id="e_rg1" name="displayRegisterForm"><body>displayRegisterForm</body></entry>
+            <entry xmi:type="uml:OpaqueBehavior" xmi:id="e_rg2" name="sendVerificationCode"><body>sendVerificationCode</body></entry>
+            <doActivity xmi:type="uml:OpaqueBehavior" xmi:id="d_rg" name="waitForInput"><body>waitForInput</body></doActivity>
+            <exit xmi:type="uml:OpaqueBehavior" xmi:id="x_rg" name="saveUser"><body>saveUser</body></exit>
+          </subvertex>
+
+          <!-- ниже Тестов: Прохождение теста -->
+          <subvertex xmi:type="uml:State" xmi:id="ST_Take" name="Прохождение теста">
+            <entry xmi:type="uml:OpaqueBehavior" xmi:id="e_tt1" name="loadTestQuestions"><body>loadTestQuestions</body></entry>
+            <entry xmi:type="uml:OpaqueBehavior" xmi:id="e_tt2" name="startTimer"><body>startTimer</body></entry>
+            <doActivity xmi:type="uml:OpaqueBehavior" xmi:id="d_tt" name="waitForAnswers"><body>waitForAnswers</body></doActivity>
+            <exit xmi:type="uml:OpaqueBehavior" xmi:id="x_tt" name="submitAnswers"><body>submitAnswers</body></exit>
+          </subvertex>
+
+          <!-- ниже Прохождения: Результат теста -->
+          <subvertex xmi:type="uml:State" xmi:id="ST_Result" name="Результат теста">
+            <entry xmi:type="uml:OpaqueBehavior" xmi:id="e_rs1" name="loadTestResult"><body>loadTestResult</body></entry>
+            <entry xmi:type="uml:OpaqueBehavior" xmi:id="e_rs2" name="calculateScore"><body>calculateScore</body></entry>
+          </subvertex>
+
+          <!-- от Панели владельца: вкладки аналитики -->
+          <subvertex xmi:type="uml:State" xmi:id="ST_OvOverview" name="Аналитика — Обзор">
+            <entry xmi:type="uml:OpaqueBehavior" xmi:id="e_ovo" name="loadOverviewKPI"><body>loadOverviewKPI</body></entry>
+            <doActivity xmi:type="uml:OpaqueBehavior" xmi:id="d_ovo" name="displayKPIAndHeatmap"><body>displayKPIAndHeatmap</body></doActivity>
+          </subvertex>
+
+          <subvertex xmi:type="uml:State" xmi:id="ST_OvChallenges" name="Аналитика — Задачи">
+            <entry xmi:type="uml:OpaqueBehavior" xmi:id="e_ovc" name="loadChallengeStats"><body>loadChallengeStats</body></entry>
+            <doActivity xmi:type="uml:OpaqueBehavior" xmi:id="d_ovc" name="displayChallengeCharts"><body>displayChallengeCharts</body></doActivity>
+          </subvertex>
+
+          <subvertex xmi:type="uml:State" xmi:id="ST_OvReports" name="Аналитика — Репорты">
+            <entry xmi:type="uml:OpaqueBehavior" xmi:id="e_ovr" name="loadReportsStats"><body>loadReportsStats</body></entry>
+            <doActivity xmi:type="uml:OpaqueBehavior" xmi:id="d_ovr" name="displayReportsCharts"><body>displayReportsCharts</body></doActivity>
+          </subvertex>
+
+          <subvertex xmi:type="uml:State" xmi:id="ST_OvTests" name="Аналитика — Тесты">
+            <entry xmi:type="uml:OpaqueBehavior" xmi:id="e_ovt" name="loadTestStats"><body>loadTestStats</body></entry>
+            <doActivity xmi:type="uml:OpaqueBehavior" xmi:id="d_ovt" name="displayTestCharts"><body>displayTestCharts</body></doActivity>
+          </subvertex>
+
+          <!-- от Панели администратора: Управление достижениями -->
+          <subvertex xmi:type="uml:State" xmi:id="ST_Achievements" name="Управление достижениями">
+            <entry xmi:type="uml:OpaqueBehavior" xmi:id="e_ach1" name="loadAchievementList"><body>loadAchievementList</body></entry>
+            <doActivity xmi:type="uml:OpaqueBehavior" xmi:id="d_ach" name="displayAchievementsTable"><body>displayAchievementsTable</body></doActivity>
+            <exit xmi:type="uml:OpaqueBehavior" xmi:id="x_ach" name="saveChanges"><body>saveChanges</body></exit>
+          </subvertex>
+
+          <!-- от Панели администратора: Управление темами -->
+          <subvertex xmi:type="uml:State" xmi:id="ST_Topics" name="Управление темами">
+            <entry xmi:type="uml:OpaqueBehavior" xmi:id="e_top1" name="loadTopicList"><body>loadTopicList</body></entry>
+            <doActivity xmi:type="uml:OpaqueBehavior" xmi:id="d_top" name="displayTopicsTable"><body>displayTopicsTable</body></doActivity>
+            <exit xmi:type="uml:OpaqueBehavior" xmi:id="x_top" name="saveChanges"><body>saveChanges</body></exit>
+          </subvertex>
+
+          <!-- от Панели администратора: Создание теста -->
+          <subvertex xmi:type="uml:State" xmi:id="ST_CreateTest" name="Создание теста">
+            <entry xmi:type="uml:OpaqueBehavior" xmi:id="e_ct" name="displayCreateTestForm"><body>displayCreateTestForm</body></entry>
+            <doActivity xmi:type="uml:OpaqueBehavior" xmi:id="d_ct" name="waitForInput"><body>waitForInput</body></doActivity>
+            <exit xmi:type="uml:OpaqueBehavior" xmi:id="x_ct" name="validateAndSaveTest"><body>validateAndSaveTest</body></exit>
+          </subvertex>
+
+          <!-- от Панели администратора: Редактирование теста -->
+          <subvertex xmi:type="uml:State" xmi:id="ST_EditTest" name="Редактирование теста">
+            <entry xmi:type="uml:OpaqueBehavior" xmi:id="e_et1" name="loadTest"><body>loadTest</body></entry>
+            <entry xmi:type="uml:OpaqueBehavior" xmi:id="e_et2" name="displayEditTestForm"><body>displayEditTestForm</body></entry>
+            <doActivity xmi:type="uml:OpaqueBehavior" xmi:id="d_et" name="waitForInput"><body>waitForInput</body></doActivity>
+            <exit xmi:type="uml:OpaqueBehavior" xmi:id="x_et" name="validateAndUpdateTest"><body>validateAndUpdateTest</body></exit>
+          </subvertex>
+
+          <!-- ═══════════════════ ПЕРЕХОДЫ ═══════════════════ -->
+
+          <!-- Запуск → Главная -->
+          <transition xmi:type="uml:Transition" xmi:id="T01" source="PS_Init"    target="ST_Main"   kind="external"/>
+
+          <!-- Главная → Выход -->
+          <transition xmi:type="uml:Transition" xmi:id="T00" source="ST_Main"    target="FS_End"    kind="external">
+            <trigger xmi:type="uml:Trigger" xmi:id="t00" name="LogoutClicked"/>
+            <effect xmi:type="uml:OpaqueBehavior" xmi:id="ef00" name="clearSession"><body>clearSession</body></effect>
+          </transition>
+
+          <!-- Главная → Кольцо 1 -->
+          <transition xmi:type="uml:Transition" xmi:id="T02" source="ST_Main"    target="ST_Login"   kind="external">
+            <trigger xmi:type="uml:Trigger" xmi:id="t02" name="LoginLinkClicked"/>
+          </transition>
+          <transition xmi:type="uml:Transition" xmi:id="T03" source="ST_Main"    target="ST_Chs"     kind="external">
+            <trigger xmi:type="uml:Trigger" xmi:id="t03" name="ChallengesLinkClicked"/>
+            <guard xmi:type="uml:Constraint" xmi:id="g03"><specification xmi:type="uml:OpaqueExpression" xmi:id="oe03"><body>Authenticated</body></specification></guard>
+          </transition>
+          <transition xmi:type="uml:Transition" xmi:id="T04" source="ST_Main"    target="ST_Profile"  kind="external">
+            <trigger xmi:type="uml:Trigger" xmi:id="t04" name="ProfileLinkClicked"/>
+            <guard xmi:type="uml:Constraint" xmi:id="g04"><specification xmi:type="uml:OpaqueExpression" xmi:id="oe04"><body>Authenticated</body></specification></guard>
+          </transition>
+          <transition xmi:type="uml:Transition" xmi:id="T05" source="ST_Main"    target="ST_Lb"       kind="external">
+            <trigger xmi:type="uml:Trigger" xmi:id="t05" name="LeaderboardLinkClicked"/>
+          </transition>
+          <transition xmi:type="uml:Transition" xmi:id="T06" source="ST_Main"    target="ST_Tests"    kind="external">
+            <trigger xmi:type="uml:Trigger" xmi:id="t06" name="TestsLinkClicked"/>
+            <guard xmi:type="uml:Constraint" xmi:id="g06"><specification xmi:type="uml:OpaqueExpression" xmi:id="oe06"><body>Authenticated</body></specification></guard>
+          </transition>
+          <transition xmi:type="uml:Transition" xmi:id="T07" source="ST_Main"    target="ST_Battle"   kind="external">
+            <trigger xmi:type="uml:Trigger" xmi:id="t07" name="BattleLinkClicked"/>
+            <guard xmi:type="uml:Constraint" xmi:id="g07"><specification xmi:type="uml:OpaqueExpression" xmi:id="oe07"><body>Authenticated</body></specification></guard>
+          </transition>
+          <transition xmi:type="uml:Transition" xmi:id="T08" source="ST_Main"    target="ST_Owner"    kind="external">
+            <trigger xmi:type="uml:Trigger" xmi:id="t08" name="OwnerLinkClicked"/>
+            <guard xmi:type="uml:Constraint" xmi:id="g08"><specification xmi:type="uml:OpaqueExpression" xmi:id="oe08"><body>isOwner</body></specification></guard>
+          </transition>
+          <transition xmi:type="uml:Transition" xmi:id="T09" source="ST_Main"    target="ST_Admin"    kind="external">
+            <trigger xmi:type="uml:Trigger" xmi:id="t09" name="AdminLinkClicked"/>
+            <guard xmi:type="uml:Constraint" xmi:id="g09"><specification xmi:type="uml:OpaqueExpression" xmi:id="oe09"><body>isAdmin</body></specification></guard>
+          </transition>
+
+          <!-- Кольцо 1 → Главная (BackClicked) -->
+          <transition xmi:type="uml:Transition" xmi:id="T10" source="ST_Login"   target="ST_Main"    kind="external">
+            <trigger xmi:type="uml:Trigger" xmi:id="t10" name="LoginSuccess"/>
+          </transition>
+          <transition xmi:type="uml:Transition" xmi:id="T11" source="ST_Profile"  target="ST_Main"    kind="external">
+            <trigger xmi:type="uml:Trigger" xmi:id="t11" name="BackClicked"/>
+          </transition>
+          <transition xmi:type="uml:Transition" xmi:id="T12" source="ST_Lb"       target="ST_Main"    kind="external">
+            <trigger xmi:type="uml:Trigger" xmi:id="t12" name="BackClicked"/>
+          </transition>
+          <transition xmi:type="uml:Transition" xmi:id="T13" source="ST_Owner"    target="ST_Main"    kind="external">
+            <trigger xmi:type="uml:Trigger" xmi:id="t13" name="BackClicked"/>
+          </transition>
+          <transition xmi:type="uml:Transition" xmi:id="T14" source="ST_Admin"    target="ST_Main"    kind="external">
+            <trigger xmi:type="uml:Trigger" xmi:id="t14" name="BackClicked"/>
+          </transition>
+
+          <!-- Профиль → вкладки -->
+          <transition xmi:type="uml:Transition" xmi:id="T60" source="ST_Profile"       target="ST_PrHistory"      kind="external">
+            <trigger xmi:type="uml:Trigger" xmi:id="t60" name="HistoryTabClicked"/>
+          </transition>
+          <transition xmi:type="uml:Transition" xmi:id="T61" source="ST_PrHistory"     target="ST_Profile"        kind="external">
+            <trigger xmi:type="uml:Trigger" xmi:id="t61" name="BackClicked"/>
+          </transition>
+
+          <transition xmi:type="uml:Transition" xmi:id="T62" source="ST_Profile"       target="ST_PrTestHistory"  kind="external">
+            <trigger xmi:type="uml:Trigger" xmi:id="t62" name="TestHistoryTabClicked"/>
+          </transition>
+          <transition xmi:type="uml:Transition" xmi:id="T63" source="ST_PrTestHistory" target="ST_Profile"        kind="external">
+            <trigger xmi:type="uml:Trigger" xmi:id="t63" name="BackClicked"/>
+          </transition>
+
+          <transition xmi:type="uml:Transition" xmi:id="T64" source="ST_Profile"       target="ST_PrReports"      kind="external">
+            <trigger xmi:type="uml:Trigger" xmi:id="t64" name="ReportsTabClicked"/>
+          </transition>
+          <transition xmi:type="uml:Transition" xmi:id="T65" source="ST_PrReports"     target="ST_Profile"        kind="external">
+            <trigger xmi:type="uml:Trigger" xmi:id="t65" name="BackClicked"/>
+          </transition>
+
+          <transition xmi:type="uml:Transition" xmi:id="T66" source="ST_Profile"       target="ST_PrAnalysis"     kind="external">
+            <trigger xmi:type="uml:Trigger" xmi:id="t66" name="AnalysisTabClicked"/>
+          </transition>
+          <transition xmi:type="uml:Transition" xmi:id="T67" source="ST_PrAnalysis"    target="ST_Profile"        kind="external">
+            <trigger xmi:type="uml:Trigger" xmi:id="t67" name="BackClicked"/>
+          </transition>
+
+          <transition xmi:type="uml:Transition" xmi:id="T68" source="ST_Profile"       target="ST_PrLearning"     kind="external">
+            <trigger xmi:type="uml:Trigger" xmi:id="t68" name="LearningTabClicked"/>
+          </transition>
+          <transition xmi:type="uml:Transition" xmi:id="T69" source="ST_PrLearning"    target="ST_Profile"        kind="external">
+            <trigger xmi:type="uml:Trigger" xmi:id="t69" name="BackClicked"/>
+          </transition>
+
+          <transition xmi:type="uml:Transition" xmi:id="T70" source="ST_Profile"          target="ST_PrAchievements" kind="external">
+            <trigger xmi:type="uml:Trigger" xmi:id="t70" name="AchievementsTabClicked"/>
+          </transition>
+          <transition xmi:type="uml:Transition" xmi:id="T71" source="ST_PrAchievements"   target="ST_Profile"        kind="external">
+            <trigger xmi:type="uml:Trigger" xmi:id="t71" name="BackClicked"/>
+          </transition>
+
+          <!-- Авторизация ↔ Регистрация -->
+          <transition xmi:type="uml:Transition" xmi:id="T15" source="ST_Login"   target="ST_Reg"     kind="external">
+            <trigger xmi:type="uml:Trigger" xmi:id="t15" name="RegisterLinkClicked"/>
+          </transition>
+          <!-- Регистрация → Авторизация: два триггера на одной стрелке -->
+          <transition xmi:type="uml:Transition" xmi:id="T16" source="ST_Reg"     target="ST_Login"   kind="external">
+            <trigger xmi:type="uml:Trigger" xmi:id="t16" name="RegistrationSuccess"/>
+            <trigger xmi:type="uml:Trigger" xmi:id="t17" name="LoginLinkClicked"/>
+          </transition>
+
+          <!-- Список задач ↔ Задача -->
+          <transition xmi:type="uml:Transition" xmi:id="T18" source="ST_Chs"     target="ST_Ch"      kind="external">
+            <trigger xmi:type="uml:Trigger" xmi:id="t18" name="ChallengeSelected"/>
+          </transition>
+          <transition xmi:type="uml:Transition" xmi:id="T19" source="ST_Ch"      target="ST_Chs"     kind="external">
+            <trigger xmi:type="uml:Trigger" xmi:id="t19" name="BackClicked"/>
+          </transition>
+
+          <!-- Панель администратора → Создание / Редактирование задачи -->
+          <transition xmi:type="uml:Transition" xmi:id="T20" source="ST_Admin"      target="ST_Create"     kind="external">
+            <trigger xmi:type="uml:Trigger" xmi:id="t20" name="CreateChallengeClicked"/>
+          </transition>
+          <transition xmi:type="uml:Transition" xmi:id="T23" source="ST_Admin"      target="ST_Edit"       kind="external">
+            <trigger xmi:type="uml:Trigger" xmi:id="t23" name="EditChallengeClicked"/>
+          </transition>
+
+          <!-- Создание задачи → Панель администратора -->
+          <transition xmi:type="uml:Transition" xmi:id="T21" source="ST_Create"     target="ST_Admin"      kind="external">
+            <trigger xmi:type="uml:Trigger" xmi:id="t21" name="SaveSuccess"/>
+            <trigger xmi:type="uml:Trigger" xmi:id="t22" name="CancelClicked"/>
+          </transition>
+
+          <!-- Редактирование задачи → Панель администратора -->
+          <transition xmi:type="uml:Transition" xmi:id="T24" source="ST_Edit"       target="ST_Admin"      kind="external">
+            <trigger xmi:type="uml:Trigger" xmi:id="t24" name="SaveSuccess"/>
+            <trigger xmi:type="uml:Trigger" xmi:id="t25" name="CancelClicked"/>
+          </transition>
+
+          <!-- Панель владельца → вкладки аналитики -->
+          <transition xmi:type="uml:Transition" xmi:id="T50" source="ST_Owner"      target="ST_OvOverview"   kind="external">
+            <trigger xmi:type="uml:Trigger" xmi:id="t50" name="OverviewTabClicked"/>
+          </transition>
+          <transition xmi:type="uml:Transition" xmi:id="T51" source="ST_OvOverview" target="ST_Owner"         kind="external">
+            <trigger xmi:type="uml:Trigger" xmi:id="t51" name="BackClicked"/>
+          </transition>
+
+          <transition xmi:type="uml:Transition" xmi:id="T52" source="ST_Owner"         target="ST_OvChallenges" kind="external">
+            <trigger xmi:type="uml:Trigger" xmi:id="t52" name="ChallengesTabClicked"/>
+          </transition>
+          <transition xmi:type="uml:Transition" xmi:id="T53" source="ST_OvChallenges"  target="ST_Owner"        kind="external">
+            <trigger xmi:type="uml:Trigger" xmi:id="t53" name="BackClicked"/>
+          </transition>
+
+          <transition xmi:type="uml:Transition" xmi:id="T54" source="ST_Owner"      target="ST_OvReports"    kind="external">
+            <trigger xmi:type="uml:Trigger" xmi:id="t54" name="ReportsTabClicked"/>
+          </transition>
+          <transition xmi:type="uml:Transition" xmi:id="T55" source="ST_OvReports"  target="ST_Owner"        kind="external">
+            <trigger xmi:type="uml:Trigger" xmi:id="t55" name="BackClicked"/>
+          </transition>
+
+          <transition xmi:type="uml:Transition" xmi:id="T56" source="ST_Owner"    target="ST_OvTests"      kind="external">
+            <trigger xmi:type="uml:Trigger" xmi:id="t56" name="TestsTabClicked"/>
+          </transition>
+          <transition xmi:type="uml:Transition" xmi:id="T57" source="ST_OvTests"  target="ST_Owner"        kind="external">
+            <trigger xmi:type="uml:Trigger" xmi:id="t57" name="BackClicked"/>
+          </transition>
+
+          <!-- Панель администратора → Управление достижениями -->
+          <transition xmi:type="uml:Transition" xmi:id="T40" source="ST_Admin"        target="ST_Achievements" kind="external">
+            <trigger xmi:type="uml:Trigger" xmi:id="t40" name="AchievementsClicked"/>
+          </transition>
+          <!-- Управление достижениями → Панель администратора -->
+          <transition xmi:type="uml:Transition" xmi:id="T41" source="ST_Achievements" target="ST_Admin"        kind="external">
+            <trigger xmi:type="uml:Trigger" xmi:id="t41" name="BackClicked"/>
+          </transition>
+
+          <!-- Панель администратора → Управление темами -->
+          <transition xmi:type="uml:Transition" xmi:id="T42" source="ST_Admin"        target="ST_Topics"       kind="external">
+            <trigger xmi:type="uml:Trigger" xmi:id="t42" name="TopicsClicked"/>
+          </transition>
+          <!-- Управление темами → Панель администратора -->
+          <transition xmi:type="uml:Transition" xmi:id="T43" source="ST_Topics"       target="ST_Admin"        kind="external">
+            <trigger xmi:type="uml:Trigger" xmi:id="t43" name="BackClicked"/>
+          </transition>
+
+          <!-- Панель администратора → Создание / Редактирование теста -->
+          <transition xmi:type="uml:Transition" xmi:id="T34" source="ST_Admin"      target="ST_CreateTest" kind="external">
+            <trigger xmi:type="uml:Trigger" xmi:id="t34" name="CreateTestClicked"/>
+          </transition>
+          <transition xmi:type="uml:Transition" xmi:id="T35" source="ST_Admin"      target="ST_EditTest"   kind="external">
+            <trigger xmi:type="uml:Trigger" xmi:id="t35" name="EditTestClicked"/>
+          </transition>
+
+          <!-- Создание теста → Панель администратора -->
+          <transition xmi:type="uml:Transition" xmi:id="T36" source="ST_CreateTest" target="ST_Admin"      kind="external">
+            <trigger xmi:type="uml:Trigger" xmi:id="t36" name="SaveSuccess"/>
+            <trigger xmi:type="uml:Trigger" xmi:id="t37" name="CancelClicked"/>
+          </transition>
+
+          <!-- Редактирование теста → Панель администратора -->
+          <transition xmi:type="uml:Transition" xmi:id="T38" source="ST_EditTest"   target="ST_Admin"      kind="external">
+            <trigger xmi:type="uml:Trigger" xmi:id="t38" name="SaveSuccess"/>
+            <trigger xmi:type="uml:Trigger" xmi:id="t39" name="CancelClicked"/>
+          </transition>
+
+          <!-- Тесты → Прохождение → Результат → Тесты -->
+          <transition xmi:type="uml:Transition" xmi:id="T28" source="ST_Tests"   target="ST_Take"    kind="external">
+            <trigger xmi:type="uml:Trigger" xmi:id="t28" name="TestSelected"/>
+          </transition>
+          <transition xmi:type="uml:Transition" xmi:id="T29" source="ST_Take"    target="ST_Result"  kind="external">
+            <trigger xmi:type="uml:Trigger" xmi:id="t29" name="TestSubmitted"/>
+            <guard xmi:type="uml:Constraint" xmi:id="g29"><specification xmi:type="uml:OpaqueExpression" xmi:id="oe29"><body>TestSubmitted || TimeExpired</body></specification></guard>
+          </transition>
+          <transition xmi:type="uml:Transition" xmi:id="T30" source="ST_Result"  target="ST_Tests"   kind="external">
+            <trigger xmi:type="uml:Trigger" xmi:id="t30" name="BackClicked"/>
+          </transition>
+
+          <!-- Битва → Главная -->
+          <transition xmi:type="uml:Transition" xmi:id="T31" source="ST_Battle"  target="ST_Main"    kind="external">
+            <trigger xmi:type="uml:Trigger" xmi:id="t31" name="BattleEnded"/>
+          </transition>
+
+          <!-- Список задач → Главная -->
+          <transition xmi:type="uml:Transition" xmi:id="T32" source="ST_Chs"     target="ST_Main"    kind="external">
+            <trigger xmi:type="uml:Trigger" xmi:id="t32" name="BackClicked"/>
+          </transition>
+
+          <!-- Тесты → Главная -->
+          <transition xmi:type="uml:Transition" xmi:id="T33" source="ST_Tests"   target="ST_Main"    kind="external">
+            <trigger xmi:type="uml:Trigger" xmi:id="t33" name="BackClicked"/>
+          </transition>
+
+        </region>
+      </packagedElement>
+    </packagedElement>
+  </uml:Model>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       EA DIAGRAM LAYOUT
+       Главная — центр холста (950, 900).
+       Кольцо 1 — radius ≈ 380 px.
+       Кольцо 2 — radius ≈ 680–750 px (продолжение радиуса).
+  ═══════════════════════════════════════════════════════════ -->
+
+  <xmi:Extension extender="Enterprise Architect" extenderID="6.5">
+    <diagrams>
+      <diagram xmi:id="DGM_GC">
+        <model package="pkg_sm" owner="pkg_sm"/>
+        <properties name="GooseCode Platform" type="Statechart"/>
+        <elements>
+
+          <!-- ── Центр ── -->
+          <!-- Главная: центр (950, 875) -->
+          <element subject="ST_Main"    geometry="Left=790;Top=820;Right=1110;Bottom=940;"   seqno="1"  style=""/>
+
+          <!-- Initial: прямо под Главной -->
+          <element subject="PS_Init"    geometry="Left=932;Top=990;Right=968;Bottom=1026;"   seqno="2"  style=""/>
+
+          <!-- Final: правее Initial (Logout из Главной идёт вправо-вниз) -->
+          <element subject="FS_End"     geometry="Left=1110;Top=990;Right=1146;Bottom=1026;" seqno="3"  style=""/>
+
+          <!-- ── Кольцо 1 (r≈380) вокруг центра (950, 875) ── -->
+
+          <!-- С  (0°):   Список задач -->
+          <element subject="ST_Chs"     geometry="Left=820;Top=440;Right=1080;Bottom=550;"   seqno="4"  style=""/>
+
+          <!-- СВ (45°):  Авторизация -->
+          <element subject="ST_Login"   geometry="Left=1200;Top=545;Right=1440;Bottom=695;"  seqno="5"  style=""/>
+
+          <!-- В  (90°):  Профиль -->
+          <element subject="ST_Profile" geometry="Left=1390;Top=830;Right=1620;Bottom=960;"  seqno="6"  style=""/>
+
+          <!-- ЮВ (135°): Таблица лидеров -->
+          <element subject="ST_Lb"      geometry="Left=1220;Top=1110;Right=1460;Bottom=1200;" seqno="7"  style=""/>
+
+          <!-- Ю  (180°): Тесты (чуть левее от Initial) -->
+          <element subject="ST_Tests"   geometry="Left=680;Top=1130;Right=920;Bottom=1240;"  seqno="8"  style=""/>
+
+          <!-- ЮЗ (225°): Битва -->
+          <element subject="ST_Battle"  geometry="Left=390;Top=1040;Right=630;Bottom=1170;"  seqno="9"  style=""/>
+
+          <!-- З  (270°): Панель администратора -->
+          <element subject="ST_Admin"   geometry="Left=190;Top=810;Right=450;Bottom=960;"    seqno="10" style=""/>
+
+          <!-- СЗ (315°): Панель владельца -->
+          <element subject="ST_Owner"   geometry="Left=320;Top=530;Right=570;Bottom=680;"    seqno="11" style=""/>
+
+          <!-- ── Кольцо 2 (продолжение радиусов) ── -->
+
+          <!-- С → С:  Задача (выше Список задач) -->
+          <element subject="ST_Ch"      geometry="Left=820;Top=170;Right=1080;Bottom=320;"   seqno="12" style=""/>
+
+          <!-- С → СЗ: Создание задачи (левее Задачи) -->
+          <element subject="ST_Create"  geometry="Left=490;Top=140;Right=740;Bottom=290;"    seqno="13" style=""/>
+
+          <!-- С → СВ: Редактирование задачи (правее Задачи) -->
+          <element subject="ST_Edit"    geometry="Left=1130;Top=80;Right=1420;Bottom=240;"   seqno="14" style=""/>
+
+          <!-- СВ → В:  Регистрация (правее Авторизации) -->
+          <element subject="ST_Reg"     geometry="Left=1510;Top=450;Right=1760;Bottom=610;"  seqno="15" style=""/>
+
+          <!-- СЗ → С: Аналитика — Обзор (выше Панели владельца) -->
+          <element subject="ST_OvOverview"    geometry="Left=50;Top=300;Right=340;Bottom=410;"    seqno="20" style=""/>
+
+          <!-- СЗ → З: Аналитика — Задачи (левее Панели владельца) -->
+          <element subject="ST_OvChallenges"  geometry="Left=50;Top=430;Right=340;Bottom=540;"    seqno="21" style=""/>
+
+          <!-- СЗ → ЮЗ: Аналитика — Репорты -->
+          <element subject="ST_OvReports"     geometry="Left=50;Top=560;Right=340;Bottom=670;"    seqno="22" style=""/>
+
+          <!-- СЗ → ЮЮЗ: Аналитика — Тесты -->
+          <element subject="ST_OvTests"       geometry="Left=50;Top=690;Right=340;Bottom=800;"    seqno="23" style=""/>
+
+          <!-- З → ЮЗ: Управление достижениями (левее-ниже Панели администратора) -->
+          <element subject="ST_Achievements" geometry="Left=0;Top=1050;Right=250;Bottom=1180;"   seqno="18" style=""/>
+
+          <!-- З → СЗЗ: Управление темами (левее-выше Панели администратора) -->
+          <element subject="ST_Topics"       geometry="Left=0;Top=640;Right=250;Bottom=760;"     seqno="19" style=""/>
+
+          <!-- Ю → ЮЮВ: Прохождение теста (ниже-правее Тестов) -->
+          <element subject="ST_Take"    geometry="Left=960;Top=1290;Right=1220;Bottom=1450;" seqno="16" style=""/>
+
+          <!-- Ю → ЮВ:  Результат теста (правее Прохождения) -->
+          <element subject="ST_Result"  geometry="Left=1290;Top=1290;Right=1530;Bottom=1400;" seqno="17" style=""/>
+
+        </elements>
+      </diagram>
+    </diagrams>
+  </xmi:Extension>
+
+</xmi:XMI>

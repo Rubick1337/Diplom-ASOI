@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import '@/widgets/MainHero/MainHero.css';
+import { useTheme } from '@/shared/context/ThemeContext';
 
 type Particle = {
     x: number;
@@ -23,6 +24,9 @@ type CodeLine = {
 export default function MainHero() {
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
     const mouseRef = useRef<{ x: number; y: number } | null>(null);
+    const { theme } = useTheme();
+    const themeRef = useRef(theme);
+    useEffect(() => { themeRef.current = theme; }, [theme]);
 
     const [displayText, setDisplayText] = useState('');
     const [isDeleting, setIsDeleting] = useState(false);
@@ -232,7 +236,9 @@ export default function MainHero() {
 
                 ctx.globalAlpha = 0.6;
                 ctx.font = '11px "JetBrains Mono", "Fira Code", monospace';
-                ctx.fillStyle = 'rgba(230,230,230,0.9)';
+                ctx.fillStyle = themeRef.current === 'light'
+                    ? 'rgba(26,24,23,0.82)'
+                    : 'rgba(230,230,230,0.9)';
                 ctx.fillText(textWithCursor, line.x, line.y);
             }
 
@@ -303,7 +309,9 @@ export default function MainHero() {
                 ctx.fill();
 
                 ctx.beginPath();
-                ctx.fillStyle = `rgba(255,255,255,${0.7 + 0.3 * p.flash})`;
+                ctx.fillStyle = themeRef.current === 'light'
+                    ? `rgba(26,24,23,${0.55 + 0.3 * p.flash})`
+                    : `rgba(255,255,255,${0.7 + 0.3 * p.flash})`;
                 ctx.arc(p.x, p.y, flashRadius, 0, Math.PI * 2);
                 ctx.fill();
             }

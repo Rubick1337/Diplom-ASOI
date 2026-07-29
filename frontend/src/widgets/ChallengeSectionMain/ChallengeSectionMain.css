@@ -308,3 +308,33 @@
         justify-content: center;
     }
 }
+
+/* LIGHT THEME */
+[data-theme="light"] .challenge-container {
+    background: #ddd8ce;
+    border-color: rgba(26,24,23,0.14);
+}
+[data-theme="light"] .challenge-description {
+    color: rgba(26,24,23,0.7);
+    opacity: 1;
+}
+[data-theme="light"] .ide-button:first-child {
+    background: rgba(26,24,23,0.06);
+    border-color: rgba(26,24,23,0.14);
+    color: #1a1817;
+}
+[data-theme="light"] .subcard {
+    background: #d5d0c6;
+    border-color: rgba(26,24,23,0.14);
+}
+[data-theme="light"] .subcard-title {
+    color: #1a1817;
+}
+[data-theme="light"] .subcard-desc {
+    color: rgba(26,24,23,0.7);
+    opacity: 1;
+}
+[data-theme="light"] .subcard-icon {
+    background: rgba(26,24,23,0.06);
+    border-color: rgba(26,24,23,0.12);
+}

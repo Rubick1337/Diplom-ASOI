@@ -1,0 +1,153 @@
+.tr-section {
+    width: 100%; max-width: 1280px;
+    margin: 40px auto 40px;
+    padding: 0 20px;
+    font-family: 'Inter', sans-serif;
+    color: #e0e0e0;
+    box-sizing: border-box;
+}
+
+/* header */
+.tr-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #333;
+}
+.tr-header__info { display: flex; align-items: center; gap: 14px; }
+.tr-header__info h2 { font-size: 1.5rem; color: #fff; margin: 0; }
+.tr-avg { color: #ffd700; font-weight: 700; font-size: 1.1rem; }
+
+/* layout */
+.tr-layout {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: 30px;
+}
+.tr-sidebar { position: sticky; top: 20px; height: fit-content; }
+
+/* form */
+.tr-form {
+    background: #1e1e1e;
+    padding: 24px;
+    border-radius: 12px;
+    border: 1px solid #333;
+}
+.tr-form h3 { margin: 0 0 16px; color: #fff; font-size: 1rem; }
+
+.tr-stars-interactive { display: flex; gap: 4px; margin-bottom: 4px; }
+.tr-stars-interactive .tr-star {
+    background: none;
+    border: none;
+    font-size: 1.6rem;
+    cursor: pointer;
+    color: #555;
+    padding: 0;
+    line-height: 1;
+    transition: color .15s;
+}
+.tr-stars-interactive .tr-star--on { color: #ffd700; text-shadow: 0 0 8px rgba(255,215,0,.4); }
+
+.tr-textarea {
+    width: 100%;
+    background: #121212;
+    border: 1px solid #333;
+    border-radius: 8px;
+    padding: 12px;
+    color: #eee;
+    margin-top: 12px;
+    resize: vertical;
+    font-family: inherit;
+    font-size: .9rem;
+    box-sizing: border-box;
+}
+.tr-textarea:focus { outline: none; border-color: #FF6B35; }
+
+.tr-submit {
+    width: 100%;
+    margin-top: 14px;
+    padding: 11px;
+    background: linear-gradient(135deg, #ff6b35, #f04949);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: .95rem;
+    transition: opacity .15s;
+}
+.tr-submit:disabled { opacity: .6; cursor: not-allowed; }
+
+.tr-login-prompt {
+    background: #1e1e1e;
+    border: 1px solid #333;
+    border-radius: 12px;
+    padding: 24px;
+    color: #888;
+    text-align: center;
+}
+
+/* feed */
+.tr-loading, .tr-empty { color: #666; padding: 20px 0; }
+
+.tr-list { animation: tr-in .22s ease; }
+@keyframes tr-in {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* card */
+.tr-card {
+    background: #1a1a1a;
+    border: 1px solid #2a2a2a;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 16px;
+}
+.tr-card--own { border: 2px solid #ff8c00; }
+
+.tr-card__head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 10px;
+}
+.tr-avatar {
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #0070f3, #00c6ff);
+    color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+.tr-meta { flex: 1; display: flex; flex-direction: column; }
+.tr-username { font-weight: 600; color: #fff; font-size: .9rem; }
+.tr-own-tag  { color: #ff8c00; font-size: .8rem; }
+.tr-date     { font-size: .78rem; color: #666; }
+
+.tr-stars-static { display: flex; gap: 2px; }
+.tr-star { font-size: 1rem; color: #444; }
+.tr-star--on { color: #ffd700; }
+
+.tr-card__body p { margin: 0; color: #ccc; font-size: .9rem; line-height: 1.55; }
+
+/* responsive */
+@media (max-width: 900px) {
+    .tr-layout { grid-template-columns: 1fr; }
+    .tr-sidebar { position: static; order: -1; }
+}
+
+/* light theme */
+[data-theme="light"] .tr-section          { color: #1a1817; }
+[data-theme="light"] .tr-header           { border-bottom-color: rgba(26,24,23,.12); }
+[data-theme="light"] .tr-header__info h2  { color: #1a1817; }
+[data-theme="light"] .tr-form             { background: #ede8df; border-color: rgba(26,24,23,.12); }
+[data-theme="light"] .tr-textarea         { background: #ddd8ce; border-color: rgba(26,24,23,.14); color: #1a1817; }
+[data-theme="light"] .tr-card             { background: #ede8df; border-color: rgba(26,24,23,.10); }
+[data-theme="light"] .tr-username         { color: #1a1817; }
+[data-theme="light"] .tr-date             { color: rgba(26,24,23,.45); }
+[data-theme="light"] .tr-card__body p     { color: #3a3532; }
+[data-theme="light"] .tr-login-prompt     { background: #ede8df; border-color: rgba(26,24,23,.12); color: #666; }

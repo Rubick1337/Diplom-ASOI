@@ -1,0 +1,299 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xmi:XMI xmi:version="2.1"
+  xmlns:xmi="http://schema.omg.org/spec/XMI/2.1"
+  xmlns:uml="http://schema.omg.org/spec/UML/2.1.2">
+
+  <xmi:Documentation exporter="Enterprise Architect" exporterVersion="6.5"/>
+
+  <!--
+    Package Diagram — GooseCode Frontend Architecture (Feature-Sliced Design)
+    Слои FSD (сверху вниз): app → pages → widgets → features → entities → shared
+    Каждый файл представлен как uml:Component внутри своего пакета.
+  -->
+
+  <uml:Model xmi:type="uml:Model" name="GooseCode_FrontendArchitecture" visibility="public">
+
+    <packagedElement xmi:type="uml:Package" xmi:id="pkg_frontend_src" name="frontend/src" visibility="public">
+
+      <!-- ═══════════════════════════════════════════
+           APP — Next.js App Router
+      ═══════════════════════════════════════════ -->
+      <packagedElement xmi:type="uml:Package" xmi:id="pkg_app" name="app" visibility="public">
+
+        <packagedElement xmi:type="uml:Component" xmi:id="cmp_layout"       name="layout"       visibility="public"/>
+        <packagedElement xmi:type="uml:Component" xmi:id="cmp_root_page"    name="page"         visibility="public"/>
+        <packagedElement xmi:type="uml:Component" xmi:id="cmp_auth_init"    name="AuthInit"     visibility="public"/>
+        <packagedElement xmi:type="uml:Component" xmi:id="cmp_redux_prov"   name="ReduxProvider" visibility="public"/>
+        <packagedElement xmi:type="uml:Component" xmi:id="cmp_not_found"    name="not-found"    visibility="public"/>
+        <packagedElement xmi:type="uml:Component" xmi:id="cmp_battle_page"     name="battle/page"     visibility="public"/>
+        <packagedElement xmi:type="uml:Component" xmi:id="cmp_leaderboard_page" name="leaderboard/page" visibility="public"/>
+        <packagedElement xmi:type="uml:Component" xmi:id="cmp_profile_page"  name="profile/page"  visibility="public"/>
+        <packagedElement xmi:type="uml:Component" xmi:id="cmp_owner_page"    name="owner/page"    visibility="public"/>
+        <packagedElement xmi:type="uml:Component" xmi:id="cmp_forbidden_page" name="forbidden/page" visibility="public"/>
+
+        <packagedElement xmi:type="uml:Package" xmi:id="pkg_app_admin" name="admin" visibility="public">
+          <packagedElement xmi:type="uml:Component" xmi:id="cmp_admin_page"   name="page"         visibility="public"/>
+          <packagedElement xmi:type="uml:Package" xmi:id="pkg_app_admin_test" name="tests/[id]"   visibility="public">
+            <packagedElement xmi:type="uml:Component" xmi:id="cmp_admin_test_page" name="page"   visibility="public"/>
+          </packagedElement>
+        </packagedElement>
+
+        <packagedElement xmi:type="uml:Package" xmi:id="pkg_app_auth" name="auth" visibility="public">
+          <packagedElement xmi:type="uml:Component" xmi:id="cmp_login_page"    name="login/page"    visibility="public"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="cmp_register_page" name="register/page" visibility="public"/>
+        </packagedElement>
+
+        <packagedElement xmi:type="uml:Package" xmi:id="pkg_app_challenge" name="challenge" visibility="public">
+          <packagedElement xmi:type="uml:Component" xmi:id="cmp_create_page"  name="create/page"      visibility="public"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="cmp_edit_id_page" name="edit/[id]/page"   visibility="public"/>
+        </packagedElement>
+
+        <packagedElement xmi:type="uml:Package" xmi:id="pkg_app_challenges" name="challenges" visibility="public">
+          <packagedElement xmi:type="uml:Component" xmi:id="cmp_challenges_page"    name="page"         visibility="public"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="cmp_challenge_id_page"  name="[id]/page"    visibility="public"/>
+        </packagedElement>
+
+        <packagedElement xmi:type="uml:Package" xmi:id="pkg_app_tests" name="tests" visibility="public">
+          <packagedElement xmi:type="uml:Component" xmi:id="cmp_tests_page"         name="page"                       visibility="public"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="cmp_tests_take_page"    name="[id]/take/page"             visibility="public"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="cmp_tests_result_page"  name="attempts/[id]/result/page"  visibility="public"/>
+        </packagedElement>
+
+      </packagedElement>
+
+      <!-- ═══════════════════════════════════════════
+           PAGES — FSD Layer
+      ═══════════════════════════════════════════ -->
+      <packagedElement xmi:type="uml:Package" xmi:id="pkg_pages" name="pages" visibility="public">
+        <packagedElement xmi:type="uml:Component" xmi:id="pg_admin"          name="AdminPage"            visibility="public"/>
+        <packagedElement xmi:type="uml:Component" xmi:id="pg_admin_test"     name="AdminTestEditorPage"  visibility="public"/>
+        <packagedElement xmi:type="uml:Component" xmi:id="pg_challenge"      name="ChallengePage"        visibility="public"/>
+        <packagedElement xmi:type="uml:Component" xmi:id="pg_challenges"     name="ChallengesPage"       visibility="public"/>
+        <packagedElement xmi:type="uml:Component" xmi:id="pg_create"         name="CreateChallengePage"  visibility="public"/>
+        <packagedElement xmi:type="uml:Component" xmi:id="pg_edit"           name="EditChallengePage"    visibility="public"/>
+        <packagedElement xmi:type="uml:Component" xmi:id="pg_leaderboard"    name="LeaderboardPage"      visibility="public"/>
+        <packagedElement xmi:type="uml:Component" xmi:id="pg_login"          name="LoginPage"            visibility="public"/>
+        <packagedElement xmi:type="uml:Component" xmi:id="pg_main"           name="MainPage"             visibility="public"/>
+        <packagedElement xmi:type="uml:Component" xmi:id="pg_owner"          name="OwnerPage"            visibility="public"/>
+        <packagedElement xmi:type="uml:Component" xmi:id="pg_profile"        name="ProfilePage"          visibility="public"/>
+        <packagedElement xmi:type="uml:Component" xmi:id="pg_register"       name="RegisterPage"         visibility="public"/>
+        <packagedElement xmi:type="uml:Component" xmi:id="pg_test_result"    name="TestResultPage"       visibility="public"/>
+        <packagedElement xmi:type="uml:Component" xmi:id="pg_tests_list"     name="TestsListPage"        visibility="public"/>
+        <packagedElement xmi:type="uml:Component" xmi:id="pg_test_take"      name="TestTakePage"         visibility="public"/>
+      </packagedElement>
+
+      <!-- ═══════════════════════════════════════════
+           WIDGETS — FSD Layer
+      ═══════════════════════════════════════════ -->
+      <packagedElement xmi:type="uml:Package" xmi:id="pkg_widgets" name="widgets" visibility="public">
+        <packagedElement xmi:type="uml:Component" xmi:id="w_achievement_toast"   name="AchievementToast"      visibility="public"/>
+        <packagedElement xmi:type="uml:Component" xmi:id="w_admin_header"        name="AdminHeader"           visibility="public"/>
+        <packagedElement xmi:type="uml:Component" xmi:id="w_admin_topbar"        name="AdminTopBar"           visibility="public"/>
+        <packagedElement xmi:type="uml:Component" xmi:id="w_ai_chat"             name="AiAssistantChat"       visibility="public"/>
+        <packagedElement xmi:type="uml:Component" xmi:id="w_auth_header"         name="AuthHeader"            visibility="public"/>
+        <packagedElement xmi:type="uml:Component" xmi:id="w_challenge_card"      name="ChallengeCard"         visibility="public"/>
+        <packagedElement xmi:type="uml:Component" xmi:id="w_challenge_list"      name="ChallengeList"         visibility="public"/>
+        <packagedElement xmi:type="uml:Component" xmi:id="w_challenge_manage"    name="ChallengeManageTab"    visibility="public"/>
+        <packagedElement xmi:type="uml:Component" xmi:id="w_challenge_section"   name="ChallengeSectionMain"  visibility="public"/>
+        <packagedElement xmi:type="uml:Package"   xmi:id="pkg_w_section_cards"   name="ChallengeSectionMainCards" visibility="public">
+          <packagedElement xmi:type="uml:Component" xmi:id="w_tests_card"        name="TestsCard"             visibility="public"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="w_theory_card"       name="TheoryTestsCard"       visibility="public"/>
+        </packagedElement>
+        <packagedElement xmi:type="uml:Component" xmi:id="w_workspace"           name="ChallengeWorkspace"    visibility="public"/>
+        <packagedElement xmi:type="uml:Component" xmi:id="w_code_ide"            name="CodeIdeWidget"         visibility="public"/>
+        <packagedElement xmi:type="uml:Component" xmi:id="w_community"           name="CommunitySolutions"    visibility="public"/>
+        <packagedElement xmi:type="uml:Component" xmi:id="w_creator"             name="CreatorSection"        visibility="public"/>
+        <packagedElement xmi:type="uml:Component" xmi:id="w_footer"              name="Footer"                visibility="public"/>
+        <packagedElement xmi:type="uml:Component" xmi:id="w_header"              name="Header"                visibility="public"/>
+        <packagedElement xmi:type="uml:Component" xmi:id="w_how_it_works"        name="HowItWorks"            visibility="public"/>
+        <packagedElement xmi:type="uml:Component" xmi:id="w_info_ai"             name="InfoAiMoodle"          visibility="public"/>
+        <packagedElement xmi:type="uml:Component" xmi:id="w_kpicard"             name="Kpicard"               visibility="public"/>
+        <packagedElement xmi:type="uml:Component" xmi:id="w_lang_grid"           name="LanguagesGrid"         visibility="public"/>
+        <packagedElement xmi:type="uml:Component" xmi:id="w_main_header"         name="MainHeader"            visibility="public"/>
+        <packagedElement xmi:type="uml:Component" xmi:id="w_main_hero"           name="MainHero"              visibility="public"/>
+        <packagedElement xmi:type="uml:Component" xmi:id="w_notif_bell"          name="NotificationBell"      visibility="public"/>
+        <packagedElement xmi:type="uml:Component" xmi:id="w_overviewtab"         name="Overviewtab"           visibility="public"/>
+        <packagedElement xmi:type="uml:Component" xmi:id="w_owner_header"        name="OwnerHeader"           visibility="public"/>
+        <packagedElement xmi:type="uml:Component" xmi:id="w_owner_tabs"          name="OwnerTabs"             visibility="public"/>
+        <packagedElement xmi:type="uml:Component" xmi:id="w_skeleton_card"       name="SkeletonCard"          visibility="public"/>
+        <packagedElement xmi:type="uml:Component" xmi:id="w_tests_panel"         name="TestsPanel"            visibility="public"/>
+        <packagedElement xmi:type="uml:Component" xmi:id="w_theme_toggle"        name="ThemeToggle"           visibility="public"/>
+        <packagedElement xmi:type="uml:Component" xmi:id="w_user_sidebar"        name="UserSidebar"           visibility="public"/>
+      </packagedElement>
+
+      <!-- ═══════════════════════════════════════════
+           FEATURES — FSD Layer
+      ═══════════════════════════════════════════ -->
+      <packagedElement xmi:type="uml:Package" xmi:id="pkg_features" name="features" visibility="public">
+        <packagedElement xmi:type="uml:Component" xmi:id="f_ach_manage"      name="AchievementsManageTab"     visibility="public"/>
+        <packagedElement xmi:type="uml:Component" xmi:id="f_ach_tab"         name="AchievementsTab"           visibility="public"/>
+        <packagedElement xmi:type="uml:Component" xmi:id="f_activity_heat"   name="ActivityHeatmap"           visibility="public"/>
+        <packagedElement xmi:type="uml:Component" xmi:id="f_analysis_tab"    name="AnalysisTab"               visibility="public"/>
+        <packagedElement xmi:type="uml:Component" xmi:id="f_ch_filters"      name="ChallengeFilters"          visibility="public"/>
+        <packagedElement xmi:type="uml:Component" xmi:id="f_ch_import_modal" name="ChallengeImportExportModal" visibility="public"/>
+        <packagedElement xmi:type="uml:Component" xmi:id="f_ch_reviews"      name="ChallengeReviews"          visibility="public"/>
+        <packagedElement xmi:type="uml:Component" xmi:id="f_ch_search"       name="ChallengeSearch"           visibility="public"/>
+        <packagedElement xmi:type="uml:Component" xmi:id="f_ch_tab"          name="Challengestab"             visibility="public"/>
+        <packagedElement xmi:type="uml:Component" xmi:id="f_chat_panel"      name="ChatPanel"                 visibility="public"/>
+        <packagedElement xmi:type="uml:Component" xmi:id="f_code_editor"     name="CodeEditor"                visibility="public"/>
+        <packagedElement xmi:type="uml:Component" xmi:id="f_codewars"        name="CodewarsImportModal"       visibility="public"/>
+        <packagedElement xmi:type="uml:Component" xmi:id="f_collab_chat"     name="CollaborativeChat"         visibility="public"/>
+        <packagedElement xmi:type="uml:Component" xmi:id="f_config_section"  name="ConfigSection"             visibility="public"/>
+        <packagedElement xmi:type="uml:Component" xmi:id="f_desc_section"    name="DescriptionSection"        visibility="public"/>
+        <packagedElement xmi:type="uml:Component" xmi:id="f_lang_select"     name="LanguageSelect"            visibility="public"/>
+        <packagedElement xmi:type="uml:Component" xmi:id="f_learning_tab"    name="LearningTab"               visibility="public"/>
+        <packagedElement xmi:type="uml:Component" xmi:id="f_login_form"      name="LoginForm"                 visibility="public"/>
+        <packagedElement xmi:type="uml:Component" xmi:id="f_progress"        name="ProgressTracker"           visibility="public"/>
+        <packagedElement xmi:type="uml:Component" xmi:id="f_random_ch"       name="RandomChallenge"           visibility="public"/>
+        <packagedElement xmi:type="uml:Component" xmi:id="f_register_form"   name="RegisterForm"              visibility="public"/>
+        <packagedElement xmi:type="uml:Component" xmi:id="f_report_action"   name="ReportActionModal"         visibility="public"/>
+        <packagedElement xmi:type="uml:Component" xmi:id="f_report_modal"    name="ReportModal"               visibility="public"/>
+        <packagedElement xmi:type="uml:Component" xmi:id="f_reports_tab"     name="Reportstab"                visibility="public"/>
+        <packagedElement xmi:type="uml:Component" xmi:id="f_room_card"       name="RoomCard"                  visibility="public"/>
+        <packagedElement xmi:type="uml:Component" xmi:id="f_room_lobby"      name="RoomLobby"                 visibility="public"/>
+        <packagedElement xmi:type="uml:Component" xmi:id="f_sol_comments"    name="SolutionComments"          visibility="public"/>
+        <packagedElement xmi:type="uml:Component" xmi:id="f_sol_vote"        name="SolutionVoteButtons"       visibility="public"/>
+        <packagedElement xmi:type="uml:Component" xmi:id="f_sol_lang_filter" name="SolutionsLanguageFilter"   visibility="public"/>
+        <packagedElement xmi:type="uml:Component" xmi:id="f_sort_select"     name="SortSelect"                visibility="public"/>
+        <packagedElement xmi:type="uml:Component" xmi:id="f_terminal"        name="TerminalPanel"             visibility="public"/>
+        <packagedElement xmi:type="uml:Component" xmi:id="f_test_cases"      name="TestCasesSection"          visibility="public"/>
+        <packagedElement xmi:type="uml:Component" xmi:id="f_test_reviews"    name="TestReviews"               visibility="public"/>
+        <packagedElement xmi:type="uml:Component" xmi:id="f_tests_manage"    name="TestsManageTab"            visibility="public"/>
+        <packagedElement xmi:type="uml:Component" xmi:id="f_tests_tab"       name="Teststab"                  visibility="public"/>
+        <packagedElement xmi:type="uml:Component" xmi:id="f_topics_tab"      name="TopicsTab"                 visibility="public"/>
+        <packagedElement xmi:type="uml:Component" xmi:id="f_users_tab"       name="UsersTab"                  visibility="public"/>
+
+        <packagedElement xmi:type="uml:Package" xmi:id="pkg_f_arena" name="CompetitiveArena" visibility="public">
+          <packagedElement xmi:type="uml:Component" xmi:id="f_arena"          name="CompetitiveArena" visibility="public"/>
+          <packagedElement xmi:type="uml:Package" xmi:id="pkg_f_phases" name="phases" visibility="public">
+            <packagedElement xmi:type="uml:Component" xmi:id="f_battle"    name="BattlePhase"   visibility="public"/>
+            <packagedElement xmi:type="uml:Component" xmi:id="f_finished"  name="FinishedPhase" visibility="public"/>
+            <packagedElement xmi:type="uml:Component" xmi:id="f_lobby"     name="LobbyPhase"    visibility="public"/>
+            <packagedElement xmi:type="uml:Component" xmi:id="f_picking"   name="PickingPhase"  visibility="public"/>
+            <packagedElement xmi:type="uml:Component" xmi:id="f_room"      name="RoomPhase"     visibility="public"/>
+          </packagedElement>
+        </packagedElement>
+
+        <packagedElement xmi:type="uml:Package" xmi:id="pkg_f_charts" name="charts" visibility="public">
+          <packagedElement xmi:type="uml:Component" xmi:id="f_chart_config"    name="chartConfig"                visibility="public"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="f_activity_line"   name="ActivityLineChart"          visibility="public"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="f_ch_funnel"       name="ChallengeFunnel"            visibility="public"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="f_diff_bar"        name="DifficultyBarChart"         visibility="public"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="f_exp_dist"        name="ExperienceDistributionChart" visibility="public"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="f_lang_pie"        name="LanguagePieChart"           visibility="public"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="f_rating_dist"     name="RatingDistributionChart"    visibility="public"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="f_report_reason"   name="ReportReasonBarChart"       visibility="public"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="f_report_status"   name="ReportStatusPieChart"       visibility="public"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="f_topic_bar"       name="TopicBarChart"              visibility="public"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="f_user_comparison" name="UserComparisonChart"        visibility="public"/>
+        </packagedElement>
+
+      </packagedElement>
+
+      <!-- ═══════════════════════════════════════════
+           ENTITIES — FSD Layer
+      ═══════════════════════════════════════════ -->
+      <packagedElement xmi:type="uml:Package" xmi:id="pkg_entities" name="entities" visibility="public">
+        <packagedElement xmi:type="uml:Package" xmi:id="pkg_e_challenge" name="challenge" visibility="public">
+          <packagedElement xmi:type="uml:Component" xmi:id="e_challenge_info" name="ChallengeInfo" visibility="public"/>
+        </packagedElement>
+        <packagedElement xmi:type="uml:Package" xmi:id="pkg_e_test" name="test" visibility="public">
+          <packagedElement xmi:type="uml:Component" xmi:id="e_test_case_item" name="TestCaseItem" visibility="public"/>
+        </packagedElement>
+      </packagedElement>
+
+      <!-- ═══════════════════════════════════════════
+           SHARED — FSD Layer
+      ═══════════════════════════════════════════ -->
+      <packagedElement xmi:type="uml:Package" xmi:id="pkg_shared" name="shared" visibility="public">
+
+        <packagedElement xmi:type="uml:Package" xmi:id="pkg_sh_api" name="api" visibility="public">
+          <packagedElement xmi:type="uml:Component" xmi:id="sh_api_client"    name="apiClient"    visibility="public"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="sh_api_endpoints" name="apiEndpoints" visibility="public"/>
+        </packagedElement>
+
+        <packagedElement xmi:type="uml:Package" xmi:id="pkg_sh_components" name="components" visibility="public">
+          <packagedElement xmi:type="uml:Component" xmi:id="sh_alert"          name="Alert"                    visibility="public"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="sh_bg_video"       name="BackgroundVideo"          visibility="public"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="sh_syntax_hl"      name="ClientSyntaxHighlighter"  visibility="public"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="sh_confirm_modal"  name="ConfirmationModal"        visibility="public"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="sh_custom_select"  name="CustomSelect"             visibility="public"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="sh_date_picker"    name="DateRangePicker"          visibility="public"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="sh_filter_pills"   name="FilterPills"              visibility="public"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="sh_locked_overlay" name="LockedOverlay"            visibility="public"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="sh_pagination"     name="Pagination"               visibility="public"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="sh_password_modal" name="PasswordModal"            visibility="public"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="sh_placeholder"    name="PlaceholderBox"           visibility="public"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="sh_subcard"        name="Subcard"                  visibility="public"/>
+        </packagedElement>
+
+        <packagedElement xmi:type="uml:Package" xmi:id="pkg_sh_context" name="context" visibility="public">
+          <packagedElement xmi:type="uml:Component" xmi:id="sh_theme_context" name="ThemeContext" visibility="public"/>
+        </packagedElement>
+
+        <packagedElement xmi:type="uml:Package" xmi:id="pkg_sh_lib" name="lib" visibility="public">
+          <packagedElement xmi:type="uml:Component" xmi:id="sh_socket" name="socket" visibility="public"/>
+        </packagedElement>
+
+        <packagedElement xmi:type="uml:Package" xmi:id="pkg_sh_services" name="services" visibility="public">
+          <packagedElement xmi:type="uml:Component" xmi:id="sh_admin_svc"     name="AdminApiService"  visibility="public"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="sh_auth_svc"      name="AuthService"      visibility="public"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="sh_challenge_svc" name="ChallengeService" visibility="public"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="sh_profile_svc"   name="ProfileService"   visibility="public"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="sh_solution_svc"  name="SolutionService"  visibility="public"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="sh_test_svc"      name="TestApiService"   visibility="public"/>
+        </packagedElement>
+
+        <packagedElement xmi:type="uml:Package" xmi:id="pkg_sh_store" name="store" visibility="public">
+          <packagedElement xmi:type="uml:Component" xmi:id="sh_store" name="store" visibility="public"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="sh_hooks" name="hooks" visibility="public"/>
+          <packagedElement xmi:type="uml:Package" xmi:id="pkg_sh_slice" name="slice" visibility="public">
+            <packagedElement xmi:type="uml:Component" xmi:id="sh_admin_manage_slice" name="adminManageSlice" visibility="public"/>
+            <packagedElement xmi:type="uml:Component" xmi:id="sh_admin_slice"        name="adminSlice"       visibility="public"/>
+            <packagedElement xmi:type="uml:Component" xmi:id="sh_admin_test_slice"   name="adminTestSlice"   visibility="public"/>
+            <packagedElement xmi:type="uml:Component" xmi:id="sh_auth_slice"         name="authSlice"        visibility="public"/>
+            <packagedElement xmi:type="uml:Component" xmi:id="sh_challenge_slice"    name="challengeSlice"   visibility="public"/>
+            <packagedElement xmi:type="uml:Component" xmi:id="sh_profile_slice"      name="profileSlice"     visibility="public"/>
+            <packagedElement xmi:type="uml:Component" xmi:id="sh_solution_slice"     name="solutionSlice"    visibility="public"/>
+            <packagedElement xmi:type="uml:Component" xmi:id="sh_test_slice"         name="testSlice"        visibility="public"/>
+          </packagedElement>
+        </packagedElement>
+
+        <packagedElement xmi:type="uml:Package" xmi:id="pkg_sh_types" name="types" visibility="public">
+          <packagedElement xmi:type="uml:Component" xmi:id="sh_type_challenge" name="challenge" visibility="public"/>
+          <packagedElement xmi:type="uml:Component" xmi:id="sh_type_ide"       name="ide"       visibility="public"/>
+        </packagedElement>
+
+        <packagedElement xmi:type="uml:Package" xmi:id="pkg_sh_utils" name="utils" visibility="public">
+          <packagedElement xmi:type="uml:Component" xmi:id="sh_prettier" name="prettierFormatter" visibility="public"/>
+        </packagedElement>
+
+      </packagedElement>
+
+      <!-- ═══════════════════════════════════════════
+           ЗАВИСИМОСТИ МЕЖДУ СЛОЯМИ FSD (пунктирные стрелки)
+      ═══════════════════════════════════════════ -->
+      <packagedElement xmi:type="uml:Dependency" xmi:id="dep_app_pages"
+        name="" visibility="public"
+        client="pkg_app" supplier="pkg_pages"/>
+
+      <packagedElement xmi:type="uml:Dependency" xmi:id="dep_pages_widgets"
+        name="" visibility="public"
+        client="pkg_pages" supplier="pkg_widgets"/>
+
+      <packagedElement xmi:type="uml:Dependency" xmi:id="dep_widgets_features"
+        name="" visibility="public"
+        client="pkg_widgets" supplier="pkg_features"/>
+
+      <packagedElement xmi:type="uml:Dependency" xmi:id="dep_features_entities"
+        name="" visibility="public"
+        client="pkg_features" supplier="pkg_entities"/>
+
+      <packagedElement xmi:type="uml:Dependency" xmi:id="dep_entities_shared"
+        name="" visibility="public"
+        client="pkg_entities" supplier="pkg_shared"/>
+
+    </packagedElement>
+  </uml:Model>
+
+</xmi:XMI>

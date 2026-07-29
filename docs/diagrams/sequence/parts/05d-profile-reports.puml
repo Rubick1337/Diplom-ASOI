@@ -1,0 +1,30 @@
+@startuml
+title Profile Page — Мои жалобы
+
+actor User
+participant "ProfilePage" as Page
+participant "UserController" as UC
+participant "ReportModel" as RC
+
+User -> Page: click "Жалобы"
+Page -> UC: dispatch(fetchMyReports(page=1, pageSize, search="", status=""))
+UC -> RC: findPaginated(userId, status, search, page, pageSize)
+RC --> UC: rows[], count
+UC --> Page: items[], total, totalPages
+Page --> User: рендер списка жалоб
+
+User -> Page: input[поиск] / select[статус] → изменяет фильтры
+Page -> UC: dispatch(fetchMyReports(page=1, ...filters))
+UC -> RC: findPaginated(userId, status, search, 1, pageSize)
+RC --> UC: rows[], count
+UC --> Page: items[], total, totalPages
+Page --> User: отфильтрованный список жалоб
+
+User -> Page: click пагинация → setReportPage(n)
+Page -> UC: dispatch(fetchMyReports(page=n, ...))
+UC -> RC: findPaginated(userId, status, search, n, pageSize)
+RC --> UC: rows[], count
+UC --> Page: items[], total, totalPages
+Page --> User: страница n списка жалоб
+
+@enduml

@@ -9,6 +9,7 @@ import '@/widgets/AdminHeader/AdminHeader.css';
 import './OwnerHeader.css';
 import NotificationBell from '@/widgets/NotificationBell/NotificationBell';
 import UserSidebar from '@/widgets/UserSidebar/UserSidebar';
+import ThemeToggle from '@/widgets/ThemeToggle/ThemeToggle';
 import DateRangePicker from '@/shared/components/DateRangePicker/DateRangePicker';
 import { RootState } from '@/shared/store/store';
 
@@ -148,6 +149,7 @@ export default function OwnerHeader({
 
                         {!mounted || !isInitialized ? null : user ? (
                             <>
+                                <ThemeToggle />
                                 <NotificationBell />
                                 <button
                                     className="header-burger"

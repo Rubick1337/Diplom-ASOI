@@ -100,8 +100,9 @@ const prepareScript = (userCode, harnessCode) => {
 
 module.exports = {
     php: {
-        image:  'php:8.2-cli-alpine',
-        runCmd: "sh -c 'cat > /tmp/code.php && php /tmp/code.php 2>&1'",
+        image:       'php:8.2-cli-alpine',
+        runCmd:      "sh -c 'cat > /tmp/code.php && php /tmp/code.php 2>&1'",
+        inputRunCmd: "head -1 | base64 -d > /tmp/__in; cat > /tmp/code.php && php /tmp/code.php < /tmp/__in",
         template,
         prepareScript,
     }

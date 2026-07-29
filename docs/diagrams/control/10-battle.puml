@@ -1,0 +1,83 @@
+@startuml
+title 10 Battle — Control Classes
+
+class BattlePage <<boundary>> {
+  - userId: int
+  - username: string
+  - page: int
+  - pageSize: int
+  - search: string
+  - roomId: string
+  - code: string
+  - password: string
+  - challengeId: int
+  - passed: int
+  - total: int
+  - solved: boolean
+  - message: string
+  + items: Challenge[]
+  + rooms: RoomsPage
+  + phase: string
+  + roomCode: string
+  + players: Player[]
+  + challenges: Challenge[]
+  + opponentProgress: Progress
+  + winner: WinnerInfo
+  + chatMessages: ChatMessage[]
+}
+
+class ChallengeController <<control>> {
+  - pageSize: int
+  - id: int
+  + items: Challenge[]
+  + challenge: Challenge
+}
+
+class SocketServer <<control>> {
+  - userId: int
+  - username: string
+  - roomId: string
+  - page: int
+  - pageSize: int
+  - search: string
+  - code: string
+  - password: string
+  - challengeId: int
+  - passed: int
+  - total: int
+  - solved: boolean
+  - message: string
+  + myRoomFound: RoomInfo
+  + myRoomNotFound: boolean
+  + roomsList: RoomsPage
+  + matchFound: MatchInfo
+  + waitingForOpponent: boolean
+  + roomCreated: RoomInfo
+  + roomError: ErrorInfo
+  + challengeSelectedByPlayer: SelectionInfo
+  + battleStart: BattleStartInfo
+  + opponentChallengeResult: ProgressInfo
+  + battleWinner: WinnerInfo
+  + receiveBattleChat: ChatMessage
+  + battleRejoined: RejoinInfo
+}
+
+class RoomStore <<entity>> {
+  - code: string
+  - roomData: RoomData
+  - battleRoomId: string
+  - battleData: BattleData
+  - socketId: string
+  - challengeId: int
+  - progress: Progress
+  + rooms: RoomData[]
+  + room: RoomData
+  + battle: BattleData
+}
+
+BattlePage ..> ChallengeController : getAllChallenges(pageSize=20) / getChallengeById(id)
+BattlePage ..> SocketServer : emit check_my_room(userId, username) /\nemit rejoin_battle(roomId, username) /\nemit get_rooms(page, pageSize, search) /\nemit join_matchmaking(username, userId) /\nemit leave_matchmaking /\nemit create_room(username, userId, password?) /\nemit join_room(username, userId, code, password?) /\nemit cancel_room /\nemit select_battle_challenge(roomId, challenge) /\nemit challenge_result(roomId, challengeId, passed, total, solved) /\nemit send_battle_chat(roomId, username, message) /\nemit surrender(roomId, username)
+SocketServer *-- RoomStore : getAllRooms / getRoom(code) / setRoom(code, roomData) /\ndeleteRoom(code) / setBattle(battleRoomId, battleData) /\ngetBattle(roomId) / deleteBattle(roomId) /\nupdateBattlePlayer / updateBattleProgress /\ngetMatchmakingRooms
+SocketServer ..> BattlePage : my_room_found / my_room_not_found /\nbattle_rejoined / rooms_list /\nmatch_found / waiting_for_opponent /\nroom_created / room_error /\nplayer_joined_room / rooms_updated /\nchallenge_selected_by_player /\nbattle_start / opponent_challenge_result /\nbattle_winner / receive_battle_chat
+
+@enduml

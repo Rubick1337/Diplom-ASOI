@@ -1,0 +1,49 @@
+@startuml
+title Battle Page — Сражение, чат, сдача и финал
+
+actor User
+participant "BattlePage" as Page
+participant "SocketServer" as Socket
+participant "RoomStore" as RS
+
+note over Page: phase = battle
+
+User -> Page: редактирует код → запускает тесты
+note over Page: CodeEditor + DockerRunner через ChallengeController
+Page -> Socket: emit challenge_result(roomId, challengeId, passed, total, solved)
+Socket -> RS: updateBattleProgress(roomId, socketId, challengeId, progress)
+RS --> Socket: ok
+Socket --> Page: opponent_challenge_result { challengeId, passed, total, solved }
+Page --> User: обновляет прогресс-бар соперника
+
+alt игрок решил все задачи
+    Socket --> Page: battle_winner { winnerUsername }
+    note over Page: clearSession() — phase → finished
+    Page --> User: рендер экрана финала
+end
+
+User -> Page: input[сообщение] → click "Отправить" в чате
+Page -> Socket: emit send_battle_chat(roomId, username, message)
+Socket --> Page: receive_battle_chat { username, message, timestamp }
+Page --> User: новое сообщение в чате
+
+User -> Page: click "Сдаться"
+Page --> User: ConfirmationModal
+User -> Page: click "Подтвердить"
+Page -> Socket: emit surrender(roomId, username)
+Socket -> RS: getBattle(roomId)
+RS --> Socket: battle
+Socket --> Page: battle_winner { winnerUsername, isSurrender: true, surrenderedUsername }
+Socket -> RS: deleteBattle(roomId)
+RS --> Socket: ok
+note over Page: clearSession() — phase → finished
+Page --> User: рендер экрана финала
+
+note over Page: phase = finished
+Page --> User: рендер победителя / проигравшего (FinishedPhase)
+User -> Page: click "Играть снова"
+note over Page: clearSession() — сброс всех состояний
+note over Page: phase → lobby
+Page --> User: возврат в лобби
+
+@enduml

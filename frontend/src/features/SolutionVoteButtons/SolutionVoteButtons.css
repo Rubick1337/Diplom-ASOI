@@ -1,0 +1,66 @@
+.vote-buttons {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.vote-btn {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 12px;
+    border-radius: 20px;
+    border: 1px solid #333;
+    background: transparent;
+    color: #888;
+    font-size: 0.82rem;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+
+.vote-btn:disabled {
+    cursor: default;
+    opacity: 0.5;
+}
+
+.vote-btn:not(:disabled):hover {
+    border-color: #555;
+    color: #ccc;
+    background: rgba(255, 255, 255, 0.04);
+}
+
+.like-btn.active {
+    border-color: #40c057;
+    color: #40c057;
+    background: rgba(64, 192, 87, 0.1);
+}
+
+.dislike-btn.active {
+    border-color: #fa5252;
+    color: #fa5252;
+    background: rgba(250, 82, 82, 0.1);
+}
+
+/* LIGHT THEME */
+[data-theme="light"] .vote-btn {
+    border-color: rgba(26, 24, 23, 0.15);
+    color: rgba(26, 24, 23, 0.5);
+}
+
+[data-theme="light"] .vote-btn:not(:disabled):hover {
+    border-color: rgba(26, 24, 23, 0.35);
+    color: rgba(26, 24, 23, 0.8);
+    background: rgba(26, 24, 23, 0.05);
+}
+
+[data-theme="light"] .like-btn.active {
+    border-color: #2f9e44;
+    color: #2f9e44;
+    background: rgba(47, 158, 68, 0.08);
+}
+
+[data-theme="light"] .dislike-btn.active {
+    border-color: #e03131;
+    color: #e03131;
+    background: rgba(224, 49, 49, 0.08);
+}

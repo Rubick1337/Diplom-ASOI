@@ -288,3 +288,61 @@
     .ram-body { padding: 16px 18px; }
     .ram-header { padding: 18px 18px 14px; }
 }
+
+/* LIGHT THEME */
+[data-theme="light"] .ram-modal {
+    background: #ede8df;
+    border-color: rgba(26,24,23,0.12);
+    box-shadow: 0 24px 60px rgba(26,24,23,0.15);
+}
+[data-theme="light"] .ram-title { color: #1a1817; }
+[data-theme="light"] .ram-subtitle { color: rgba(26,24,23,0.45); }
+[data-theme="light"] .ram-close {
+    border-color: rgba(26,24,23,0.14);
+    color: rgba(26,24,23,0.45);
+}
+[data-theme="light"] .ram-divider { background: rgba(26,24,23,0.10); }
+[data-theme="light"] .ram-body::-webkit-scrollbar-thumb { background: rgba(26,24,23,0.18); }
+[data-theme="light"] .ram-info-card {
+    background: #f5f0e8;
+    border-color: rgba(26,24,23,0.12);
+}
+[data-theme="light"] .ram-info-row { border-bottom-color: rgba(26,24,23,0.08); }
+[data-theme="light"] .ram-info-key { color: rgba(26,24,23,0.45); }
+[data-theme="light"] .ram-info-val { color: #1a1817; }
+[data-theme="light"] .ram-info-val--strong { color: #1a1817; }
+[data-theme="light"] .ram-field-label { color: rgba(26,24,23,0.45); }
+[data-theme="light"] .ram-comment-box {
+    background: #f5f0e8;
+    border-color: rgba(26,24,23,0.12);
+    color: rgba(26,24,23,0.65);
+}
+[data-theme="light"] .ram-feedback-textarea {
+    background: #f5f0e8;
+    border-color: rgba(26,24,23,0.14);
+    color: #1a1817;
+}
+[data-theme="light"] .ram-feedback-textarea::placeholder { color: rgba(26,24,23,0.30); }
+[data-theme="light"] .ram-char-count { color: rgba(26,24,23,0.35); }
+[data-theme="light"] .ram-action-btn--close {
+    border-color: rgba(26,24,23,0.14);
+    color: rgba(26,24,23,0.50);
+}
+[data-theme="light"] .ram-action-btn--close:hover {
+    border-color: rgba(26,24,23,0.28);
+    color: #1a1817;
+}
+[data-theme="light"] .ram-info-card {
+    background: #ddd8ce;
+    border-color: rgba(26,24,23,0.12);
+}
+[data-theme="light"] .ram-comment-box {
+    background: #ddd8ce;
+    border-color: rgba(26,24,23,0.12);
+    color: rgba(26,24,23,0.65);
+}
+[data-theme="light"] .ram-feedback-textarea {
+    background: #ddd8ce;
+    border-color: rgba(26,24,23,0.14);
+    color: #1a1817;
+}

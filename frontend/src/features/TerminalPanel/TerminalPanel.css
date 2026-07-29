@@ -238,3 +238,50 @@
     padding: 5px;
     border-radius: 4px;
 }
+
+/* LIGHT THEME */
+[data-theme="light"] .terminal-panel {
+    background-color: #ede8df;
+    border-top-color: rgba(26,24,23,0.12);
+}
+[data-theme="light"] .terminal-tabs-header {
+    background-color: #f5f0e8;
+    border-bottom-color: rgba(26,24,23,0.12);
+}
+[data-theme="light"] .term-tab {
+    color: rgba(26,24,23,0.45);
+    border-right-color: rgba(26,24,23,0.08);
+}
+[data-theme="light"] .term-tab:hover {
+    color: #1a1817;
+    background-color: #ede8df;
+}
+[data-theme="light"] .term-tab.active {
+    color: #FF6B35;
+    background-color: #ffffff;
+    border-top-color: #FF6B35;
+}
+[data-theme="light"] .terminal-body::-webkit-scrollbar-track { background: #ffffff; }
+[data-theme="light"] .terminal-body::-webkit-scrollbar-thumb { background-color: rgba(26,24,23,0.18); }
+[data-theme="light"] .log-time { color: rgba(26,24,23,0.35); }
+[data-theme="light"] .log-entry.info .log-message { color: #1a1817; }
+[data-theme="light"] .empty-state-terminal { color: rgba(26,24,23,0.40); }
+[data-theme="light"] .prob-location { color: rgba(26,24,23,0.40); }
+[data-theme="light"] .prob-details {
+    background: #f5f0e8;
+    border-left-color: rgba(26,24,23,0.18);
+    color: rgba(26,24,23,0.60);
+}
+[data-theme="light"] .log-details pre {
+    background: #f5f0e8;
+    color: rgba(26,24,23,0.60);
+}
+[data-theme="light"] .line-badge {
+    background: rgba(26,24,23,0.10);
+    color: #0070f3;
+}
+[data-theme="light"] .problem-item:hover { background: rgba(26,24,23,0.04); }
+[data-theme="light"] .empty-state.success { color: rgba(26,24,23,0.60); }
+[data-theme="light"] .term-tab img {
+    filter: invert(1) brightness(0.2);
+}

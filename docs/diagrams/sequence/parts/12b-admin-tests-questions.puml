@@ -1,0 +1,58 @@
+@startuml
+title Admin Tests — Управление вопросами
+
+actor Admin
+participant "AdminTestsPage" as Page
+participant "TestController" as TC
+participant "Question" as Q
+participant "DockerRunner" as Docker
+
+Admin -> Page: click "+ Добавить вопрос"
+Admin -> Page: select тип + input[text, points]
+note over Page: single-choice / multiple-choice / matching / code
+
+Admin -> Page: click "Сохранить вопрос"
+Page -> TC: dispatch(createQuestion(testId, { typeId, text, points, options?, testCases? }))
+TC -> Q: create(testId, typeId, text, points, orderIndex)
+Q --> TC: newQuestion
+TC --> Page: newQuestion
+Page --> Admin: вопрос добавлен в список
+
+Admin -> Page: upload[image] для вопроса
+Page -> TC: dispatch(uploadQuestionImage(questionId, imageFile))
+TC -> Q: update(questionId, { imageUrl })
+Q --> TC: updatedQuestion
+TC --> Page: { imageUrl }
+Page --> Admin: изображение загружено
+
+Admin -> Page: перетаскивает вопросы → новый порядок
+Page -> TC: dispatch(reorderQuestions(testId, orderedIds[]))
+TC -> Q: bulkUpdate(orderedIds, orderIndex)
+Q --> TC: ok
+TC --> Page: ok
+Page --> Admin: порядок вопросов сохранён
+
+Admin -> Page: click "Редактировать" вопрос → изменяет поля
+Page -> TC: dispatch(updateQuestion(questionId, { text, points, options?, testCases? }))
+TC -> Q: update(questionId, changes)
+Q --> TC: updatedQuestion
+TC --> Page: updatedQuestion
+Page --> Admin: вопрос обновлён
+
+alt предпросмотр код-вопроса
+    Admin -> Page: input[код] → click "Предпросмотр"
+    Page -> TC: dispatch(previewCode(questionId, code, language))
+    TC -> Docker: runInDocker(language, code, testCases[])
+    Docker --> TC: results[]{ passed, output, expected }
+    TC --> Page: results[]
+    Page --> Admin: результаты по тест-кейсам
+end
+
+Admin -> Page: click "Удалить" вопрос → ConfirmationModal → подтвердить
+Page -> TC: dispatch(deleteQuestion(testId, questionId))
+TC -> Q: destroy(questionId)
+Q --> TC: ok
+TC --> Page: ok
+Page --> Admin: вопрос удалён из списка
+
+@enduml

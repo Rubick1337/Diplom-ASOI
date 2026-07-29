@@ -8,6 +8,7 @@ import '@/widgets/Header/Header.css';
 import './AdminHeader.css';
 import NotificationBell from '@/widgets/NotificationBell/NotificationBell';
 import UserSidebar from '@/widgets/UserSidebar/UserSidebar';
+import ThemeToggle from '@/widgets/ThemeToggle/ThemeToggle';
 import { RootState } from '@/shared/store/store';
 
 const getAvatarColor = (name: string) => {
@@ -60,6 +61,7 @@ export default function AdminHeader() {
                     <div className="header-right-section">
                         {!mounted || !isInitialized ? null : user ? (
                             <>
+                                <ThemeToggle />
                                 <NotificationBell />
                                 <button
                                     className="header-burger"

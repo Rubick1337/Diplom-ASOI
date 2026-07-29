@@ -109,3 +109,39 @@
 .lf-options::-webkit-scrollbar-thumb:hover {
     background: #444;
 }
+
+/* LIGHT THEME */
+[data-theme="light"] .lf-trigger {
+    background: #ddd8ce;
+    border-color: rgba(26,24,23,0.16);
+    color: #1a1817;
+}
+[data-theme="light"] .lf-trigger:hover {
+    border-color: rgba(240,73,73,0.45);
+}
+[data-theme="light"] .lf-trigger.open {
+    border-color: rgba(240,73,73,0.70);
+    box-shadow: 0 0 0 2px rgba(240,73,73,0.18);
+}
+[data-theme="light"] .lf-arrow {
+    color: rgba(26,24,23,0.40);
+}
+[data-theme="light"] .lf-options {
+    background: #ede8df;
+    border-color: rgba(26,24,23,0.12);
+    box-shadow: 0 10px 30px rgba(26,24,23,0.12);
+}
+[data-theme="light"] .lf-option {
+    color: rgba(26,24,23,0.65);
+}
+[data-theme="light"] .lf-option:hover {
+    background: rgba(26,24,23,0.06);
+    color: #1a1817;
+}
+[data-theme="light"] .lf-option.selected {
+    background: rgba(240,73,73,0.08);
+    color: #F04949;
+}
+[data-theme="light"] .lf-options::-webkit-scrollbar-thumb {
+    background: rgba(26,24,23,0.18);
+}

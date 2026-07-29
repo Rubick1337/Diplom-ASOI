@@ -72,6 +72,15 @@ class DockerRunner {
 
                         const runtimeErr = results.find(r => r.status === 'error');
                         if (runtimeErr) {
+                            let errorLine = null;
+                            let errorCol = 1;
+                            let errorEndCol = null;
+                            if (runtimeErr.errorLoc) {
+                                errorLine = runtimeErr.errorLoc.line - userCodeOffset;
+                                if (errorLine < 1) errorLine = 1;
+                                errorCol = runtimeErr.errorLoc.col || 1;
+                                errorEndCol = runtimeErr.errorLoc.endCol || null;
+                            }
                             return resolve({
                                 success: false,
                                 executionTimeMs,
@@ -79,6 +88,9 @@ class DockerRunner {
                                     type: 'runtime_error',
                                     message: 'Ошибка выполнения',
                                     details: this._filterStackTrace(String(runtimeErr.actual), langConfig.image, userCodeOffset, userCodeLines),
+                                    errorLine,
+                                    errorCol,
+                                    errorEndCol,
                                     userCodeLines
                                 },
                                 testResults: results
@@ -101,6 +113,53 @@ class DockerRunner {
                         executionTimeMs: 0,
                         error: { type: 'parse_error', message: 'Ошибка парсинга результатов', details: stdout.trim(), userCodeLines }
                     });
+                }
+            });
+        });
+    }
+
+    async runRaw(langConfig, code, timeLimitMs = 10000, stdinInput = null) {
+        const hasInput = stdinInput !== null && stdinInput !== undefined && stdinInput !== '';
+        const runCmd   = hasInput && langConfig.inputRunCmd ? langConfig.inputRunCmd : langConfig.runCmd;
+        const stdinData = hasInput && langConfig.inputRunCmd
+            ? Buffer.from(stdinInput).toString('base64') + '\n' + code
+            : code;
+
+        return new Promise((resolve) => {
+            const proc = spawn('docker', [
+                'run', '-i', '--rm',
+                '--memory=128m', '--cpus=0.5', '--pids-limit', '50',
+                '--network', 'none',
+                langConfig.image,
+                'sh', '-c', runCmd,
+            ]);
+
+            let stdout = '';
+            let stderr = '';
+            let resolved = false;
+
+            const hardKill = setTimeout(() => {
+                if (!resolved) {
+                    proc.kill('SIGKILL');
+                    resolved = true;
+                    resolve({ output: '', error: 'Превышен лимит времени (TLE)', timedOut: true });
+                }
+            }, timeLimitMs + 3000);
+
+            proc.stdin.write(stdinData);
+            proc.stdin.end();
+
+            proc.stdout.on('data', d => { stdout += d.toString(); });
+            proc.stderr.on('data', d => { stderr += d.toString(); });
+
+            proc.on('close', (exitCode) => {
+                clearTimeout(hardKill);
+                if (resolved) return;
+                resolved = true;
+                if (exitCode !== 0 && stderr.trim()) {
+                    resolve({ output: stdout.trim(), error: stderr.trim(), timedOut: false });
+                } else {
+                    resolve({ output: stdout.trim(), error: null, timedOut: false });
                 }
             });
         });
@@ -135,11 +194,11 @@ class DockerRunner {
         if (!stack) return '';
 
         if (image.includes('node')) {
-            return this._filterNodeStack(stack, userCodeLines);
+            return this._filterNodeStack(stack, userCodeLines, userCodeOffset);
         }
 
         if (image.includes('python')) {
-            return this._filterPythonStack(stack, userCodeLines);
+            return this._filterPythonStack(stack, userCodeLines, userCodeOffset);
         }
 
         if (image.includes('gcc')) {
@@ -161,7 +220,7 @@ class DockerRunner {
         return stack.trim();
     }
 
-    _filterNodeStack(stack, userCodeLines) {
+    _filterNodeStack(stack, userCodeLines, userCodeOffset = 0) {
         const lines = stack.split('\n');
         const result = lines.filter(line => {
             const l = line.trim();
@@ -181,26 +240,35 @@ class DockerRunner {
             }
             return false;
         });
-        return result.join('\n').trim();
+
+        let output = result.join('\n').trim();
+        if (userCodeOffset > 0) {
+            output = output.replace(/\[stdin\]:(\d+)/g, (_, n) => {
+                const adj = parseInt(n) - userCodeOffset;
+                return `[stdin]:${adj > 0 ? adj : 1}`;
+            });
+        }
+        return output;
     }
 
-    _filterPythonStack(stack, userCodeLines) {
+    _filterPythonStack(stack, userCodeLines, userCodeOffset = 0) {
         const lines = stack.split('\n');
-        const result = lines.filter(line => {
+        const result = lines.map(line => {
             const l = line.trim();
 
-            if (!l.startsWith('File ') && !l.startsWith('Traceback') && !l.startsWith('During')) {
-                return true;
-            }
-            if (l.startsWith('Traceback')) return false;
+            if (l.startsWith('Traceback') || l.startsWith('During')) return null;
 
             const fileMatch = l.match(/^File ".*", line (\d+)/);
             if (fileMatch) {
                 const frameLine = parseInt(fileMatch[1]);
-                return frameLine <= userCodeLines;
+                const userLine = frameLine - userCodeOffset;
+                if (userLine < 1 || userLine > userCodeLines) return null;
+                return userCodeOffset > 0
+                    ? line.replace(`line ${frameLine}`, `line ${userLine}`)
+                    : line;
             }
-            return true;
-        });
+            return line;
+        }).filter(l => l !== null);
         return result.join('\n').trim();
     }
 

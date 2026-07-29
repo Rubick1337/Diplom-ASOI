@@ -1,0 +1,133 @@
+@startuml
+title Диаграмма последовательности — Challenge Page (Workspace)
+
+actor User
+participant "ChallengeWorkspace" as Page
+participant "ChallengeController" as CC
+participant "SolutionController" as SC
+participant "UserController" as UC
+participant "Challenge" as Challenge
+participant "HistoryChallenge" as HC
+participant "SolutionVote" as SV
+participant "SolutionComment" as SCom
+participant "ReportModel" as RC
+participant "ReviewModel" as RV
+participant "AIService" as AI
+participant "DockerRunner" as Docker
+
+User -> Page: открывает /challenges/:id
+
+Page -> CC: getChallengeById(id)
+CC -> Challenge: findByIdWithTestCases(id)
+Challenge --> CC: name, description, funcName, parameters[], testCases[], topics[]
+CC --> Page: name, description, funcName, parameters[], testCases[], topics[]
+Page --> User: рендер workspace (описание + редактор + тесты)
+
+User -> Page: select язык → setLanguage
+
+User -> Page: редактирует код в Monaco Editor
+
+User -> Page: click "Форматировать код"
+Page -> CC: formatCode(code, language)
+CC -> Docker: runFormatter(language, code)
+Docker --> CC: formattedCode
+CC --> Page: formattedCode
+Page --> User: обновлённый код в редакторе
+
+User -> Page: click "Отправить"
+Page -> CC: execute(id, code, language, userId)
+CC -> Docker: runInDocker(language, harness+code, timeLimitMs)
+Docker --> CC: testResults[] (status, actual, duration)
+CC -> HC: saveHistory(userId, challengeId, status, language, code, testsPassed, executionTimeMs)
+HC --> CC: ok
+CC --> Page: testResults[]
+Page --> User: отображает результаты тестов
+
+alt все тесты прошли (isSolved)
+    Page -> UC: addExperience(xpGained)
+    UC --> Page: обновлённый XP
+    Page --> User: обновлённый XP, конфетти
+end
+
+User -> Page: click "Отзывы"
+Page -> CC: getReviews(challengeId)
+CC -> RV: findAll(challengeId)
+RV --> CC: reviews[], avgRating, total
+CC --> Page: reviews[], avgRating, pagination
+Page --> User: рендер отзывов
+
+User -> Page: textarea[текст] + select[рейтинг] → click "Оставить отзыв"
+Page -> CC: addReview(challengeId, userId, content, rating)
+CC -> RV: create(challengeId, userId, content, rating)
+RV --> CC: newReview
+CC --> Page: новый отзыв
+Page --> User: обновлённый список отзывов
+
+User -> Page: click "Решения сообщества"
+Page -> CC: getSolutions(challengeId, userId, page, language)
+CC -> HC: findAll(challengeId, status=success)
+HC --> CC: items[], total
+CC --> Page: items[], totalPages, currentPage
+Page --> User: рендер решений сообщества
+
+User -> Page: click на решении → открыть детали
+Page -> SC: getVotes(solutionId, userId)
+SC -> SV: findAll(solutionId)
+SV --> SC: upvotes, downvotes, userVote
+SC --> Page: upvotes, downvotes, userVote
+
+Page -> SC: getComments(solutionId, page=1, pageSize=20)
+SC -> SCom: findAll(solutionId, page, pageSize)
+SCom --> SC: items[], total, totalPages
+SC --> Page: items[], total, totalPages
+Page --> User: рендер решения с голосами и комментариями
+
+User -> Page: click "Нравится" / "Не нравится"
+Page -> SC: vote(solutionId, { userId, vote: 1|-1 })
+SC -> SV: upsert(solutionId, userId, vote)
+SV --> SC: updatedVote
+SC --> Page: upvotes, downvotes, userVote
+Page --> User: обновлённые счётчики голосов
+
+User -> Page: click убрать голос
+Page -> SC: removeVote(solutionId, { userId })
+SC -> SV: destroy(solutionId, userId)
+SV --> SC: ok
+SC --> Page: upvotes, downvotes, userVote: null
+Page --> User: голос сброшен
+
+User -> Page: textarea[комментарий] → click "Отправить"
+Page -> SC: addComment(solutionId, { userId, content })
+SC -> SCom: create(solutionId, userId, content)
+SCom --> SC: newComment
+SC --> Page: newComment
+Page --> User: новый комментарий в списке
+
+User -> Page: click "Удалить" на своём комментарии
+Page -> SC: deleteComment(solutionId, commentId, { userId })
+SC -> SCom: destroy(commentId, userId)
+SCom --> SC: ok
+SC --> Page: { message: "Комментарий удалён" }
+Page --> User: комментарий удалён из списка
+
+User -> Page: click "Пожаловаться"
+Page --> User: открывается ReportModal
+
+User -> Page: select[причина] + textarea[текст] → click "Отправить"
+Page -> CC: createReport(challengeId, userId, reasonId, reasonText)
+CC -> RC: create(challengeId, userId, reasonId, reasonText)
+RC --> CC: ok
+CC --> Page: success
+Page --> User: модалка закрывается
+
+User -> Page: click "Помощник ИИ"
+Page --> User: открывается AI-панель
+
+User -> Page: textarea[вопрос по задаче] → click "Спросить"
+Page -> CC: aiChat(challengeId, { question, code, language })
+CC -> AI: generateHint(challengeDescription, question, code, language)
+AI --> CC: hint
+CC --> Page: hint
+Page --> User: отображает подсказку ИИ
+
+@enduml

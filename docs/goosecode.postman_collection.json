@@ -1,0 +1,1085 @@
+{
+  "info": {
+    "_postman_id": "goosecode-api-v2",
+    "name": "GooseCode API",
+    "description": "Полная коллекция API платформы GooseCode.\n\n**Быстрый старт:**\n1. Выполни «Send Verification Code» → получи код на почту\n2. Выполни «Login» → accessToken сохранится автоматически в переменную {{accessToken}}\n3. Все защищённые запросы используют Authorization: Bearer {{accessToken}}\n\n**Переменные** challengeId, testId и т.д. сохраняются автоматически после создания через тест-скрипты.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl",        "value": "http://localhost:8000/api", "type": "string" },
+    { "key": "accessToken",    "value": "",  "type": "string" },
+    { "key": "userId",         "value": "1", "type": "string" },
+    { "key": "challengeId",    "value": "1", "type": "string" },
+    { "key": "testId",         "value": "1", "type": "string" },
+    { "key": "questionId",     "value": "1", "type": "string" },
+    { "key": "attemptId",      "value": "1", "type": "string" },
+    { "key": "solutionId",     "value": "1", "type": "string" },
+    { "key": "topicId",        "value": "1", "type": "string" },
+    { "key": "notificationId", "value": "1", "type": "string" },
+    { "key": "reportId",       "value": "1", "type": "string" },
+    { "key": "achievementId",  "value": "1", "type": "string" },
+    { "key": "commentId",      "value": "1", "type": "string" }
+  ],
+  "item": [
+    {
+      "name": "🔐 Auth",
+      "item": [
+        {
+          "name": "Send Verification Code",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/users/send-code", "host": ["{{baseUrl}}"], "path": ["users", "send-code"] },
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"test@goosecode.dev\"\n}", "options": { "raw": { "language": "json" } } }
+          },
+          "response": []
+        },
+        {
+          "name": "Register",
+          "event": [{
+            "listen": "test",
+            "script": { "exec": [
+              "if (pm.response.code === 201 || pm.response.code === 200) {",
+              "    const h = pm.response.headers.find(h => h.key.toLowerCase() === 'set-cookie' && h.value.startsWith('accessToken='));",
+              "    if (h) pm.collectionVariables.set('accessToken', h.value.split(';')[0].split('=')[1]);",
+              "    const j = pm.response.json();",
+              "    if (j.user?.id) pm.collectionVariables.set('userId', String(j.user.id));",
+              "}"
+            ], "type": "text/javascript" }
+          }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/users/register", "host": ["{{baseUrl}}"], "path": ["users", "register"] },
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"test@goosecode.dev\",\n  \"username\": \"testuser\",\n  \"password\": \"Test12345!\",\n  \"code\": \"123456\"\n}", "options": { "raw": { "language": "json" } } }
+          },
+          "response": []
+        },
+        {
+          "name": "Login",
+          "event": [{
+            "listen": "test",
+            "script": { "exec": [
+              "if (pm.response.code === 200) {",
+              "    const h = pm.response.headers.find(h => h.key.toLowerCase() === 'set-cookie' && h.value.startsWith('accessToken='));",
+              "    if (h) {",
+              "        const token = h.value.split(';')[0].split('=')[1];",
+              "        pm.collectionVariables.set('accessToken', token);",
+              "        console.log('Token saved');",
+              "    }",
+              "    const j = pm.response.json();",
+              "    if (j.user?.id) pm.collectionVariables.set('userId', String(j.user.id));",
+              "    pm.test('Login OK', () => pm.response.to.have.status(200));",
+              "}"
+            ], "type": "text/javascript" }
+          }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/users/login", "host": ["{{baseUrl}}"], "path": ["users", "login"] },
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"test@goosecode.dev\",\n  \"password\": \"Test12345!\"\n}", "options": { "raw": { "language": "json" } } }
+          },
+          "response": []
+        },
+        {
+          "name": "Refresh Token",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/users/refresh", "host": ["{{baseUrl}}"], "path": ["users", "refresh"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": { "raw": "{{baseUrl}}/users/logout", "host": ["{{baseUrl}}"], "path": ["users", "logout"] }
+          },
+          "response": []
+        },
+        {
+          "name": "OAuth — Google (открывать в браузере)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/auth/google", "host": ["{{baseUrl}}"], "path": ["auth", "google"] }
+          },
+          "response": []
+        },
+        {
+          "name": "OAuth — GitHub (открывать в браузере)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/auth/github", "host": ["{{baseUrl}}"], "path": ["auth", "github"] }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "👤 Users",
+      "item": [
+        {
+          "name": "Get My Profile",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": { "raw": "{{baseUrl}}/users/profile", "host": ["{{baseUrl}}"], "path": ["users", "profile"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Update User",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/users/{{userId}}", "host": ["{{baseUrl}}"], "path": ["users", "{{userId}}"] },
+            "body": { "mode": "raw", "raw": "{\n  \"username\": \"updateduser\",\n  \"bio\": \"Backend developer\",\n  \"github\": \"https://github.com/testuser\"\n}", "options": { "raw": { "language": "json" } } }
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Users",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": { "raw": "{{baseUrl}}/users/getAll", "host": ["{{baseUrl}}"], "path": ["users", "getAll"] }
+          },
+          "response": []
+        },
+        {
+          "name": "My Challenge History",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": { "raw": "{{baseUrl}}/users/my-history", "host": ["{{baseUrl}}"], "path": ["users", "my-history"] }
+          },
+          "response": []
+        },
+        {
+          "name": "My Test History",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": { "raw": "{{baseUrl}}/users/my-test-history", "host": ["{{baseUrl}}"], "path": ["users", "my-test-history"] }
+          },
+          "response": []
+        },
+        {
+          "name": "My Created Challenges",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": { "raw": "{{baseUrl}}/users/my-challenges", "host": ["{{baseUrl}}"], "path": ["users", "my-challenges"] }
+          },
+          "response": []
+        },
+        {
+          "name": "My Reports",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": { "raw": "{{baseUrl}}/users/my-reports", "host": ["{{baseUrl}}"], "path": ["users", "my-reports"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Learning Plan",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": { "raw": "{{baseUrl}}/users/learning-plan", "host": ["{{baseUrl}}"], "path": ["users", "learning-plan"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Activity Heatmap",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": { "raw": "{{baseUrl}}/users/activity-heatmap", "host": ["{{baseUrl}}"], "path": ["users", "activity-heatmap"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Generate Topic Guide (AI)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/users/topic-guide", "host": ["{{baseUrl}}"], "path": ["users", "topic-guide"] },
+            "body": { "mode": "raw", "raw": "{\n  \"topic\": \"Рекурсия в Python\"\n}", "options": { "raw": { "language": "json" } } }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Leaderboard",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": { "raw": "{{baseUrl}}/users/leaderboard?limit=10", "host": ["{{baseUrl}}"], "path": ["users", "leaderboard"], "query": [{ "key": "limit", "value": "10" }] }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Notifications",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": { "raw": "{{baseUrl}}/users/notifications", "host": ["{{baseUrl}}"], "path": ["users", "notifications"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Mark Notification Read",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": { "raw": "{{baseUrl}}/users/notifications/{{notificationId}}/read", "host": ["{{baseUrl}}"], "path": ["users", "notifications", "{{notificationId}}", "read"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Notification",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": { "raw": "{{baseUrl}}/users/notifications/{{notificationId}}", "host": ["{{baseUrl}}"], "path": ["users", "notifications", "{{notificationId}}"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete All Notifications",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": { "raw": "{{baseUrl}}/users/notifications", "host": ["{{baseUrl}}"], "path": ["users", "notifications"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Get My Achievements",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": { "raw": "{{baseUrl}}/users/achievements", "host": ["{{baseUrl}}"], "path": ["users", "achievements"] }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "🏆 Challenges",
+      "item": [
+        {
+          "name": "Get All Challenges",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/challenges/getAll?page=1&limit=10&difficulty=easy",
+              "host": ["{{baseUrl}}"], "path": ["challenges", "getAll"],
+              "query": [{ "key": "page", "value": "1" }, { "key": "limit", "value": "10" }, { "key": "difficulty", "value": "easy" }]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Challenge Topics",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/challenges/topics", "host": ["{{baseUrl}}"], "path": ["challenges", "topics"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Challenge by ID",
+          "event": [{
+            "listen": "test",
+            "script": { "exec": [
+              "if (pm.response.code === 200) {",
+              "    const j = pm.response.json();",
+              "    if (j.solutions?.[0]?.id) pm.collectionVariables.set('solutionId', String(j.solutions[0].id));",
+              "}"
+            ], "type": "text/javascript" }
+          }],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": { "raw": "{{baseUrl}}/challenges/{{challengeId}}", "host": ["{{baseUrl}}"], "path": ["challenges", "{{challengeId}}"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Challenge",
+          "event": [{
+            "listen": "test",
+            "script": { "exec": [
+              "if (pm.response.code === 201) {",
+              "    const j = pm.response.json();",
+              "    if (j.id) pm.collectionVariables.set('challengeId', String(j.id));",
+              "}"
+            ], "type": "text/javascript" }
+          }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/challenges/create", "host": ["{{baseUrl}}"], "path": ["challenges", "create"] },
+            "body": { "mode": "raw", "raw": "{\n  \"title\": \"Two Sum\",\n  \"description\": \"Дан массив целых чисел и число target. Верни индексы двух чисел, сумма которых равна target.\",\n  \"difficulty\": \"easy\",\n  \"topicIds\": [1],\n  \"timeLimit\": 30,\n  \"functionName\": \"twoSum\",\n  \"parameters\": [\n    { \"name\": \"nums\", \"type\": \"number[]\", \"order\": 0 },\n    { \"name\": \"target\", \"type\": \"number\", \"order\": 1 }\n  ],\n  \"returnType\": \"number[]\",\n  \"testCases\": [\n    { \"args\": [[2,7,11,15], 9], \"expected\": [0,1], \"isHidden\": false },\n    { \"args\": [[3,2,4], 6], \"expected\": [1,2], \"isHidden\": false },\n    { \"args\": [[3,3], 6], \"expected\": [0,1], \"isHidden\": true }\n  ]\n}", "options": { "raw": { "language": "json" } } }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Challenge",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/challenges/{{challengeId}}", "host": ["{{baseUrl}}"], "path": ["challenges", "{{challengeId}}"] },
+            "body": { "mode": "raw", "raw": "{\n  \"title\": \"Two Sum (обновлено)\",\n  \"difficulty\": \"medium\"\n}", "options": { "raw": { "language": "json" } } }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Challenge",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": { "raw": "{{baseUrl}}/challenges/{{challengeId}}", "host": ["{{baseUrl}}"], "path": ["challenges", "{{challengeId}}"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Execute Code",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/challenges/{{challengeId}}/execute", "host": ["{{baseUrl}}"], "path": ["challenges", "{{challengeId}}", "execute"] },
+            "body": { "mode": "raw", "raw": "{\n  \"code\": \"def twoSum(nums, target):\\n    seen = {}\\n    for i, n in enumerate(nums):\\n        if target - n in seen:\\n            return [seen[target - n], i]\\n        seen[n] = i\\n    return []\",\n  \"language\": \"python\"\n}", "options": { "raw": { "language": "json" } } }
+          },
+          "response": []
+        },
+        {
+          "name": "Verify Challenge (тест-кейсы)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/challenges/verify", "host": ["{{baseUrl}}"], "path": ["challenges", "verify"] },
+            "body": { "mode": "raw", "raw": "{\n  \"challengeId\": {{challengeId}},\n  \"code\": \"def twoSum(nums, target):\\n    seen = {}\\n    for i, n in enumerate(nums):\\n        if target - n in seen:\\n            return [seen[target - n], i]\\n        seen[n] = i\\n    return []\",\n  \"language\": \"python\"\n}", "options": { "raw": { "language": "json" } } }
+          },
+          "response": []
+        },
+        {
+          "name": "Format Code",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/challenges/format", "host": ["{{baseUrl}}"], "path": ["challenges", "format"] },
+            "body": { "mode": "raw", "raw": "{\n  \"code\": \"def twoSum(nums,target):\\n seen={};return next(([seen[target-n],i] for i,n in enumerate(nums) if target-n in seen), [])\",\n  \"language\": \"python\"\n}", "options": { "raw": { "language": "json" } } }
+          },
+          "response": []
+        },
+        {
+          "name": "AI Generate Challenge",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/challenges/ai/generate", "host": ["{{baseUrl}}"], "path": ["challenges", "ai", "generate"] },
+            "body": { "mode": "raw", "raw": "{\n  \"topic\": \"Массивы и хэш-таблицы\",\n  \"difficulty\": \"medium\",\n  \"language\": \"python\"\n}", "options": { "raw": { "language": "json" } } }
+          },
+          "response": []
+        },
+        {
+          "name": "AI Analyze Solution",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/challenges/{{challengeId}}/ai/analyze", "host": ["{{baseUrl}}"], "path": ["challenges", "{{challengeId}}", "ai", "analyze"] },
+            "body": { "mode": "raw", "raw": "{\n  \"code\": \"def twoSum(nums, target):\\n    for i in range(len(nums)):\\n        for j in range(i+1, len(nums)):\\n            if nums[i] + nums[j] == target:\\n                return [i, j]\",\n  \"language\": \"python\"\n}", "options": { "raw": { "language": "json" } } }
+          },
+          "response": []
+        },
+        {
+          "name": "AI Chat",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/challenges/{{challengeId}}/ai/chat", "host": ["{{baseUrl}}"], "path": ["challenges", "{{challengeId}}", "ai", "chat"] },
+            "body": { "mode": "raw", "raw": "{\n  \"message\": \"Как улучшить временную сложность моего решения?\",\n  \"code\": \"def twoSum(nums, target):\\n    for i in range(len(nums)):\\n        for j in range(i+1, len(nums)):\\n            if nums[i] + nums[j] == target:\\n                return [i, j]\",\n  \"language\": \"python\"\n}", "options": { "raw": { "language": "json" } } }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Challenge History",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": { "raw": "{{baseUrl}}/challenges/{{challengeId}}/history", "host": ["{{baseUrl}}"], "path": ["challenges", "{{challengeId}}", "history"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Challenge Solutions",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": { "raw": "{{baseUrl}}/challenges/{{challengeId}}/solutions?page=1&limit=10", "host": ["{{baseUrl}}"], "path": ["challenges", "{{challengeId}}", "solutions"], "query": [{ "key": "page", "value": "1" }, { "key": "limit", "value": "10" }] }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Challenge Reviews",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": { "raw": "{{baseUrl}}/challenges/{{challengeId}}/reviews", "host": ["{{baseUrl}}"], "path": ["challenges", "{{challengeId}}", "reviews"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Challenge Review",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/challenges/{{challengeId}}/reviews", "host": ["{{baseUrl}}"], "path": ["challenges", "{{challengeId}}", "reviews"] },
+            "body": { "mode": "raw", "raw": "{\n  \"content\": \"Отличная задача, хорошо отражает реальные интервью\",\n  \"rating\": 5\n}", "options": { "raw": { "language": "json" } } }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Challenge Report Reasons",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": { "raw": "{{baseUrl}}/challenges/{{challengeId}}/report-reasons", "host": ["{{baseUrl}}"], "path": ["challenges", "{{challengeId}}", "report-reasons"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Challenge Report",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/challenges/{{challengeId}}/report", "host": ["{{baseUrl}}"], "path": ["challenges", "{{challengeId}}", "report"] },
+            "body": { "mode": "raw", "raw": "{\n  \"reasonId\": 1,\n  \"reasonText\": \"Некорректное описание задачи\"\n}", "options": { "raw": { "language": "json" } } }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "📝 Tests — User",
+      "item": [
+        {
+          "name": "Get Published Tests",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": { "raw": "{{baseUrl}}/tests?page=1&limit=10", "host": ["{{baseUrl}}"], "path": ["tests"], "query": [{ "key": "page", "value": "1" }, { "key": "limit", "value": "10" }] }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Published Test by ID",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": { "raw": "{{baseUrl}}/tests/{{testId}}", "host": ["{{baseUrl}}"], "path": ["tests", "{{testId}}"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Question Types",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/tests/question-types", "host": ["{{baseUrl}}"], "path": ["tests", "question-types"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Start Test Attempt",
+          "event": [{
+            "listen": "test",
+            "script": { "exec": [
+              "if (pm.response.code === 201) {",
+              "    const j = pm.response.json();",
+              "    if (j.id) pm.collectionVariables.set('attemptId', String(j.id));",
+              "}"
+            ], "type": "text/javascript" }
+          }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": { "raw": "{{baseUrl}}/tests/{{testId}}/start", "host": ["{{baseUrl}}"], "path": ["tests", "{{testId}}", "start"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Submit Test Attempt",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/tests/attempts/{{attemptId}}/submit", "host": ["{{baseUrl}}"], "path": ["tests", "attempts", "{{attemptId}}", "submit"] },
+            "body": { "mode": "raw", "raw": "{\n  \"answers\": [\n    { \"questionId\": {{questionId}}, \"selectedOptionIds\": [1] }\n  ]\n}", "options": { "raw": { "language": "json" } } }
+          },
+          "response": []
+        },
+        {
+          "name": "Get My Attempts",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": { "raw": "{{baseUrl}}/tests/{{testId}}/my-attempts", "host": ["{{baseUrl}}"], "path": ["tests", "{{testId}}", "my-attempts"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Attempt Result",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": { "raw": "{{baseUrl}}/tests/attempts/{{attemptId}}/result", "host": ["{{baseUrl}}"], "path": ["tests", "attempts", "{{attemptId}}", "result"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Test Reviews",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": { "raw": "{{baseUrl}}/tests/{{testId}}/reviews", "host": ["{{baseUrl}}"], "path": ["tests", "{{testId}}", "reviews"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Test Review",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/tests/{{testId}}/reviews", "host": ["{{baseUrl}}"], "path": ["tests", "{{testId}}", "reviews"] },
+            "body": { "mode": "raw", "raw": "{\n  \"content\": \"Хороший тест, вопросы по делу\",\n  \"rating\": 4\n}", "options": { "raw": { "language": "json" } } }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Test Report Reasons",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": { "raw": "{{baseUrl}}/tests/{{testId}}/report-reasons", "host": ["{{baseUrl}}"], "path": ["tests", "{{testId}}", "report-reasons"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Test Report",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/tests/{{testId}}/report", "host": ["{{baseUrl}}"], "path": ["tests", "{{testId}}", "report"] },
+            "body": { "mode": "raw", "raw": "{\n  \"reasonId\": 1,\n  \"reasonText\": \"Вопрос содержит ошибку в ответах\"\n}", "options": { "raw": { "language": "json" } } }
+          },
+          "response": []
+        },
+        {
+          "name": "Run Code",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/tests/run-code", "host": ["{{baseUrl}}"], "path": ["tests", "run-code"] },
+            "body": { "mode": "raw", "raw": "{\n  \"code\": \"print(int(input()) * 2)\",\n  \"language\": \"python\",\n  \"stdinInput\": \"21\"\n}", "options": { "raw": { "language": "json" } } }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "📝 Tests — Admin",
+      "item": [
+        {
+          "name": "Get All Tests",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": { "raw": "{{baseUrl}}/tests/admin/tests", "host": ["{{baseUrl}}"], "path": ["tests", "admin", "tests"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Test",
+          "event": [{
+            "listen": "test",
+            "script": { "exec": [
+              "if (pm.response.code === 201) {",
+              "    const j = pm.response.json();",
+              "    if (j.id) pm.collectionVariables.set('testId', String(j.id));",
+              "}"
+            ], "type": "text/javascript" }
+          }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/tests/admin/tests", "host": ["{{baseUrl}}"], "path": ["tests", "admin", "tests"] },
+            "body": { "mode": "raw", "raw": "{\n  \"title\": \"Основы Python\",\n  \"description\": \"Тест по базовым концепциям языка Python\",\n  \"timeLimit\": 30,\n  \"passingScore\": 70\n}", "options": { "raw": { "language": "json" } } }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Test by ID",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": { "raw": "{{baseUrl}}/tests/admin/tests/{{testId}}", "host": ["{{baseUrl}}"], "path": ["tests", "admin", "tests", "{{testId}}"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Test",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/tests/admin/tests/{{testId}}", "host": ["{{baseUrl}}"], "path": ["tests", "admin", "tests", "{{testId}}"] },
+            "body": { "mode": "raw", "raw": "{\n  \"title\": \"Основы Python (обновлено)\",\n  \"timeLimit\": 45\n}", "options": { "raw": { "language": "json" } } }
+          },
+          "response": []
+        },
+        {
+          "name": "Publish / Unpublish Test",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/tests/admin/tests/{{testId}}/publish", "host": ["{{baseUrl}}"], "path": ["tests", "admin", "tests", "{{testId}}", "publish"] },
+            "body": { "mode": "raw", "raw": "{\n  \"isPublished\": true\n}", "options": { "raw": { "language": "json" } } }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Test",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": { "raw": "{{baseUrl}}/tests/admin/tests/{{testId}}", "host": ["{{baseUrl}}"], "path": ["tests", "admin", "tests", "{{testId}}"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Question (multichoice)",
+          "event": [{
+            "listen": "test",
+            "script": { "exec": [
+              "if (pm.response.code === 201) {",
+              "    const j = pm.response.json();",
+              "    if (j.id) pm.collectionVariables.set('questionId', String(j.id));",
+              "}"
+            ], "type": "text/javascript" }
+          }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/tests/admin/tests/{{testId}}/questions", "host": ["{{baseUrl}}"], "path": ["tests", "admin", "tests", "{{testId}}", "questions"] },
+            "body": { "mode": "raw", "raw": "{\n  \"typeId\": 1,\n  \"text\": \"Какой метод добавляет элемент в конец списка?\",\n  \"points\": 1,\n  \"allowMultiple\": false,\n  \"options\": [\n    { \"text\": \"append()\", \"isCorrect\": true,  \"order\": 0 },\n    { \"text\": \"push()\",   \"isCorrect\": false, \"order\": 1 },\n    { \"text\": \"add()\",    \"isCorrect\": false, \"order\": 2 },\n    { \"text\": \"insert()\", \"isCorrect\": false, \"order\": 3 }\n  ]\n}", "options": { "raw": { "language": "json" } } }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Question",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/tests/admin/tests/{{testId}}/questions/{{questionId}}", "host": ["{{baseUrl}}"], "path": ["tests", "admin", "tests", "{{testId}}", "questions", "{{questionId}}"] },
+            "body": { "mode": "raw", "raw": "{\n  \"text\": \"Какой метод добавляет элемент в конец списка Python?\",\n  \"points\": 2\n}", "options": { "raw": { "language": "json" } } }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Question",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": { "raw": "{{baseUrl}}/tests/admin/tests/{{testId}}/questions/{{questionId}}", "host": ["{{baseUrl}}"], "path": ["tests", "admin", "tests", "{{testId}}", "questions", "{{questionId}}"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Reorder Questions",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/tests/admin/tests/{{testId}}/questions/reorder", "host": ["{{baseUrl}}"], "path": ["tests", "admin", "tests", "{{testId}}", "questions", "reorder"] },
+            "body": { "mode": "raw", "raw": "{\n  \"orderedIds\": [3, 1, 2]\n}", "options": { "raw": { "language": "json" } } }
+          },
+          "response": []
+        },
+        {
+          "name": "Export Test to Moodle ZIP",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": { "raw": "{{baseUrl}}/tests/admin/tests/{{testId}}/export", "host": ["{{baseUrl}}"], "path": ["tests", "admin", "tests", "{{testId}}", "export"] },
+            "description": "Скачивает ZIP с questions.xml для импорта в Moodle Question Bank"
+          },
+          "response": []
+        },
+        {
+          "name": "Import from Moodle XML",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": { "raw": "{{baseUrl}}/tests/admin/tests/import", "host": ["{{baseUrl}}"], "path": ["tests", "admin", "tests", "import"] },
+            "body": { "mode": "formdata", "formdata": [{ "key": "file", "type": "file", "src": "", "description": "XML из Moodle Question Bank → Export → Moodle XML format" }] }
+          },
+          "response": []
+        },
+        {
+          "name": "Import from Quiz API",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/tests/admin/tests/import-quiz", "host": ["{{baseUrl}}"], "path": ["tests", "admin", "tests", "import-quiz"] },
+            "body": { "mode": "raw", "raw": "{\n  \"tags\": [\"Python\", \"Linux\"],\n  \"difficulty\": \"Medium\",\n  \"limit\": 10,\n  \"title\": \"Python Quiz из QuizAPI\"\n}", "options": { "raw": { "language": "json" } } }
+          },
+          "response": []
+        },
+        {
+          "name": "Run Code Preview",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/tests/run-code-preview", "host": ["{{baseUrl}}"], "path": ["tests", "run-code-preview"] },
+            "body": { "mode": "raw", "raw": "{\n  \"questionId\": {{questionId}},\n  \"code\": \"print('Hello, World!')\",\n  \"language\": \"python\"\n}", "options": { "raw": { "language": "json" } } }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "🛡️ Admin — Dashboard",
+      "item": [
+        {
+          "name": "Overview Stats",
+          "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }], "url": { "raw": "{{baseUrl}}/admin/overview", "host": ["{{baseUrl}}"], "path": ["admin", "overview"] } },
+          "response": []
+        },
+        {
+          "name": "Activity Stats",
+          "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }], "url": { "raw": "{{baseUrl}}/admin/activity", "host": ["{{baseUrl}}"], "path": ["admin", "activity"] } },
+          "response": []
+        },
+        {
+          "name": "Challenge Stats",
+          "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }], "url": { "raw": "{{baseUrl}}/admin/challenges", "host": ["{{baseUrl}}"], "path": ["admin", "challenges"] } },
+          "response": []
+        },
+        {
+          "name": "Top Users",
+          "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }], "url": { "raw": "{{baseUrl}}/admin/users", "host": ["{{baseUrl}}"], "path": ["admin", "users"] } },
+          "response": []
+        },
+        {
+          "name": "Reports Stats",
+          "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }], "url": { "raw": "{{baseUrl}}/admin/reports", "host": ["{{baseUrl}}"], "path": ["admin", "reports"] } },
+          "response": []
+        },
+        {
+          "name": "Recent Reports",
+          "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }], "url": { "raw": "{{baseUrl}}/admin/reports/recent", "host": ["{{baseUrl}}"], "path": ["admin", "reports", "recent"] } },
+          "response": []
+        },
+        {
+          "name": "Get Report Reasons",
+          "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }], "url": { "raw": "{{baseUrl}}/admin/report-reasons", "host": ["{{baseUrl}}"], "path": ["admin", "report-reasons"] } },
+          "response": []
+        },
+        {
+          "name": "Update Report Status",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/admin/reports/{{reportId}}", "host": ["{{baseUrl}}"], "path": ["admin", "reports", "{{reportId}}"] },
+            "body": { "mode": "raw", "raw": "{\n  \"status\": \"resolved\"\n}", "options": { "raw": { "language": "json" } } }
+          },
+          "response": []
+        },
+        {
+          "name": "Activity Heatmap",
+          "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }], "url": { "raw": "{{baseUrl}}/admin/heatmap", "host": ["{{baseUrl}}"], "path": ["admin", "heatmap"] } },
+          "response": []
+        },
+        {
+          "name": "Challenge Funnel",
+          "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }], "url": { "raw": "{{baseUrl}}/admin/funnel", "host": ["{{baseUrl}}"], "path": ["admin", "funnel"] } },
+          "response": []
+        },
+        {
+          "name": "User Distributions",
+          "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }], "url": { "raw": "{{baseUrl}}/admin/distributions", "host": ["{{baseUrl}}"], "path": ["admin", "distributions"] } },
+          "response": []
+        },
+        {
+          "name": "Leaderboard",
+          "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }], "url": { "raw": "{{baseUrl}}/admin/leaderboard", "host": ["{{baseUrl}}"], "path": ["admin", "leaderboard"] } },
+          "response": []
+        },
+        {
+          "name": "Test Stats",
+          "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }], "url": { "raw": "{{baseUrl}}/admin/test-stats", "host": ["{{baseUrl}}"], "path": ["admin", "test-stats"] } },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "🛡️ Admin — Challenges",
+      "item": [
+        {
+          "name": "Challenges Manage List",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": { "raw": "{{baseUrl}}/admin/challenges/manage?page=1&limit=20", "host": ["{{baseUrl}}"], "path": ["admin", "challenges", "manage"], "query": [{ "key": "page", "value": "1" }, { "key": "limit", "value": "20" }] }
+          },
+          "response": []
+        },
+        {
+          "name": "Export Challenges (JSON)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/admin/challenges/export", "host": ["{{baseUrl}}"], "path": ["admin", "challenges", "export"] },
+            "body": { "mode": "raw", "raw": "{\n  \"ids\": [1, 2, 3]\n}", "options": { "raw": { "language": "json" } } }
+          },
+          "response": []
+        },
+        {
+          "name": "Import Challenges (JSON file)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": { "raw": "{{baseUrl}}/admin/challenges/import", "host": ["{{baseUrl}}"], "path": ["admin", "challenges", "import"] },
+            "body": { "mode": "formdata", "formdata": [{ "key": "file", "type": "file", "src": "" }] }
+          },
+          "response": []
+        },
+        {
+          "name": "Generate Challenges with AI",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/admin/challenges/generate-ai", "host": ["{{baseUrl}}"], "path": ["admin", "challenges", "generate-ai"] },
+            "body": { "mode": "raw", "raw": "{\n  \"topic\": \"Сортировка\",\n  \"difficulty\": \"medium\",\n  \"count\": 3\n}", "options": { "raw": { "language": "json" } } }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Challenge Detail",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": { "raw": "{{baseUrl}}/admin/challenges/{{challengeId}}/detail", "host": ["{{baseUrl}}"], "path": ["admin", "challenges", "{{challengeId}}", "detail"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Challenge",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/admin/challenges/{{challengeId}}", "host": ["{{baseUrl}}"], "path": ["admin", "challenges", "{{challengeId}}"] },
+            "body": { "mode": "raw", "raw": "{\n  \"title\": \"Two Sum (проверено)\",\n  \"isApproved\": true\n}", "options": { "raw": { "language": "json" } } }
+          },
+          "response": []
+        },
+        {
+          "name": "Toggle Challenge Hidden",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/admin/challenges/{{challengeId}}/hidden", "host": ["{{baseUrl}}"], "path": ["admin", "challenges", "{{challengeId}}", "hidden"] },
+            "body": { "mode": "raw", "raw": "{\n  \"isHidden\": true\n}", "options": { "raw": { "language": "json" } } }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Challenge Difficulty",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/admin/challenges/{{challengeId}}/difficulty", "host": ["{{baseUrl}}"], "path": ["admin", "challenges", "{{challengeId}}", "difficulty"] },
+            "body": { "mode": "raw", "raw": "{\n  \"difficulty\": \"hard\"\n}", "options": { "raw": { "language": "json" } } }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Challenge (admin)",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": { "raw": "{{baseUrl}}/admin/challenges/{{challengeId}}", "host": ["{{baseUrl}}"], "path": ["admin", "challenges", "{{challengeId}}"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Codewars Kata",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": { "raw": "{{baseUrl}}/admin/codewars/kata/5277c8a221e209d3f6000b56", "host": ["{{baseUrl}}"], "path": ["admin", "codewars", "kata", "5277c8a221e209d3f6000b56"] },
+            "description": "Пример ID: 5277c8a221e209d3f6000b56 (String repeat)"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "🛡️ Admin — Topics",
+      "item": [
+        {
+          "name": "Get All Topics",
+          "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }], "url": { "raw": "{{baseUrl}}/admin/topics", "host": ["{{baseUrl}}"], "path": ["admin", "topics"] } },
+          "response": []
+        },
+        {
+          "name": "Create Topic",
+          "event": [{
+            "listen": "test",
+            "script": { "exec": [
+              "if (pm.response.code === 201) {",
+              "    const j = pm.response.json();",
+              "    if (j.id) pm.collectionVariables.set('topicId', String(j.id));",
+              "}"
+            ], "type": "text/javascript" }
+          }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/admin/topics", "host": ["{{baseUrl}}"], "path": ["admin", "topics"] },
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Динамическое программирование\"\n}", "options": { "raw": { "language": "json" } } }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Topic",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/admin/topics/{{topicId}}", "host": ["{{baseUrl}}"], "path": ["admin", "topics", "{{topicId}}"] },
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"DP — Динамическое программирование\"\n}", "options": { "raw": { "language": "json" } } }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Topic",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": { "raw": "{{baseUrl}}/admin/topics/{{topicId}}", "host": ["{{baseUrl}}"], "path": ["admin", "topics", "{{topicId}}"] }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "🛡️ Admin — Achievements",
+      "item": [
+        {
+          "name": "Get All Achievements",
+          "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }], "url": { "raw": "{{baseUrl}}/admin/achievements", "host": ["{{baseUrl}}"], "path": ["admin", "achievements"] } },
+          "response": []
+        },
+        {
+          "name": "Create Achievement",
+          "event": [{
+            "listen": "test",
+            "script": { "exec": [
+              "if (pm.response.code === 201) {",
+              "    const j = pm.response.json();",
+              "    if (j.id) pm.collectionVariables.set('achievementId', String(j.id));",
+              "}"
+            ], "type": "text/javascript" }
+          }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/admin/achievements", "host": ["{{baseUrl}}"], "path": ["admin", "achievements"] },
+            "body": { "mode": "raw", "raw": "{\n  \"key\": \"solve_10\",\n  \"title\": \"Первые 10 задач\",\n  \"description\": \"Решите 10 задач платформы\",\n  \"icon\": \"/achievements/solve_10.png\",\n  \"condition\": { \"type\": \"solveCount\", \"value\": 10 }\n}", "options": { "raw": { "language": "json" } } }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Achievement",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/admin/achievements/{{achievementId}}", "host": ["{{baseUrl}}"], "path": ["admin", "achievements", "{{achievementId}}"] },
+            "body": { "mode": "raw", "raw": "{\n  \"title\": \"Первые 10 задач (обновлено)\",\n  \"description\": \"Решите любые 10 задач платформы\"\n}", "options": { "raw": { "language": "json" } } }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Achievement",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": { "raw": "{{baseUrl}}/admin/achievements/{{achievementId}}", "host": ["{{baseUrl}}"], "path": ["admin", "achievements", "{{achievementId}}"] }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "💬 Solutions",
+      "item": [
+        {
+          "name": "Get Solution Votes",
+          "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }], "url": { "raw": "{{baseUrl}}/solutions/{{solutionId}}/votes", "host": ["{{baseUrl}}"], "path": ["solutions", "{{solutionId}}", "votes"] } },
+          "response": []
+        },
+        {
+          "name": "Vote for Solution",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/solutions/{{solutionId}}/votes", "host": ["{{baseUrl}}"], "path": ["solutions", "{{solutionId}}", "votes"] },
+            "body": { "mode": "raw", "raw": "{\n  \"type\": \"up\"\n}", "options": { "raw": { "language": "json" } } }
+          },
+          "response": []
+        },
+        {
+          "name": "Remove Vote",
+          "request": { "method": "DELETE", "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }], "url": { "raw": "{{baseUrl}}/solutions/{{solutionId}}/votes", "host": ["{{baseUrl}}"], "path": ["solutions", "{{solutionId}}", "votes"] } },
+          "response": []
+        },
+        {
+          "name": "Get Solution Comments",
+          "request": { "method": "GET", "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }], "url": { "raw": "{{baseUrl}}/solutions/{{solutionId}}/comments", "host": ["{{baseUrl}}"], "path": ["solutions", "{{solutionId}}", "comments"] } },
+          "response": []
+        },
+        {
+          "name": "Add Comment",
+          "event": [{
+            "listen": "test",
+            "script": { "exec": [
+              "if (pm.response.code === 201) {",
+              "    const j = pm.response.json();",
+              "    if (j.id) pm.collectionVariables.set('commentId', String(j.id));",
+              "}"
+            ], "type": "text/javascript" }
+          }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/solutions/{{solutionId}}/comments", "host": ["{{baseUrl}}"], "path": ["solutions", "{{solutionId}}", "comments"] },
+            "body": { "mode": "raw", "raw": "{\n  \"content\": \"Элегантное решение! Можно ещё оптимизировать использование памяти.\"\n}", "options": { "raw": { "language": "json" } } }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Comment",
+          "request": { "method": "DELETE", "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }], "url": { "raw": "{{baseUrl}}/solutions/{{solutionId}}/comments/{{commentId}}", "host": ["{{baseUrl}}"], "path": ["solutions", "{{solutionId}}", "comments", "{{commentId}}"] } },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

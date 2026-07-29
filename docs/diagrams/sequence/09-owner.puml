@@ -1,0 +1,113 @@
+@startuml
+title Диаграмма последовательности — Owner Page
+
+actor Owner
+participant "OwnerPage" as Page
+participant "AdminController" as AC
+participant "User" as User
+participant "Challenge" as Challenge
+participant "HistoryChallenge" as HC
+participant "ReportChallenge" as RC
+participant "Topic" as Topic
+
+Owner -> Page: click Overview
+
+Page -> AC: getOverview()
+AC -> User: getOverview()
+User --> AC: userStats
+AC -> Challenge: getOverview()
+Challenge --> AC: challengeStats
+AC -> HC: getOverview()
+HC --> AC: historyStats
+AC -> RC: getOverview()
+RC --> AC: reportStats
+AC --> Page: overview
+
+Page -> AC: getActivity(from, to)
+AC -> HC: getActivity(from, to)
+HC --> AC: activity[]
+AC --> Page: activity[]
+
+Page -> AC: getActivityHeatmap()
+AC -> HC: getActivityHeatmap()
+HC --> AC: heatmap[]
+AC --> Page: heatmap[]
+
+Page --> Owner: рендер Overview (KPI, график активности, тепловая карта)
+
+Owner -> Page: select период → setPeriodIdx(n)
+Page -> Page: getRange() → from, to
+Page -> AC: getActivity(from, to)
+AC -> HC: getActivity(from, to)
+HC --> AC: activity[]
+AC --> Page: activity[]
+Page --> Owner: обновлённый график активности
+
+Owner -> Page: input[type=date] → setCustomFrom / setCustomTo
+Page -> AC: getActivity(from, to)
+AC -> HC: getActivity(from, to)
+HC --> AC: activity[]
+AC --> Page: activity[]
+Page --> Owner: обновлённый график активности
+
+Owner -> Page: click Challenges
+
+Page -> AC: getChallengeStats()
+AC -> Topic: getChallengesByTopic()
+Topic --> AC: topicStats[]
+AC -> Challenge: getChallengesByDifficulty()
+Challenge --> AC: difficultyCounts[]
+AC -> HC: getSubmissionsByLanguage()
+HC --> AC: languageCounts[]
+AC -> Challenge: getHardestChallenges(limit)
+Challenge --> AC: hardestChallenges[]
+AC --> Page: challengeStats
+
+Page --> Owner: рендер Challenges (по языкам, темам, сложности, топ сложных)
+
+Owner -> Page: click Users
+
+Page -> AC: getTopUsers(limit)
+AC -> User: getTopUsers(limit)
+User --> AC: topUsers[]
+AC --> Page: topUsers[]
+
+Page -> AC: getUserDistributions(ratingBucket, expBucket)
+AC -> User: getUserDistributions(ratingBucket, expBucket)
+User --> AC: distributions
+AC --> Page: distributions
+
+Page --> Owner: рендер Users (топ пользователей, распределение рейтинга и опыта)
+
+Owner -> Page: input[type=range] → setRatingBucket / setExpBucket
+Page -> AC: getUserDistributions(ratingBucket, expBucket)
+AC -> User: getUserDistributions(ratingBucket, expBucket)
+User --> AC: distributions
+AC --> Page: distributions
+Page --> Owner: обновлённые графики распределений
+
+Owner -> Page: click Reports
+
+Page -> AC: getReportsStats()
+AC -> RC: getReportsByStatus()
+RC --> AC: statusCounts[]
+AC -> RC: getReportsByReason()
+RC --> AC: reasonCounts[]
+AC --> Page: reportsStats
+
+Page -> AC: getRecentReports(page, limit, status, challenge, reporter, dateFrom, dateTo)
+AC -> RC: getRecentReports(page, limit, status, challenge, reporter, dateFrom, dateTo)
+RC --> AC: rows[], total
+AC --> Page: reportsPage
+
+Page --> Owner: рендер Reports (статистика жалоб, список)
+
+Owner -> Page: click "Вкладка"
+Page -> Page: handleExportPDF()
+Page --> Owner: скачивает tab_{name}_{date}.pdf
+
+Owner -> Page: click "Полный отчёт"
+Page -> Page: handleFullReport()
+Page --> Owner: скачивает full_report_{date}.pdf
+
+@enduml

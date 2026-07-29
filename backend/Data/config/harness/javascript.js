@@ -86,8 +86,9 @@ const PREPARE = (userCode, harnessCode) =>
     `const __origLog = console.log;\nconsole.log = console.error = console.warn = console.info = console.debug = () => {};\n${userCode}\n\n${harnessCode}`;
 
 const NODE_CONFIG = {
-    image:  'node:18-alpine',
-    runCmd: 'node -',
+    image:        'node:18-alpine',
+    runCmd:       'node -',
+    inputRunCmd:  'head -1 | base64 -d > /tmp/__in; cat > /tmp/__s.js && node /tmp/__s.js < /tmp/__in',
     template:      HARNESS,
     prepareScript: PREPARE,
 };

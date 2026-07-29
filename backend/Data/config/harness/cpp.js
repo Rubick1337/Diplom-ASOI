@@ -190,8 +190,9 @@ const prepareScript = (userCode, harnessCode) => {
 
 module.exports = {
     cpp: {
-        image:  'gcc:latest',
-        runCmd: "sh -c 'cat > /tmp/code.cpp && g++ -std=c++17 -O2 /tmp/code.cpp -o /tmp/exe 2>&1 && /tmp/exe'",
+        image:       'gcc:latest',
+        runCmd:      "sh -c 'cat > /tmp/code.cpp && g++ -std=c++17 -O2 /tmp/code.cpp -o /tmp/exe 2>&1 && /tmp/exe'",
+        inputRunCmd: "head -1 | base64 -d > /tmp/__in; cat > /tmp/code.cpp && g++ -std=c++17 -O2 /tmp/code.cpp -o /tmp/exe && /tmp/exe < /tmp/__in",
         template,
         prepareScript,
     }

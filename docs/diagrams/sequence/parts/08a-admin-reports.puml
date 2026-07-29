@@ -1,0 +1,41 @@
+@startuml
+title Admin Page — Управление жалобами
+
+actor Admin
+participant "AdminPage" as Page
+participant "AdminController" as AC
+participant "ReportModel" as RC
+participant "Notification" as Notification
+
+Admin -> Page: открывает /admin → вкладка Reports
+
+Page -> AC: dispatch(getReportsStats())
+AC -> RC: getReportsByStatus()
+RC --> AC: statusCounts[]
+AC -> RC: getReportsByReason()
+RC --> AC: reasonCounts[]
+AC --> Page: reportsStats
+
+Page -> AC: dispatch(getRecentReports(page=1, limit=10))
+AC -> RC: getRecentReports(page, limit)
+RC --> AC: rows[], total
+AC --> Page: reportsPage
+Page --> Admin: рендер Reports (статистика жалоб, список)
+
+Admin -> Page: click "Применить фильтры" (status, challenge, reporter, dateFrom, dateTo)
+Page -> AC: dispatch(getRecentReports(page, limit, status, challenge, reporter, dateFrom, dateTo))
+AC -> RC: getRecentReports(page, limit, status, challenge, reporter, dateFrom, dateTo)
+RC --> AC: rows[], total
+AC --> Page: reportsPage
+Page --> Admin: отфильтрованный список жалоб
+
+Admin -> Page: click "Resolved" / "Dismissed" на жалобе
+Page -> AC: dispatch(updateReportStatus(id, status, adminMessage))
+AC -> RC: updateReportStatus(id, status, adminId)
+RC --> AC: updatedReport
+AC -> Notification: createNotification(userId, title, message, type)
+Notification --> AC: ok
+AC --> Page: обновлённая жалоба
+Page --> Admin: статус жалобы обновлён
+
+@enduml

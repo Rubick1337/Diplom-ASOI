@@ -97,9 +97,9 @@ export default function LobbyPhase({
                 <div className="challenges-layout">
                     <aside className="challenges-sidebar">
                         <div className="sidebar-filter-card">
-                            <h3>Быстрый поиск</h3>
+                            <h3>Рейтинг</h3>
                             <p style={{ fontSize: '0.85rem', color: '#888', marginBottom: '1.2rem', lineHeight: 1.4 }}>
-                                Найди случайного соперника автоматически
+                                Найди соперника для рейтинга
                             </p>
                             <div className="filter-actions" style={{ marginTop: 0, paddingTop: 0, borderTop: 'none' }}>
                                 <button
@@ -174,10 +174,7 @@ export default function LobbyPhase({
 
                     <div className="challenges-feed">
                         <div className="challenge-list-column">
-                            <div style={{
-                                background: '#121212', border: '1px solid #2a2a2a', borderRadius: 12,
-                                padding: '16px 20px', marginBottom: 16, display: 'flex', gap: 10, alignItems: 'center'
-                            }}>
+                            <div className="lobby-join-bar">
                                 <input
                                     className="filter-input-text"
                                     placeholder="Введите код комнаты..."

@@ -38,7 +38,7 @@ ChallengeModel.addScope('withStats', {
             [
                 sequelize.literal(`(
                     SELECT COALESCE(AVG("rating"), 0)
-                    FROM "ReviewChallenges"
+                    FROM "Reviews"
                     WHERE "challengeId" = "Challenge"."id"
                 )`),
                 'averageRating'

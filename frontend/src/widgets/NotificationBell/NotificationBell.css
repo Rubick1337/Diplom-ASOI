@@ -166,6 +166,14 @@
 .nb-item--unread:hover { background: rgba(255,107,53,0.07); }
 .nb-item:not(.nb-item--unread):hover { background: rgba(255,255,255,0.03); }
 
+/* achievement items use accent colour for unread bg */
+.nb-item--achievement.nb-item--unread {
+    background: color-mix(in srgb, var(--accent) 6%, transparent);
+}
+.nb-item--achievement.nb-item--unread:hover {
+    background: color-mix(in srgb, var(--accent) 11%, transparent);
+}
+
 .nb-item__indicator {
     position: absolute;
     left: 0;
@@ -240,6 +248,43 @@
     line-height: 1.5;
 }
 
+/* ── Achievement-specific elements ───────────────────────────────────────── */
+.nb-item__ach-icon {
+    width: 42px;
+    height: 42px;
+    flex-shrink: 0;
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.10);
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 1px;
+    background: rgba(255,255,255,0.03);
+}
+.nb-item__ach-img {
+    width: 38px;
+    height: 38px;
+    object-fit: contain;
+}
+.nb-item__ach-body {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+.nb-item__ach-rarity {
+    display: inline-block;
+    font-size: 0.62rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 2px 8px;
+    border-radius: 20px;
+    border: 1px solid;
+    width: fit-content;
+    background: rgba(0,0,0,0.25);
+}
+
 .nb-item__del {
     width: 24px;
     height: 24px;
@@ -257,3 +302,109 @@
 }
 .nb-item:hover .nb-item__del { color: #555; }
 .nb-item__del:hover { background: rgba(248,113,113,0.12); color: #f87171 !important; }
+
+@media (max-width: 640px) {
+    .nb-dropdown {
+        position: fixed;
+        top: 60px;
+        left: 8px;
+        right: 8px;
+        width: auto;
+    }
+}
+
+/* LIGHT THEME */
+[data-theme="light"] .nb-btn {
+    border-color: rgba(26,24,23,0.14);
+    background: rgba(26,24,23,0.05);
+    color: rgba(26,24,23,0.50);
+}
+[data-theme="light"] .nb-btn:hover,
+[data-theme="light"] .nb-btn--active {
+    border-color: #FF6B35;
+    color: #FF6B35;
+    background: rgba(255,107,53,0.08);
+}
+[data-theme="light"] .nb-badge {
+    border-color: #f5f0e8;
+}
+[data-theme="light"] .nb-dropdown {
+    background: #ffffff;
+    border-color: rgba(26,24,23,0.12);
+    box-shadow: 0 16px 48px rgba(26,24,23,0.15);
+}
+[data-theme="light"] .nb-head__title {
+    color: #1a1817;
+}
+[data-theme="light"] .nb-action-btn {
+    border-color: rgba(26,24,23,0.14);
+    color: rgba(26,24,23,0.45);
+}
+[data-theme="light"] .nb-tabs {
+    border-bottom-color: rgba(26,24,23,0.10);
+}
+[data-theme="light"] .nb-tab {
+    color: rgba(26,24,23,0.40);
+}
+[data-theme="light"] .nb-tab:hover {
+    color: rgba(26,24,23,0.65);
+}
+[data-theme="light"] .nb-tab-count {
+    background: rgba(26,24,23,0.07);
+    color: rgba(26,24,23,0.45);
+}
+[data-theme="light"] .nb-empty {
+    color: rgba(26,24,23,0.30);
+}
+[data-theme="light"] .nb-list::-webkit-scrollbar-thumb {
+    background: rgba(26,24,23,0.18);
+}
+[data-theme="light"] .nb-item--unread {
+    background: rgba(255,107,53,0.04);
+}
+[data-theme="light"] .nb-item--unread:hover {
+    background: rgba(255,107,53,0.08);
+}
+[data-theme="light"] .nb-item:not(.nb-item--unread):hover {
+    background: rgba(26,24,23,0.04);
+}
+[data-theme="light"] .nb-item__title {
+    color: rgba(26,24,23,0.75);
+}
+[data-theme="light"] .nb-item--unread .nb-item__title {
+    color: #1a1817;
+}
+[data-theme="light"] .nb-item__time {
+    color: rgba(26,24,23,0.35);
+}
+[data-theme="light"] .nb-item__msg {
+    color: rgba(26,24,23,0.45);
+}
+[data-theme="light"] .nb-item--unread .nb-item__msg {
+    color: rgba(26,24,23,0.65);
+}
+[data-theme="light"] .nb-item__admin-comment {
+    border-left-color: rgba(26,24,23,0.14);
+}
+[data-theme="light"] .nb-item__admin-label {
+    color: rgba(26,24,23,0.40);
+}
+[data-theme="light"] .nb-item__admin-text {
+    color: rgba(26,24,23,0.55);
+}
+[data-theme="light"] .nb-item:hover .nb-item__del {
+    color: rgba(26,24,23,0.35);
+}
+[data-theme="light"] .nb-item--achievement.nb-item--unread {
+    background: color-mix(in srgb, var(--accent) 5%, transparent);
+}
+[data-theme="light"] .nb-item--achievement.nb-item--unread:hover {
+    background: color-mix(in srgb, var(--accent) 10%, transparent);
+}
+[data-theme="light"] .nb-item__ach-icon {
+    background: rgba(26,24,23,0.04);
+    border-color: rgba(26,24,23,0.10);
+}
+[data-theme="light"] .nb-item__ach-rarity {
+    background: rgba(255,255,255,0.7);
+}

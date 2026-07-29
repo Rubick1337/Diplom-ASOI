@@ -58,3 +58,33 @@
 @media (max-width: 480px) {
     .custom-select-container { width: 100%; }
 }
+
+/* LIGHT THEME */
+[data-theme="light"] .custom-select-trigger {
+    background: #ffffff;
+    border-color: rgba(26,24,23,0.14);
+    color: #1a1817;
+}
+[data-theme="light"] .custom-select-trigger.open {
+    background: #ffffff;
+    border-color: #f04949;
+}
+[data-theme="light"] .select-arrow {
+    color: rgba(26,24,23,0.40);
+}
+[data-theme="light"] .custom-options {
+    background: #ffffff;
+    border-color: rgba(26,24,23,0.12);
+    box-shadow: 0 10px 25px rgba(26,24,23,0.12);
+}
+[data-theme="light"] .custom-option {
+    color: rgba(26,24,23,0.65);
+}
+[data-theme="light"] .custom-option:hover {
+    background: rgba(26,24,23,0.05);
+    color: #1a1817;
+}
+[data-theme="light"] .custom-option.selected {
+    background: rgba(240,73,73,0.08);
+    color: #f04949;
+}

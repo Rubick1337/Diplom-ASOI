@@ -1,0 +1,41 @@
+services:
+  moodle-db:
+    image: mariadb:10.11
+    container_name: moodle-db
+    restart: unless-stopped
+    environment:
+      MARIADB_ROOT_PASSWORD: moodle_root
+      MARIADB_DATABASE: moodle
+      MARIADB_USER: moodle
+      MARIADB_PASSWORD: moodle
+    volumes:
+      - moodle_db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 15
+
+  moodle:
+    build:
+      context: ./moodle-docker
+      dockerfile: Dockerfile
+    container_name: moodle-app
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    environment:
+      MOODLE_DB_HOST: moodle-db
+      MOODLE_DB_NAME: moodle
+      MOODLE_DB_USER: moodle
+      MOODLE_DB_PASS: moodle
+      MOODLE_ADMIN_PASS: Admin1234!
+    volumes:
+      - moodle_moodledata:/var/moodledata
+    depends_on:
+      moodle-db:
+        condition: service_healthy
+
+volumes:
+  moodle_db_data:
+  moodle_moodledata:

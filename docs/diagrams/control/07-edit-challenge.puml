@@ -1,0 +1,79 @@
+@startuml
+title 07 Edit Challenge — Control Classes
+
+class EditChallengePage <<boundary>> {
+  - id: int
+  - name: string
+  - difficulty: string
+  - funcName: string
+  - timeLimitMs: int
+  - description: string
+  - parameters: Parameter[]
+  - testCases: TestCase[]
+  - topicIds: int[]
+  - userId: int
+  - code: string
+  - language: string
+  + topics: Topic[]
+  + challenge: Challenge
+  + testResults: TestResult[]
+}
+
+class ChallengeController <<control>> {
+  - id: int
+  - name: string
+  - difficulty: string
+  - funcName: string
+  - timeLimitMs: int
+  - description: string
+  - parameters: Parameter[]
+  - testCases: TestCase[]
+  - topicIds: int[]
+  - userId: int
+  - code: string
+  - language: string
+  + topics: Topic[]
+  + challenge: Challenge
+  + testResults: TestResult[]
+}
+
+class Topic <<entity>> {
+  - name: string
+  + id: int
+  + name: string
+}
+
+class Challenge <<entity>> {
+  - id: int
+  - name: string
+  - difficulty: string
+  - funcName: string
+  - timeLimitMs: int
+  - description: string
+  - parameters: Parameter[]
+  - testCases: TestCase[]
+  - topicIds: int[]
+  + id: int
+  + name: string
+  + difficulty: string
+  + topics: Topic[]
+  + sampleInput: string
+  + sampleOutput: string
+}
+
+class DockerRunner <<control>> {
+  - language: string
+  - harness: string
+  - code: string
+  - timeLimitMs: int
+  + stdout: string
+  + stderr: string
+  + testResults: TestResult[]
+}
+
+EditChallengePage ..> ChallengeController : getTopics() / getOne(id) / createTopic(name) /\nverifyChallenge(...) / update(id, ...)
+ChallengeController o-- Topic : getTopics() / createTopic(name)
+ChallengeController o-- Challenge : findByIdWithTestCases(id) / updateWithTestCases(id, challengeData, testCases[])
+ChallengeController *-- DockerRunner : runInDocker(language, harness+code, timeLimitMs)
+
+@enduml

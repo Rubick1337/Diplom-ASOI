@@ -5,11 +5,18 @@ import { useParams } from 'next/navigation';
 import { useAppDispatch, useAppSelector } from '@/shared/store/hooks';
 import { RootState } from '@/shared/store/store';
 import { fetchCommunitySolutions } from '@/shared/store/slice/challengeSlice';
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import dynamic from 'next/dynamic';
+
+const SyntaxHighlighter = dynamic(
+    () => import('@/shared/components/ClientSyntaxHighlighter/ClientSyntaxHighlighter'),
+    { ssr: false, loading: () => <div style={{ minHeight: 153 }} /> }
+) as any;
+import { useTheme } from '@/shared/context/ThemeContext';
 import ChallengePagination from '@/shared/components/Pagination/Pagination';
 import { SortSelect, SortValue } from '@/features/SortSelect/SortSelect';
 import { SolutionsLanguageFilter, FilterLanguageValue } from '@/features/SolutionsLanguageFilter/SolutionsLanguageFilter';
+import { SolutionVoteButtons } from '@/features/SolutionVoteButtons/SolutionVoteButtons';
+import { SolutionComments } from '@/features/SolutionComments/SolutionComments';
 import './CommunitySolutions.css';
 
 const sortOptions: Record<string, string> = {
@@ -19,6 +26,7 @@ const sortOptions: Record<string, string> = {
 
 export const CommunitySolutions: React.FC = () => {
     const dispatch = useAppDispatch();
+    const { theme } = useTheme();
     const params = useParams<{ id: string }>();
     const challengeId = params ? Number(params.id) : 0;
 
@@ -129,12 +137,12 @@ export const CommunitySolutions: React.FC = () => {
                                     </button>
                                     <SyntaxHighlighter
                                         language={sol.language === 'python' ? 'python' : 'javascript'}
-                                        style={vscDarkPlus}
+                                        isDarkTheme={theme !== 'light'}
                                         customStyle={{
                                             margin: 0,
                                             padding: '20px',
                                             fontSize: '0.9rem',
-                                            backgroundColor: '#0d0d0d',
+                                            backgroundColor: theme === 'light' ? '#ddd8ce' : '#0d0d0d',
                                             borderRadius: '8px',
                                             minHeight: '153px'
                                         }}
@@ -147,7 +155,13 @@ export const CommunitySolutions: React.FC = () => {
                                     <div className="sol-stats">
                                         <span className="stat-item">Скорость: <b>{sol.executionTimeMs}мс</b></span>
                                     </div>
+                                    <SolutionVoteButtons solutionId={sol.id} userId={user?.id} />
                                 </div>
+
+                                <SolutionComments
+                                    solutionId={sol.id}
+                                    userId={user?.id}
+                                />
                             </div>
                         ))}
 

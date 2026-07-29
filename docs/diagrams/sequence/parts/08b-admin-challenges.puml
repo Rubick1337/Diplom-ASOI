@@ -1,0 +1,50 @@
+@startuml
+title Admin Page — Управление задачами
+
+actor Admin
+participant "AdminPage" as Page
+participant "AdminController" as AC
+participant "Challenge" as Challenge
+
+Admin -> Page: click "Manage"
+Page -> AC: dispatch(getChallengesManage(page=1, limit=10))
+AC -> Challenge: getChallengesManage(page, limit)
+Challenge --> AC: items[], total
+AC --> Page: challengesManage
+Page --> Admin: рендер таблицы задач
+
+Admin -> Page: input[search] / select[topic] → click "Применить"
+Page -> AC: dispatch(getChallengesManage(page=1, limit, search, topicId))
+AC -> Challenge: getChallengesManage(page, limit, search, topicId)
+Challenge --> AC: items[], total
+AC --> Page: challengesManage
+Page --> Admin: отфильтрованная таблица
+
+Admin -> Page: click пагинация → goTo(n)
+Page -> AC: dispatch(getChallengesManage(page=n, limit, search, topicId))
+AC -> Challenge: getChallengesManage(n, limit, search, topicId)
+Challenge --> AC: items[], total
+AC --> Page: challengesManage
+Page --> Admin: страница n таблицы
+
+Admin -> Page: click "Скрыть" / "Показать"
+Page -> AC: dispatch(toggleChallengeHidden(id, isHidden))
+AC -> Challenge: toggleChallengeHidden(id, isHidden)
+Challenge --> AC: { id, isHidden }
+AC --> Page: id, isHidden
+Page --> Admin: статус видимости обновлён
+
+Admin -> Page: click "Удалить" → ConfirmationModal → подтвердить
+Page -> AC: dispatch(deleteChallengeAdmin(id))
+AC -> Challenge: deleteChallengeAdmin(id)
+Challenge --> AC: ok
+AC --> Page: success
+Page --> Admin: задача удалена из таблицы
+
+Admin -> Page: click "Редактировать"
+Page --> Admin: переход на /challenge/edit/:id
+
+Admin -> Page: click "+ Добавить задачу"
+Page --> Admin: переход на /challenge/create
+
+@enduml

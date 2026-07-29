@@ -1,0 +1,37 @@
+@startuml
+title Admin Page — Управление достижениями
+
+actor Admin
+participant "AdminPage" as Page
+participant "AdminController" as AC
+participant "Achievement" as Ach
+
+Admin -> Page: click "Achievements"
+Page -> AC: dispatch(getAllAchievements())
+AC -> Ach: findAll()
+Ach --> AC: achievements[]{ id, title, desc, rarity, imageFilename }
+AC --> Page: achievements[]
+Page --> Admin: рендер таблицы достижений
+
+Admin -> Page: input[title, desc, rarity] + upload[image] → click "Создать"
+Page -> AC: dispatch(createAchievement(title, desc, rarity, imageFile))
+AC -> Ach: create(title, desc, rarity, imageFilename)
+Ach --> AC: newAchievement
+AC --> Page: newAchievement
+Page --> Admin: достижение добавлено в таблицу
+
+Admin -> Page: click "Изменить" → input[поля] / upload[image] → click "Сохранить"
+Page -> AC: dispatch(updateAchievement(id, { title, desc, rarity, imageFile }))
+AC -> Ach: update(id, updates)
+Ach --> AC: updatedAchievement
+AC --> Page: updatedAchievement
+Page --> Admin: достижение обновлено в таблице
+
+Admin -> Page: click "Удалить" → ConfirmationModal → подтвердить
+Page -> AC: dispatch(deleteAchievement(id))
+AC -> Ach: destroy(id)
+Ach --> AC: ok
+AC --> Page: { ok: true }
+Page --> Admin: достижение удалено из таблицы
+
+@enduml

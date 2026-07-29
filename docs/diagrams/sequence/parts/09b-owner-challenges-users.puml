@@ -1,0 +1,44 @@
+@startuml
+title Owner Page — Статистика задач и пользователей
+
+actor Owner
+participant "OwnerPage" as Page
+participant "AdminController" as AC
+participant "User" as User
+participant "Challenge" as Challenge
+participant "HistoryChallenge" as HC
+participant "Topic" as Topic
+
+Owner -> Page: click "Challenges"
+Page -> AC: dispatch(getChallengeStats())
+AC -> Topic: getChallengesByTopic()
+Topic --> AC: topicStats[]
+AC -> Challenge: getChallengesByDifficulty()
+Challenge --> AC: difficultyCounts[]
+AC -> HC: getSubmissionsByLanguage()
+HC --> AC: languageCounts[]
+AC -> Challenge: getHardestChallenges(limit)
+Challenge --> AC: hardestChallenges[]
+AC --> Page: challengeStats
+Page --> Owner: рендер Challenges (языки, темы, сложность, топ сложных)
+
+Owner -> Page: click "Users"
+Page -> AC: dispatch(getTopUsers(limit))
+AC -> User: getTopUsers(limit)
+User --> AC: topUsers[]
+AC --> Page: topUsers[]
+
+Page -> AC: dispatch(getUserDistributions(ratingBucket, expBucket))
+AC -> User: getUserDistributions(ratingBucket, expBucket)
+User --> AC: distributions
+AC --> Page: distributions
+Page --> Owner: рендер Users (топ пользователей, распределение рейтинга и опыта)
+
+Owner -> Page: input[type=range] → setRatingBucket / setExpBucket
+Page -> AC: dispatch(getUserDistributions(ratingBucket, expBucket))
+AC -> User: getUserDistributions(ratingBucket, expBucket)
+User --> AC: distributions
+AC --> Page: distributions
+Page --> Owner: обновлённые графики распределений
+
+@enduml

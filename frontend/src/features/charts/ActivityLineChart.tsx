@@ -7,7 +7,7 @@ import {
     Tooltip, Legend, ResponsiveContainer,
 } from 'recharts';
 import { TOOLTIP_STYLE } from './chartConfig';
-import FilterPills from '@/features/Filterpills/Filterpills';
+import FilterPills from '@/shared/components/FilterPills/FilterPills';
 
 interface Props {
     activity: any[];

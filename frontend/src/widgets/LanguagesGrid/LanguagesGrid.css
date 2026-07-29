@@ -94,3 +94,17 @@
         grid-template-columns: repeat(2, 1fr);
     }
 }
+
+/* LIGHT THEME */
+[data-theme="light"] .languages-sub {
+    color: rgba(26,24,23,0.65);
+    opacity: 1;
+}
+[data-theme="light"] .lang-card {
+    background: #ddd8ce;
+    border-color: rgba(26,24,23,0.14);
+}
+[data-theme="light"] .lang-name {
+    color: #1a1817;
+    opacity: 0.9;
+}

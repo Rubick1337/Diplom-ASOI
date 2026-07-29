@@ -1,0 +1,23 @@
+@startuml
+title Tests Page — Результаты и история попыток
+
+actor User
+participant "TestsPage" as Page
+participant "TestController" as TC
+participant "TestAttempt" as TA
+
+User -> Page: click "Подробнее" после завершения
+Page -> TC: dispatch(getAttemptResult(attemptId, userId))
+TC -> TA: findByPk(attemptId, include=Questions+Answers)
+TA --> TC: attempt{ score, maxScore, questions[]{ text, isCorrect, userAnswer, correctAnswer } }
+TC --> Page: attempt
+Page --> User: рендер детального результата (по каждому вопросу)
+
+User -> Page: click "Мои попытки"
+Page -> TC: dispatch(getMyAttempts(testId, userId))
+TC -> TA: findAll(testId, userId, order=DESC)
+TA --> TC: attempts[]{ id, score, maxScore, finishedAt }
+TC --> Page: attempts[]
+Page --> User: рендер таблицы попыток
+
+@enduml

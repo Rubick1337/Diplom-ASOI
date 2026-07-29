@@ -1,0 +1,54 @@
+const sequelize = require('../config/dbConfig');
+const { DataTypes } = require('sequelize');
+
+const ReportModel = sequelize.define(
+    'Report',
+    {
+        id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+        userId: {
+            type: DataTypes.INTEGER,
+            allowNull: false
+        },
+        challengeId: {
+            type: DataTypes.INTEGER,
+            allowNull: true,
+        },
+        testId: {
+            type: DataTypes.INTEGER,
+            allowNull: true,
+        },
+        reasonId: {
+            type: DataTypes.INTEGER,
+            allowNull: true,
+        },
+        reasonText: {
+            type: DataTypes.TEXT,
+            allowNull: true,
+        },
+        status: {
+            type: DataTypes.STRING,
+            allowNull: false,
+            defaultValue: 'Pending'
+        },
+        resolvedById: {
+            type: DataTypes.INTEGER,
+            allowNull: true,
+            defaultValue: null,
+        },
+        resolvedAt: {
+            type: DataTypes.DATE,
+            allowNull: true,
+            defaultValue: null,
+        },
+        createdAt: {
+            type: DataTypes.DATE,
+            defaultValue: DataTypes.NOW
+        }
+    },
+    {
+        tableName: 'Reports',
+        timestamps: false
+    }
+);
+
+module.exports = ReportModel;

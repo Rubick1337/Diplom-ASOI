@@ -1,5 +1,6 @@
 require("dotenv").config()
 const express = require('express');
+const path    = require('path');
 const app = express()
 const sequelize = require('../Data/config/dbConfig');
 const models = require('../Data/models');
@@ -16,6 +17,8 @@ const initSocket = require('./socket/socket');
 initSocket(server);
 
 app.use(cors({ origin: process.env.CLIENT_URL, credentials: true }));
+app.use('/achievements', express.static(path.join(__dirname, '../public/achievements')));
+app.use('/question-images', express.static(path.join(__dirname, '../public/question-images')));
 app.use(cookieParser());
 app.use(passport.initialize());
 app.use(express.json());
@@ -34,7 +37,6 @@ const start = async () => {
         await checkRedisConnection();
 
         await sequelize.authenticate();
-        await sequelize.sync();
 
         server.listen(PORT, () => {
             console.log("Server started on port " + PORT);

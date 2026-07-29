@@ -88,3 +88,20 @@
         font-size: 10px;
     }
 }
+
+/* LIGHT THEME */
+[data-theme="light"] .kpi-card {
+    background: linear-gradient(180deg, rgba(255,255,255,0.9), #ffffff);
+    border-color: rgba(26,24,23,0.10);
+    border-top-color: rgba(26,24,23,0.14);
+}
+[data-theme="light"] .kpi-card:hover {
+    border-color: rgba(255,107,53,0.35);
+    box-shadow: 0 0 24px rgba(255,107,53,0.10);
+}
+[data-theme="light"] .kpi-card__label {
+    color: rgba(26,24,23,0.45);
+}
+[data-theme="light"] .kpi-card__value {
+    color: #1a1817;
+}

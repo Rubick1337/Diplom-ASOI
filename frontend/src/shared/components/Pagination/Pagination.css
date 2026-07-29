@@ -69,3 +69,25 @@
     align-items: center;
     justify-content: center;
 }
+
+/* LIGHT THEME */
+[data-theme="light"] .pagination-btn {
+    background: #ffffff;
+    border-color: rgba(26,24,23,0.14);
+    color: rgba(26,24,23,0.65);
+}
+[data-theme="light"] .pagination-btn:hover:not(:disabled) {
+    background: rgba(26,24,23,0.05);
+    border-color: rgba(240,73,73,0.40);
+    color: #1a1817;
+    box-shadow: 0 0 16px rgba(240,73,73,0.18);
+}
+[data-theme="light"] .pagination-page {
+    background: #ffffff;
+}
+[data-theme="light"] .pagination-page-active {
+    background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,0) 60%),
+                linear-gradient(135deg, #FF6B35, #F04949);
+    border-color: rgba(255,255,255,0.12);
+    color: #fff;
+}

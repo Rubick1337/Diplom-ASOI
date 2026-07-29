@@ -4,11 +4,13 @@ import { useRouter } from 'next/navigation';
 import Editor from '@monaco-editor/react';
 import {
     Settings, FileText, FlaskConical, Code2,
-    Plus, Trash2, Play, CheckCircle2, XCircle,
-    ChevronDown, ChevronUp, AlertTriangle, UserCheck, UserX, Send, Sparkles, X,
+    Plus, Play, CheckCircle2, XCircle,
+    ChevronDown, ChevronUp, AlertTriangle, UserCheck, UserX, Send, Sparkles, X, Download,
 } from 'lucide-react';
+import CodewarsImportModal, { CodewarsImportData } from '@/features/CodewarsImport/CodewarsImportModal';
 import ChallengeService, { ExecuteResponse, Topic } from '@/shared/services/ChallengeService';
 import { useAppSelector } from '@/shared/store/hooks';
+import { useTheme } from '@/shared/context/ThemeContext';
 import Header from '@/widgets/Header/Header';
 import { ConfirmationModal } from '@/shared/components/ConfirmationModal/ConfirmationModal';
 import CustomSelect from '@/shared/components/CustomSelect/CustomSelect';
@@ -56,6 +58,7 @@ const PARAM_TYPE_LABELS: Record<LanguageValue, Record<ParamDataType, string>> = 
     csharp:       { int: 'int',     float: 'double', string: 'string', bool: 'bool',    array: 'int[]',      array2d: 'int[][]',  object: 'object'  },
     php:          { int: 'int',     float: 'float',  string: 'string', bool: 'bool',    array: 'array',      array2d: 'array[]',  object: 'array'   },
     coffeescript: { int: 'Number',  float: 'Number', string: 'String', bool: 'Boolean', array: 'Array',      array2d: 'Array 2D', object: 'Object'  },
+    java:         { int: 'int',     float: 'double', string: 'String', bool: 'boolean', array: 'int[]',      array2d: 'int[][]',  object: 'Object'  },
 };
 
 function toTsType(t: string)  { return t === 'int' || t === 'float' ? 'number' : t === 'string' ? 'string' : t === 'bool' ? 'boolean' : t === 'array' ? 'any[]' : t === 'array2d' ? 'any[][]' : 'any'; }
@@ -137,6 +140,7 @@ function ArgInput({
 export default function CreateChallengePage() {
     const router      = useRouter();
     const currentUser = useAppSelector(s => s.auth.user);
+    const { theme }   = useTheme();
 
     const [topics,           setTopics]           = useState<Topic[]>([]);
     const [selectedTopicIds, setSelectedTopicIds] = useState<number[]>([]);
@@ -145,6 +149,7 @@ export default function CreateChallengePage() {
     const [topicCreating,    setTopicCreating]    = useState(false);
     const topicRef = useRef<HTMLDivElement>(null);
     const aiSolutionRef = useRef<string | null>(null);
+    const suppressCodeEffectRef = useRef(false);
 
     const [diffOpen, setDiffOpen] = useState(false);
     const diffRef = useRef<HTMLDivElement>(null);
@@ -196,6 +201,11 @@ export default function CreateChallengePage() {
     const [verifyError,   setVerifyError]   = useState('');
 
     useEffect(() => {
+        if (suppressCodeEffectRef.current) {
+            suppressCodeEffectRef.current = false;
+            setVerifyResult(null);
+            return;
+        }
         if (aiSolutionRef.current !== null) {
             setVerifyCode(aiSolutionRef.current);
             aiSolutionRef.current = null;
@@ -203,7 +213,6 @@ export default function CreateChallengePage() {
             setVerifyCode(generateStarterCode(verifyLang, funcName, parameters));
         }
         setVerifyResult(null);
-
     }, [funcName, parameters]);
 
     const paramTypeOptions = ALL_PARAM_TYPES.map(t => ({
@@ -213,6 +222,11 @@ export default function CreateChallengePage() {
 
     const [modal, setModal] = useState<{ title: string; message: string; type: 'warning' | 'danger' | 'info' } | null>(null);
     const showModal = (title: string, message: string, type: 'warning' | 'danger' | 'info' = 'warning') => setModal({ title, message, type });
+
+    const [cwOpen,     setCwOpen]     = useState(false);
+    const [cwAiSuggest, setCwAiSuggest] = useState<{ name: string; description: string; funcName: string; sampleInput: string; sampleOutput: string } | null>(null);
+    const [cwAiLoading, setCwAiLoading] = useState(false);
+    const [cwAiError,   setCwAiError]   = useState('');
 
     const [aiOpen,    setAiOpen]    = useState(false);
     const [aiPrompt,  setAiPrompt]  = useState('');
@@ -290,6 +304,95 @@ export default function CreateChallengePage() {
         });
     };
 
+    const handleCodewarsImport = (data: CodewarsImportData) => {
+        if (data.name)         setName(data.name);
+        if (data.description)  setDescription(data.description);
+        if (data.difficulty)   setDifficulty(data.difficulty);
+        if (data.funcName)     setFuncName(data.funcName);
+        if (data.sampleInput  !== undefined) setSampleInput(data.sampleInput);
+        if (data.sampleOutput !== undefined) setSampleOutput(data.sampleOutput);
+        if (data.tags.length > 0) {
+            const matched = topics
+                .filter(t => data.tags.some(tag => tag.toLowerCase() === t.name.toLowerCase()))
+                .map(t => t.id);
+            if (matched.length > 0) setSelectedTopicIds(matched);
+        }
+        // Предлагаем запустить ИИ для перевода и заполнения остальных полей
+        setCwAiSuggest({
+            name:         data.name,
+            description:  data.description,
+            funcName:     data.funcName,
+            sampleInput:  data.sampleInput,
+            sampleOutput: data.sampleOutput,
+        });
+        setCwAiError('');
+    };
+
+    const handleCwAiRun = async () => {
+        if (!cwAiSuggest) return;
+        setCwAiLoading(true);
+        setCwAiError('');
+        try {
+            const prompt = [
+                `Задача взята с Codewars.`,
+                `Название (оставь как есть, переведи если нужно): "${cwAiSuggest.name}"`,
+                `Имя функции (НЕ меняй): "${cwAiSuggest.funcName}"`,
+                cwAiSuggest.sampleInput  ? `Пример входа: ${cwAiSuggest.sampleInput}`  : '',
+                cwAiSuggest.sampleOutput ? `Пример выхода: ${cwAiSuggest.sampleOutput}` : '',
+                ``,
+                `Оригинальное описание на английском языке:`,
+                `"""`,
+                cwAiSuggest.description,
+                `"""`,
+                ``,
+                `Твоя задача:`,
+                `1. Переведи описание на русский язык — точно и подробно.`,
+                `2. Определи типы и имена параметров функции из описания и примеров.`,
+                `3. Придумай минимум 4 тест-кейса (включая граничные случаи).`,
+                `4. Напиши рабочее эталонное решение на JavaScript.`,
+                `ВАЖНО: funcName должен остаться строго "${cwAiSuggest.funcName}".`,
+            ].filter(Boolean).join('\n');
+
+            const gen = await ChallengeService.generateChallenge(prompt);
+
+            if (gen.name)        setName(gen.name);
+            if (gen.difficulty)  setDifficulty(Number(gen.difficulty));
+            if (gen.description) setDescription(gen.description);
+            if (gen.sampleInput  !== undefined) setSampleInput(gen.sampleInput  ?? '');
+            if (gen.sampleOutput !== undefined) setSampleOutput(gen.sampleOutput ?? '');
+
+            const params: any[] = Array.isArray(gen.parameters)
+                ? gen.parameters.map((p: any, i: number) => ({ name: p.name || '', dataType: p.dataType || 'int', order: i }))
+                : [];
+
+            // Set verifyCode directly to avoid race with useEffect([funcName, parameters])
+            if (gen.solution) {
+                suppressCodeEffectRef.current = true;
+                setVerifyCode(gen.solution);
+                setVerifyLang('javascript');
+            }
+            setFuncName(cwAiSuggest.funcName);
+            setParameters(params);
+
+            const tests: any[] = Array.isArray(gen.testCases)
+                ? gen.testCases.map((tc: any) => ({
+                    title:          tc.title          || '',
+                    expectedOutput: tc.expectedOutput ?? '',
+                    testArgs: Array.isArray(tc.testArgs)
+                        ? tc.testArgs.map((a: any) => ({ value: String(a.value ?? ''), order: a.order ?? 0 }))
+                        : params.map((_: any, i: number) => ({ value: '', order: i })),
+                }))
+                : [{ title: 'Test 1', expectedOutput: '', testArgs: [] }];
+            setTestCases(tests);
+            setVerifyResult(null);
+            setCwAiSuggest(null);
+        } catch (e: any) {
+            setCwAiError(e?.response?.data?.message || e?.message || 'Ошибка ИИ');
+        } finally {
+            setCwAiLoading(false);
+        }
+    };
+
     const handleAiGenerate = async () => {
         if (!aiPrompt.trim()) { setAiError('Введите описание задачи'); return; }
         setAiLoading(true);
@@ -299,7 +402,6 @@ export default function CreateChallengePage() {
 
             if (gen.name)        setName(gen.name);
             if (gen.difficulty)  setDifficulty(Number(gen.difficulty));
-            if (gen.funcName)    setFuncName(gen.funcName);
             if (gen.description) setDescription(gen.description);
             if (gen.sampleInput  !== undefined) setSampleInput(gen.sampleInput  ?? '');
             if (gen.sampleOutput !== undefined) setSampleOutput(gen.sampleOutput ?? '');
@@ -309,9 +411,11 @@ export default function CreateChallengePage() {
                 : [];
 
             if (gen.solution) {
-                aiSolutionRef.current = gen.solution;
+                suppressCodeEffectRef.current = true;
+                setVerifyCode(gen.solution);
                 setVerifyLang('javascript');
             }
+            if (gen.funcName) setFuncName(gen.funcName);
             setParameters(params);
 
             const tests: any[] = Array.isArray(gen.testCases)
@@ -413,6 +517,14 @@ export default function CreateChallengePage() {
                     </div>
                     <div className="cc-topbar-right">
                         <button
+                            className="cc-btn-ghost"
+                            onClick={() => setCwOpen(true)}
+                            title="Импортировать задачу из Codewars"
+                        >
+                            <Download size={16} />
+                            Импорт Codewars
+                        </button>
+                        <button
                             className={`cc-btn-ghost ${aiOpen ? 'active' : ''}`}
                             onClick={() => { setAiOpen(v => !v); setAiError(''); }}
                             title="Сгенерировать задачу с помощью ИИ"
@@ -437,6 +549,47 @@ export default function CreateChallengePage() {
                         </button>
                     </div>
                 </div>
+
+                {/* Баннер предложения ИИ после импорта Codewars */}
+                {cwAiSuggest && (
+                    <div className="cc-cw-ai-banner">
+                        <div className="cc-cw-ai-banner-left">
+                            <Sparkles size={16} className="cc-ai-icon" />
+                            <div>
+                                <div className="cc-cw-ai-banner-title">
+                                    Запустить ИИ?
+                                </div>
+                                <div className="cc-cw-ai-banner-sub">
+                                    ИИ переведёт описание на русский и заполнит параметры, тест-кейсы и эталонное решение.
+                                </div>
+                                {cwAiError && (
+                                    <div className="cc-cw-ai-banner-error">
+                                        <AlertTriangle size={12} /> {cwAiError}
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                        <div className="cc-cw-ai-banner-actions">
+                            <button
+                                className="cc-btn-ghost"
+                                onClick={() => setCwAiSuggest(null)}
+                                disabled={cwAiLoading}
+                            >
+                                Пропустить
+                            </button>
+                            <button
+                                className="cc-btn-ghost active"
+                                onClick={handleCwAiRun}
+                                disabled={cwAiLoading}
+                            >
+                                {cwAiLoading
+                                    ? <><span className="cc-spinner" /> Перевожу…</>
+                                    : <><Sparkles size={14} /> Запустить ИИ</>
+                                }
+                            </button>
+                        </div>
+                    </div>
+                )}
 
                 {}
                 {aiOpen && (
@@ -649,7 +802,7 @@ export default function CreateChallengePage() {
                                                 onClick={() => removeParameter(i)}
                                                 title="Удалить параметр"
                                             >
-                                                <Trash2 size={13} />
+                                                <img src="/images/trash.png" alt="del" style={{width:'13px',height:'13px',verticalAlign:'middle'}} />
                                             </button>
                                         </div>
                                     ))}
@@ -722,7 +875,7 @@ export default function CreateChallengePage() {
                                                         disabled={testCases.length <= 1}
                                                         title="Удалить тест"
                                                     >
-                                                        <Trash2 size={12} />
+                                                        <img src="/images/trash.png" alt="del" style={{width:'12px',height:'12px',verticalAlign:'middle'}} />
                                                     </button>
                                                     {isCollapsed ? <ChevronDown size={14} /> : <ChevronUp size={14} />}
                                                 </div>
@@ -810,10 +963,21 @@ export default function CreateChallengePage() {
                                     language={verifyLang === 'coffeescript' ? 'javascript' : verifyLang === 'cpp' ? 'cpp' : verifyLang}
                                     value={verifyCode}
                                     onChange={v => { setVerifyCode(v ?? ''); setVerifyResult(null); }}
-                                    theme="vs-dark"
+                                    theme={theme === 'light' ? 'vs-warm' : 'vs-dark'}
                                     beforeMount={monaco => {
                                         monaco.languages.typescript.javascriptDefaults.setDiagnosticsOptions({ noSemanticValidation: true, noSyntaxValidation: true });
                                         monaco.languages.typescript.typescriptDefaults.setDiagnosticsOptions({ noSemanticValidation: true, noSyntaxValidation: true });
+                                        monaco.editor.defineTheme('vs-warm', {
+                                            base: 'vs',
+                                            inherit: true,
+                                            rules: [],
+                                            colors: {
+                                                'editor.background': '#f5f0e8',
+                                                'editor.lineHighlightBackground': '#ede8df',
+                                                'editorLineNumber.foreground': '#b0a898',
+                                                'editorGutter.background': '#f5f0e8',
+                                            },
+                                        });
                                     }}
                                     options={{
                                         fontSize: 13,
@@ -886,6 +1050,12 @@ export default function CreateChallengePage() {
                 onConfirm={() => setModal(null)}
                 onClose={() => setModal(null)}
             />
+            {cwOpen && (
+                <CodewarsImportModal
+                    onImport={handleCodewarsImport}
+                    onClose={() => setCwOpen(false)}
+                />
+            )}
         </>
     );
 }

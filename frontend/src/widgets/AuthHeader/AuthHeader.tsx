@@ -3,6 +3,7 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import Image from 'next/image';
 import '@/widgets/MainHeader/Header.css';
+import ThemeToggle from '@/widgets/ThemeToggle/ThemeToggle';
 
 export default function AuthHeader() {
     const router = useRouter();
@@ -25,6 +26,7 @@ export default function AuthHeader() {
                 </nav>
 
                 <div className="header-actions">
+                    <ThemeToggle />
                     <button className="btn-dark" onClick={() => router.push('/auth/login')}>Войти</button>
                     <button className="btn-accent" onClick={() => router.push('/auth/register')}>Присоединиться</button>
                 </div>

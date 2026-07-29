@@ -1,0 +1,196 @@
+@startuml
+title Диаграмма последовательности — Profile Page
+
+actor User
+participant "ProfilePage" as Page
+participant "Redux Store" as Store
+participant "UserController" as UC
+participant "User" as UserModel
+participant "HistoryChallenge" as HC
+participant "Challenge" as Challenge
+participant "Topic" as Topic
+participant "ReportModel" as RC
+participant "TestAttempt" as TA
+participant "Test" as TestModel
+participant "Achievement" as Ach
+participant "Notification" as Notif
+participant "AIService" as AI
+participant "Redis" as Redis
+
+User -> Page: открывает /profile
+
+Page -> Store: dispatch(fetchProfile())
+Store -> UC: getProfile()
+UC -> UserModel: findById(userId)
+UserModel --> UC: user
+UC -> HC: findByUser(userId)
+HC --> UC: attempts[]
+UC -> Topic: getAll()
+Topic --> UC: topics[]
+UC --> Store: user, stats, languages[], topics[], allTopics[]
+Store --> Page: profile.data
+
+Page -> Store: dispatch(fetchActivityHeatmap())
+Store -> UC: getActivityHeatmap()
+UC -> HC: findByUserAndYear(userId, year)
+HC --> UC: rows[]
+UC --> Store: days{ date → count }
+Store --> Page: profile.heatmap
+
+Page --> User: рендер сайдбара (аватар, уровень, XP, статистика, языки) + тепловая карта
+
+User -> Page: click История задач
+
+Page -> Store: dispatch(fetchMyHistory(page, pageSize, search, status, language))
+Store -> UC: getMyHistory(page, pageSize, search, status, language)
+UC -> HC: findPaginated(userId, status, language, search, page, pageSize)
+HC --> UC: rows[], count
+UC --> Store: items[], total, totalPages
+Store --> Page: profile.history
+Page --> User: рендер таблицы истории решений
+
+User -> Page: input[поиск] → setHistSearch
+Page -> Store: dispatch(fetchMyHistory(page=1, ...search))
+Store -> UC: getMyHistory(page=1, pageSize, search, status, language)
+UC -> HC: findPaginated(userId, status, language, search, page, pageSize)
+HC --> UC: rows[], count
+UC --> Store: items[], total, totalPages
+Store --> Page: profile.history
+Page --> User: обновлённая таблица истории
+
+User -> Page: select[статус] → setHistStatus
+Page -> Store: dispatch(fetchMyHistory(page=1, ...status))
+Store -> UC: getMyHistory(page=1, pageSize, search, status, language)
+UC -> HC: findPaginated(userId, status, language, search, page, pageSize)
+HC --> UC: rows[], count
+UC --> Store: items[], total, totalPages
+Store --> Page: profile.history
+Page --> User: отфильтрованная таблица истории
+
+User -> Page: select[язык] → setHistLang
+Page -> Store: dispatch(fetchMyHistory(page=1, ...language))
+Store -> UC: getMyHistory(page=1, pageSize, search, status, language)
+UC -> HC: findPaginated(userId, status, language, search, page, pageSize)
+HC --> UC: rows[], count
+UC --> Store: items[], total, totalPages
+Store --> Page: profile.history
+Page --> User: отфильтрованная таблица истории
+
+User -> Page: click пагинация → setHistPage(n)
+Page -> Store: dispatch(fetchMyHistory(page=n, ...))
+Store -> UC: getMyHistory(page=n, pageSize, search, status, language)
+UC -> HC: findPaginated(userId, status, language, search, page, pageSize)
+HC --> UC: rows[], count
+UC --> Store: items[], total, totalPages
+Store --> Page: profile.history
+Page --> User: страница n таблицы истории
+
+User -> Page: click "Код" на строке истории
+Page --> User: открывает модалку с кодом решения
+
+User -> Page: click История тестов
+
+Page -> Store: dispatch(fetchMyTestHistory(page, pageSize))
+Store -> UC: getMyTestHistory(page, pageSize)
+UC -> TA: findPaginated(userId, page, pageSize)
+TA --> UC: rows[], count
+UC --> Store: items[], total, totalPages
+Store --> Page: profile.testHistory
+Page --> User: рендер таблицы истории прохождений тестов
+
+User -> Page: click на строке тест-истории → просмотр результата
+Page -> Store: dispatch(fetchAttemptResult(attemptId))
+Store -> UC: getAttemptResult(attemptId, userId)
+UC -> TA: findByPk(attemptId)
+TA --> UC: attempt
+UC --> Store: attempt{ score, maxScore, answers[] }
+Store --> Page: profile.attemptResult
+Page --> User: модалка с детальным результатом
+
+User -> Page: click Жалобы
+
+Page -> Store: dispatch(fetchMyReports(page, pageSize, search, status))
+Store -> UC: getMyReports(page, pageSize, search, status)
+UC -> RC: findPaginated(userId, status, search, page, pageSize)
+RC --> UC: rows[], count
+UC --> Store: items[], total, totalPages
+Store --> Page: profile.reports
+Page --> User: рендер списка жалоб
+
+User -> Page: input[поиск] / select[статус] → фильтры
+Page -> Store: dispatch(fetchMyReports(page=1, ...filters))
+Store -> UC: getMyReports(page=1, pageSize, search, status)
+UC -> RC: findPaginated(userId, status, search, page, pageSize)
+RC --> UC: rows[], count
+UC --> Store: items[], total, totalPages
+Store --> Page: profile.reports
+Page --> User: отфильтрованный список жалоб
+
+User -> Page: click Статистика
+Page -> Store: select(profile.data)
+Store --> Page: stats, languages, topics
+Page --> User: рендер StatisticsTab (успешность, языки, темы)
+
+User -> Page: click Достижения
+
+Page -> Store: dispatch(fetchAchievements())
+Store -> UC: getAchievements()
+UC -> Ach: getUserAchievements(userId)
+Ach --> UC: achievements[]{ id, title, desc, rarity, imageFilename, unlockedAt }
+UC --> Store: achievements[]
+Store --> Page: profile.achievements
+Page --> User: рендер AchievementsTab (карточки достижений, заблокированные)
+
+User -> Page: click Обучение
+
+Page -> Store: dispatch(fetchLearningPlan())
+Store -> UC: getLearningPlan()
+UC -> Topic: getAll()
+Topic --> UC: topics[]
+UC -> Challenge: findVisible()
+Challenge --> UC: challenges[]
+UC -> HC: findByUser(userId)
+HC --> UC: history[]
+UC --> Store: topicProgress[], recommendations[], overallProgress
+Store --> Page: profile.learningPlan
+Page --> User: рендер LearningTab (прогресс по темам, рекомендации)
+
+User -> Page: click "Сгенерировать гайд" по теме
+Page -> Store: dispatch(generateTopicGuide(topicName, preferences))
+Store -> UC: generateTopicGuide(topicName, preferences)
+UC -> Redis: get(cacheKey)
+alt кэш найден
+    Redis --> UC: guide
+else кэша нет
+    UC -> AI: generateTopicGuide(topicName, preferences)
+    AI --> UC: concepts[], path[], related[]
+    UC -> Redis: setEx(cacheKey, guide, TTL)
+    Redis --> UC: ok
+end
+UC --> Store: guide
+Store --> Page: guide
+Page --> User: рендер гайда по теме (концепции, путь, связанные темы)
+
+User -> Page: click иконка уведомлений
+
+Page -> UC: getNotifications()
+UC -> Notif: findAll(userId, order=DESC)
+Notif --> UC: notifications[]
+UC --> Page: notifications[]
+Page --> User: рендер панели уведомлений
+
+User -> Page: click на уведомлении → "Отметить прочитанным"
+Page -> UC: markNotificationRead(notificationId)
+UC -> Notif: update(id, { isRead: true })
+Notif --> UC: ok
+UC --> Page: ok
+Page --> User: уведомление помечено прочитанным
+
+User -> Page: click "Удалить всё"
+Page -> UC: deleteAllNotifications()
+UC -> Notif: destroy(userId)
+Notif --> UC: ok
+UC --> Page: { success: true }
+Page --> User: список уведомлений очищен
+
+@enduml

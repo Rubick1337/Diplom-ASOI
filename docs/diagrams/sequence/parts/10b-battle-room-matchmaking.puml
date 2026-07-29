@@ -1,0 +1,69 @@
+@startuml
+title Battle Page — Создание комнаты, матчмейкинг и вход
+
+actor User
+participant "BattlePage" as Page
+participant "SocketServer" as Socket
+participant "RoomStore" as RS
+
+User -> Page: click "Быстрый поиск"
+Page -> Socket: emit join_matchmaking(username, userId)
+Socket -> RS: getMatchmakingRooms()
+RS --> Socket: matchmakingRooms[]
+alt соперник уже ждёт
+    Socket -> RS: deleteRoom(code)
+    RS --> Socket: ok
+    Socket -> RS: setBattle(battleRoomId, battleData)
+    RS --> Socket: ok
+    Socket --> Page: match_found { roomId, players[] }
+    note over Page: phase → picking
+else
+    Socket -> RS: setRoom(code, roomData)
+    RS --> Socket: ok
+    Socket --> Page: waiting_for_opponent
+    Socket --> Page: match_found { roomId, players[] }
+    note over Page: phase → picking
+end
+
+User -> Page: click "Отмена поиска"
+Page -> Socket: emit leave_matchmaking
+Socket -> RS: deleteRoom(myRoom.code)
+RS --> Socket: ok
+Socket --> Page: matchmaking_cancelled
+Page --> User: возврат в лобби
+
+User -> Page: click "Создать комнату"
+Page -> Socket: emit create_room(username, userId, password?)
+Socket -> RS: setRoom(code, roomData)
+RS --> Socket: ok
+Socket --> Page: room_created { code, hasPassword }
+Socket --> Page: rooms_updated (broadcast)
+note over Page: phase → room
+
+Socket --> Page: player_joined_room { players[] }
+Page --> User: рендер имени гостя в RoomPhase
+
+User -> Page: click "Отменить комнату"
+Page -> Socket: emit cancel_room
+Socket -> RS: deleteRoom(myRoom.code)
+RS --> Socket: ok
+Socket --> Page: rooms_updated (broadcast)
+note over Page: phase → lobby
+
+User -> Page: click на карточке комнаты → join_room
+Page -> Socket: emit join_room(username, userId, code, password?)
+Socket -> RS: getRoom(code)
+RS --> Socket: room
+alt неверный пароль
+    Socket --> Page: room_error { message: "Неверный пароль" }
+    Page --> User: показывает поле ввода пароля
+else
+    Socket -> RS: deleteRoom(code)
+    RS --> Socket: ok
+    Socket -> RS: setBattle(battleRoomId, battleData)
+    RS --> Socket: ok
+    Socket --> Page: match_found { roomId, players[] }
+    note over Page: phase → picking
+end
+
+@enduml

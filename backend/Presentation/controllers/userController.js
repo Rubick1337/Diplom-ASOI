@@ -1,15 +1,21 @@
+const bcrypt = require('bcryptjs');
 const UserRepositorySequelize = require('../../Data/repository/UserRepositorySequelize');
 const UserService = require('../../Application/services/UserService');
 const TokenService = require('../../Application/services/TokenService');
+const EmailService = require('../../Application/services/EmailService');
+const UserCreateDto = require('../../Application/dto/Users/UserCreateDto');
+const validateUserCreate = require('../../Application/validators/Users/validateUserCreate');
 const sequelize = require('../../Data/config/dbConfig');
 const {
     HistoryChallenges,
     Challenge,
     Topic,
     User,
-    ReportChallenge,
+    Report,
     ReportReason,
     Notification,
+    TestAttempt,
+    Test,
 } = require('../../Data/models');
 const { fn, col, literal, Op } = require('sequelize');
 
@@ -40,52 +46,83 @@ async function getTopicGuide(topicName) {
 }
 
 class UserController {
+    async sendVerificationCode(req, res, next) {
+        try {
+            const { username, email, password } = req.body;
+
+            const dto = new UserCreateDto({ username, email, password, role: 3 });
+            validateUserCreate(dto);
+
+            if (await userRepository.findOne({ email: dto.email })) {
+                return res.status(409).json({ message: 'Пользователь с такой почтой уже существует' });
+            }
+            if (await userRepository.findOne({ username: dto.username })) {
+                return res.status(409).json({ message: 'Username уже занят' });
+            }
+
+            const passwordHash = await bcrypt.hash(password, 5);
+            const code = Math.floor(100000 + Math.random() * 900000).toString();
+
+            await redisClient.setEx(
+                `email_verify:${email}`,
+                300,
+                JSON.stringify({ username: dto.username, email: dto.email, passwordHash, code })
+            );
+
+            await EmailService.sendVerificationCode(dto.email, code);
+
+            return res.json({ message: 'Код отправлен на почту' });
+        } catch (e) {
+            console.error('sendVerificationCode error:', e);
+            if (e.details) return res.status(400).json({ message: 'Validation error', errors: e.details });
+            return res.status(500).json({ message: e.message || 'Server error' });
+        }
+    }
+
     async registration(req, res, next) {
         try {
-            const rawData = {
-                username: req.body.username,
-                password: req.body.password,
-                email: req.body.email,
-                role: req.body.role ?? 3,
-            };
+            const { email, code } = req.body;
 
-            const result = await userService.register(rawData);
+            if (!email || !code) {
+                return res.status(400).json({ message: 'Email и код обязательны' });
+            }
 
-            res.cookie('accessToken', result.accessToken, {
-                httpOnly: true,
-                secure: false,
-                sameSite: 'strict',
-                maxAge: 30 * 60 * 1000
+            const raw = await redisClient.get(`email_verify:${email}`);
+            if (!raw) {
+                return res.status(400).json({ message: 'Код истёк или не был запрошен. Запросите новый код' });
+            }
+
+            const pending = JSON.parse(raw);
+            if (pending.code !== code.trim()) {
+                return res.status(400).json({ message: 'Неверный код подтверждения' });
+            }
+
+            await redisClient.del(`email_verify:${email}`);
+
+            const result = await userService.createVerifiedUser({
+                username: pending.username,
+                email: pending.email,
+                passwordHash: pending.passwordHash,
             });
 
+            res.cookie('accessToken', result.accessToken, {
+                httpOnly: true, secure: false, sameSite: 'strict', maxAge: 30 * 60 * 1000
+            });
             res.cookie('refreshToken', result.refreshToken, {
-                httpOnly: true,
-                secure: false,
-                sameSite: 'strict',
-                maxAge: 10 * 24 * 60 * 60 * 1000
+                httpOnly: true, secure: false, sameSite: 'strict', maxAge: 10 * 24 * 60 * 60 * 1000
             });
 
             return res.status(201).json({
                 user: result.user,
                 accessToken: result.accessToken,
-                refreshToken: result.refreshToken
+                refreshToken: result.refreshToken,
             });
         } catch (e) {
             console.error('registration error:', e);
-
-            if (e.details) {
-                return res.status(400).json({ message: 'Validation error', errors: e.details });
-            }
-
-            if (e.message && e.message.includes('почтой')) {
+            if (e.message?.includes('почтой') || e.message?.includes('занят')) {
                 return res.status(409).json({ message: e.message });
             }
-
-            if (ApiError && ApiError.Internal) {
-                return next(ApiError.Internal(e.message));
-            }
-
-            return res.status(500).json({ message: 'Server error' });
+            return res.status(500).json({ message: e.message || 'Server error' });
         }
     }
 
@@ -410,7 +447,7 @@ class UserController {
                 ? { name: { [Op.iLike]: `%${req.query.search}%` } }
                 : undefined;
 
-            const { rows, count } = await ReportChallenge.findAndCountAll({
+            const { rows, count } = await Report.findAndCountAll({
                 where,
                 include: [
                     {
@@ -436,6 +473,52 @@ class UserController {
             });
         } catch (e) {
             console.error('getMyReports error:', e);
+            return res.status(500).json({ message: 'Server error' });
+        }
+    }
+
+    async getMyTestHistory(req, res, next) {
+        try {
+            const token = req.cookies?.accessToken || (req.headers.authorization || '').replace('Bearer ', '');
+            const payload = TokenService.validateAccessToken(token);
+            if (!payload) return res.status(401).json({ message: 'Не авторизован' });
+            const userId = payload.id;
+
+            const page     = Math.max(1, parseInt(req.query.page)     || 1);
+            const pageSize = Math.min(50, Math.max(1, parseInt(req.query.pageSize) || 20));
+            const offset   = (page - 1) * pageSize;
+
+            const where = { userId };
+            if (req.query.status && req.query.status !== 'all') where.status = req.query.status;
+
+            const testWhere = req.query.search
+                ? { title: { [Op.iLike]: `%${req.query.search}%` } }
+                : undefined;
+
+            const { rows, count } = await TestAttempt.findAndCountAll({
+                where,
+                attributes: ['id', 'testId', 'status', 'score', 'maxScore', 'startedAt', 'finishedAt'],
+                include: [{
+                    model: Test,
+                    as: 'test',
+                    attributes: ['id', 'title'],
+                    ...(testWhere ? { where: testWhere, required: true } : { required: false }),
+                }],
+                order: [['startedAt', 'DESC']],
+                limit: pageSize,
+                offset,
+                distinct: true,
+            });
+
+            return res.json({
+                items: rows.map(r => r.toJSON()),
+                total: count,
+                page,
+                pageSize,
+                totalPages: Math.ceil(count / pageSize),
+            });
+        } catch (e) {
+            console.error('getMyTestHistory error:', e);
             return res.status(500).json({ message: 'Server error' });
         }
     }
@@ -513,6 +596,18 @@ class UserController {
                 attributes: ['id', 'name', 'difficulty'],
                 include: [{ model: Topic, as: 'topics', attributes: ['id'], through: { attributes: [] } }],
             });
+
+            const allTests = await Test.findAll({
+                where: { isPublished: true },
+                attributes: ['id', 'title', 'topicId'],
+            });
+            const topicTestsMap = {};
+            for (const t of allTests) {
+                const td = t.toJSON ? t.toJSON() : t;
+                if (td.topicId == null) continue;
+                if (!topicTestsMap[td.topicId]) topicTestsMap[td.topicId] = [];
+                topicTestsMap[td.topicId].push({ id: td.id, title: td.title });
+            }
 
             const history = await HistoryChallenges.findAll({
                 where: { userId },
@@ -666,7 +761,7 @@ class UserController {
                         factors.push({ positive: false, text: `${t.failedHardCount} задач с повторными неудачами — стоит повторить основы` });
                     }
 
-                    return { type, topicId: t.id, topicName: t.name, reason, score, factors, challenges: t.nextChallenges.slice(0, 2) };
+                    return { type, topicId: t.id, topicName: t.name, reason, score, factors, challenges: t.nextChallenges.slice(0, 2), tests: (topicTestsMap[t.id] || []).slice(0, 2) };
                 })
                 .sort((a, b) => b.score - a.score);
 
@@ -695,6 +790,7 @@ class UserController {
                         score,
                         factors,
                         challenges: reviewChallenges,
+                        tests: (topicTestsMap[t.id] || []).slice(0, 2),
                     };
                 })
                 .sort((a, b) => b.score - a.score);
@@ -804,6 +900,16 @@ class UserController {
             const userId = payload.id;
             await Notification.destroy({ where: { userId } });
             res.json({ success: true });
+        } catch (e) { next(e); }
+    }
+
+    async getAchievements(req, res, next) {
+        try {
+            const token = req.cookies?.accessToken || (req.headers.authorization || '').replace('Bearer ', '');
+            const payload = TokenService.validateAccessToken(token);
+            if (!payload) return res.status(401).json({ message: 'Не авторизован' });
+            const AchievementService = require('../../Application/services/AchievementService');
+            res.json(await AchievementService.getUserAchievements(payload.id));
         } catch (e) { next(e); }
     }
 }

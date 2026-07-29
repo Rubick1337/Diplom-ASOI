@@ -1,0 +1,276 @@
+@startuml Frontend Architecture — GooseCode (FSD)
+skinparam packageStyle rectangle
+skinparam componentStyle rectangle
+skinparam backgroundColor #FAFAFA
+skinparam defaultFontName Arial
+
+skinparam package {
+  BorderColor #2D6A9F
+  BackgroundColor #E8F0FB
+  FontStyle bold
+  FontSize 12
+}
+skinparam component {
+  BorderColor #555
+  BackgroundColor #FFFFFF
+  FontSize 10
+}
+
+package "frontend/src" {
+
+  ' ══════════════════════════════════════════
+  ' APP — Next.js App Router (маршрутизация)
+  ' ══════════════════════════════════════════
+  package "app" {
+    [layout]
+    [page]
+    [AuthInit]
+    [ReduxProvider]
+    [not-found]
+
+    package "admin" as app_admin {
+      [admin/page]
+      package "tests/[id]" as app_admin_test {
+        [admin/tests/page]
+      }
+    }
+    package "auth" as app_auth {
+      [login/page]
+      [register/page]
+    }
+    package "challenge" as app_challenge {
+      [create/page]
+      [edit/[id]/page]
+    }
+    package "challenges" as app_challenges {
+      [challenges/page]
+      [[id]/page] as challenges_id
+    }
+    package "tests" as app_tests {
+      [tests/page]
+      [[id]/take/page] as tests_take
+      [attempts/[id]/result/page]
+    }
+    [battle/page]
+    [leaderboard/page]
+    [profile/page]
+    [owner/page]
+    [forbidden/page]
+  }
+
+  ' ══════════════════════════════════════════
+  ' PAGES — FSD Layer: полные страницы
+  ' ══════════════════════════════════════════
+  package "pages" {
+    [AdminPage]
+    [AdminTestEditorPage]
+    [ChallengePage]
+    [ChallengesPage]
+    [CreateChallengePage]
+    [EditChallengePage]
+    [LeaderboardPage]
+    [LoginPage]
+    [MainPage]
+    [OwnerPage]
+    [ProfilePage]
+    [RegisterPage]
+    [TestResultPage]
+    [TestsListPage]
+    [TestTakePage]
+  }
+
+  ' ══════════════════════════════════════════
+  ' WIDGETS — FSD Layer: крупные составные компоненты
+  ' ══════════════════════════════════════════
+  package "widgets" {
+    [AchievementToast]
+    [AdminHeader]
+    [AdminTopBar]
+    [AiAssistantChat]
+    [AuthHeader]
+    [ChallengeCard]
+    [ChallengeList]
+    [ChallengeManageTab]
+    [ChallengeSectionMain]
+    package "ChallengeSectionMainCards" as w_cards {
+      [TestsCard]
+      [TheoryTestsCard]
+    }
+    [ChallengeWorkspace]
+    [CodeIdeWidget]
+    [CommunitySolutions]
+    [CreatorSection]
+    [Footer]
+    [Header]
+    [HowItWorks]
+    [InfoAiMoodle]
+    [Kpicard]
+    [LanguagesGrid]
+    [MainHeader]
+    [MainHero]
+    [NotificationBell]
+    [Overviewtab]
+    [OwnerHeader]
+    [OwnerTabs]
+    [SkeletonCard]
+    [TestsPanel]
+    [ThemeToggle]
+    [UserSidebar]
+  }
+
+  ' ══════════════════════════════════════════
+  ' FEATURES — FSD Layer: функциональные модули
+  ' ══════════════════════════════════════════
+  package "features" {
+    [AchievementsManageTab]
+    [AchievementsTab]
+    [ActivityHeatmap]
+    [AnalysisTab]
+    [ChallengeFilters]
+    [ChallengeImportExportModal]
+    [ChallengeReviews]
+    [ChallengeSearch]
+    [Challengestab]
+    [ChatPanel]
+    [CodeEditor]
+    [CodewarsImportModal]
+    [CollaborativeChat]
+    [ConfigSection]
+    [DescriptionSection]
+    [LanguageSelect]
+    [LearningTab]
+    [LoginForm]
+    [ProgressTracker]
+    [RandomChallenge]
+    [RegisterForm]
+    [ReportActionModal]
+    [ReportModal]
+    [Reportstab]
+    [RoomCard]
+    [RoomLobby]
+    [SolutionComments]
+    [SolutionVoteButtons]
+    [SolutionsLanguageFilter]
+    [SortSelect]
+    [TerminalPanel]
+    [TestCasesSection]
+    [TestReviews]
+    [TestsManageTab]
+    [Teststab]
+    [TopicsTab]
+    [UsersTab]
+
+    package "CompetitiveArena" as f_arena {
+      [CompetitiveArena]
+      package "phases" as f_phases {
+        [BattlePhase]
+        [FinishedPhase]
+        [LobbyPhase]
+        [PickingPhase]
+        [RoomPhase]
+      }
+    }
+
+    package "charts" as f_charts {
+      [ActivityLineChart]
+      [ChallengeFunnel]
+      [DifficultyBarChart]
+      [ExperienceDistributionChart]
+      [LanguagePieChart]
+      [RatingDistributionChart]
+      [ReportReasonBarChart]
+      [ReportStatusPieChart]
+      [TopicBarChart]
+      [UserComparisonChart]
+      [chartConfig]
+    }
+  }
+
+  ' ══════════════════════════════════════════
+  ' ENTITIES — FSD Layer: бизнес-сущности
+  ' ══════════════════════════════════════════
+  package "entities" {
+    package "challenge" as e_challenge {
+      [ChallengeInfo]
+    }
+    package "test" as e_test {
+      [TestCaseItem]
+    }
+  }
+
+  ' ══════════════════════════════════════════
+  ' SHARED — FSD Layer: общий код
+  ' ══════════════════════════════════════════
+  package "shared" {
+    package "api" as sh_api {
+      [apiClient]
+      [apiEndpoints]
+    }
+
+    package "components" as sh_components {
+      [Alert]
+      [BackgroundVideo]
+      [ClientSyntaxHighlighter]
+      [ConfirmationModal]
+      [CustomSelect]
+      [DateRangePicker]
+      [FilterPills]
+      [LockedOverlay]
+      [Pagination]
+      [PasswordModal]
+      [PlaceholderBox]
+      [Subcard]
+    }
+
+    package "context" as sh_context {
+      [ThemeContext]
+    }
+
+    package "lib" as sh_lib {
+      [socket]
+    }
+
+    package "services" as sh_services {
+      [AdminApiService]
+      [AuthService]
+      [ChallengeService]
+      [ProfileService]
+      [SolutionService]
+      [TestApiService]
+    }
+
+    package "store" as sh_store {
+      [store]
+      [hooks]
+      package "slice" as sh_slice {
+        [adminManageSlice]
+        [adminSlice]
+        [adminTestSlice]
+        [authSlice]
+        [challengeSlice]
+        [profileSlice]
+        [solutionSlice]
+        [testSlice]
+      }
+    }
+
+    package "types" as sh_types {
+      [challenge types] as t_challenge
+      [ide types] as t_ide
+    }
+
+    package "utils" as sh_utils {
+      [prettierFormatter]
+    }
+  }
+
+}
+
+' ===== СВЯЗИ МЕЖДУ ПАПКАМИ (СЛОЯМИ FSD) =====
+app      ..> pages
+pages    ..> widgets
+widgets  ..> features
+features ..> entities
+entities ..> shared
+
+@enduml

@@ -1,0 +1,20 @@
+@startuml
+title Profile Page — Статистика и достижения
+
+actor User
+participant "ProfilePage" as Page
+participant "UserController" as UC
+participant "Achievement" as Ach
+
+User -> Page: click "Статистика"
+note over Page: использует загруженные данные профиля (stats, languages, topics)
+Page --> User: рендер StatisticsTab (успешность, языки, темы)
+
+User -> Page: click "Достижения"
+Page -> UC: dispatch(fetchAchievements())
+UC -> Ach: getUserAchievements(userId)
+Ach --> UC: achievements[]{ id, title, desc, rarity, imageFilename, unlockedAt }
+UC --> Page: achievements[]
+Page --> User: рендер AchievementsTab (карточки достижений, заблокированные)
+
+@enduml

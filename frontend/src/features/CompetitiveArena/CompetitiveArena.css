@@ -28,10 +28,6 @@
     align-self: flex-start;
 }
 
-.arena-mode .challenges-sidebar {
-    position: sticky;
-    top: 100px;
-}
 
 .arena-sidebar::-webkit-scrollbar {
     display: none;
@@ -192,7 +188,21 @@
 .arena-mode .challenges-feed {
     opacity: 1 !important;
     display: flex !important;
+    flex-direction: column;
+    gap: 20px;
     min-height: 400px;
+}
+
+.arena-mode .challenge-list-column {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.arena-mode .motion-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
 }
 .lobby-main {
     display: flex;
@@ -481,4 +491,280 @@
     flex-direction: column;
     align-items: center;
     gap: 16px;
+}
+
+/* RoomPhase */
+.rp-card {
+    background: #111;
+    border: 1px solid #2a2a2a;
+    border-radius: 16px;
+    padding: 40px 36px;
+    margin-top: 40px;
+}
+
+.rp-card-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 32px;
+}
+
+.rp-title {
+    margin: 0;
+    font-size: 1.6rem;
+    color: #fff;
+}
+
+.rp-sections {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-bottom: 32px;
+}
+
+.rp-code-block {
+    background: #0a0a0a;
+    border: 1px solid #333;
+    border-radius: 12px;
+    padding: 20px 24px;
+    text-align: center;
+}
+
+.rp-label {
+    color: #666;
+    font-size: 0.72rem;
+    margin: 0 0 8px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.rp-code-value {
+    font-size: 2.4rem;
+    font-weight: 900;
+    letter-spacing: 10px;
+    color: #FF6B35;
+    margin-bottom: 12px;
+}
+
+.rp-info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.rp-info-cell {
+    background: #0a0a0a;
+    border: 1px solid #2a2a2a;
+    border-radius: 10px;
+    padding: 16px;
+    text-align: center;
+}
+
+.rp-info-cell .rp-label { margin-bottom: 6px; }
+
+.rp-info-val {
+    margin: 0;
+    font-weight: 700;
+    font-size: 1rem;
+}
+
+.rp-info-val--password[data-has="false"] { color: #555; }
+.rp-info-val--password[data-has="true"]  { color: #fff; }
+
+.rp-players-block {
+    background: #0a0a0a;
+    border: 1px solid #2a2a2a;
+    border-radius: 10px;
+    padding: 16px 20px;
+}
+
+.rp-players-block .rp-label { margin-bottom: 12px; }
+
+.rp-players-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.rp-player-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.rp-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+.rp-dot--online  { background: #4caf50; }
+.rp-dot--waiting { background: #333; }
+
+.rp-player-name { font-weight: 700; color: #fff; }
+
+.rp-badge {
+    font-size: 0.7rem;
+    padding: 2px 8px;
+    border-radius: 4px;
+}
+.rp-badge--host  { background: rgba(255,107,53,0.12); color: #FF6B35; }
+.rp-badge--guest { background: rgba(76,175,80,0.12);  color: #4caf50; }
+
+.rp-waiting-text { color: #555; font-style: italic; font-size: 0.9rem; }
+
+.lobby-join-bar {
+    background: #121212;
+    border: 1px solid #2a2a2a;
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin-bottom: 16px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+/* LIGHT THEME */
+[data-theme="light"] .competitive-arena {
+    background: #f5f0e8;
+}
+[data-theme="light"] .battle-lobby,
+[data-theme="light"] .battle-picking,
+[data-theme="light"] .battle-finished {
+    background: #f5f0e8;
+}
+[data-theme="light"] .battle-tabs-nav {
+    background: #ede8df;
+    border-bottom-color: rgba(26,24,23,0.12);
+}
+[data-theme="light"] .battle-tabs-nav button {
+    color: rgba(26,24,23,0.50);
+    border-right-color: rgba(26,24,23,0.08);
+}
+[data-theme="light"] .battle-tabs-nav button:hover {
+    background: #e4ddd3;
+    color: rgba(26,24,23,0.70);
+}
+[data-theme="light"] .battle-tabs-nav button.active {
+    background: #ddd8ce;
+    color: #FF6B35;
+}
+[data-theme="light"] .lobby-join-bar {
+    background: #ede8df;
+    border-color: rgba(26,24,23,0.12);
+}
+[data-theme="light"] .lobby-title {
+    color: #1a1817;
+}
+[data-theme="light"] .lobby-subtitle {
+    color: rgba(26,24,23,0.50);
+}
+[data-theme="light"] .search-btn.secondary {
+    background: rgba(26,24,23,0.06);
+    border-color: rgba(26,24,23,0.14);
+    color: #1a1817;
+}
+[data-theme="light"] .search-btn.secondary:hover {
+    background: rgba(26,24,23,0.10);
+}
+[data-theme="light"] .lobby-form h2,
+[data-theme="light"] .browse-header h2 {
+    color: #1a1817;
+}
+[data-theme="light"] .form-group label {
+    color: rgba(26,24,23,0.55);
+}
+[data-theme="light"] .room-input {
+    background: #ede8df;
+    border-color: rgba(26,24,23,0.16);
+    color: #1a1817;
+}
+[data-theme="light"] .room-input:focus {
+    border-color: rgba(240,73,73,0.5);
+}
+[data-theme="light"] .room-waiting {
+    background: rgba(26,24,23,0.04);
+    border-color: rgba(26,24,23,0.10);
+}
+[data-theme="light"] .room-waiting-text {
+    color: rgba(26,24,23,0.50);
+}
+[data-theme="light"] .back-btn {
+    color: rgba(26,24,23,0.45);
+}
+[data-theme="light"] .back-btn:hover {
+    color: #1a1817;
+}
+[data-theme="light"] .rooms-count {
+    color: rgba(26,24,23,0.45);
+}
+[data-theme="light"] .task-pick-item {
+    background: #ede8df;
+    border-color: rgba(26,24,23,0.12);
+    color: rgba(26,24,23,0.75);
+}
+[data-theme="light"] .task-pick-item:hover {
+    background: #e4ddd3;
+    color: #1a1817;
+}
+[data-theme="light"] .final-scores {
+    background: #ede8df;
+    border-color: rgba(26,24,23,0.12);
+    color: rgba(26,24,23,0.70);
+}
+[data-theme="light"] .battle-picking h2,
+[data-theme="light"] .battle-finished h1 {
+    color: #1a1817;
+}
+[data-theme="light"] .btn-reset-arena {
+    background: rgba(26,24,23,0.03);
+    border-color: rgba(26,24,23,0.12);
+    color: rgba(26,24,23,0.50);
+}
+[data-theme="light"] .btn-reset-arena:hover {
+    color: rgba(26,24,23,0.70);
+    border-color: rgba(26,24,23,0.22);
+    background: rgba(26,24,23,0.06);
+}
+[data-theme="light"] .searching-status {
+    color: rgba(26,24,23,0.45);
+}
+
+/* RoomPhase light theme */
+[data-theme="light"] .rp-card {
+    background: #ede8df;
+    border-color: rgba(26,24,23,0.12);
+}
+[data-theme="light"] .rp-title {
+    color: #1a1817;
+}
+[data-theme="light"] .rp-code-block {
+    background: #ddd8ce;
+    border-color: rgba(26,24,23,0.12);
+}
+[data-theme="light"] .rp-label {
+    color: rgba(26,24,23,0.45);
+}
+[data-theme="light"] .rp-info-cell {
+    background: #ddd8ce;
+    border-color: rgba(26,24,23,0.12);
+}
+[data-theme="light"] .rp-info-val--password[data-has="false"] {
+    color: rgba(26,24,23,0.40);
+}
+[data-theme="light"] .rp-info-val--password[data-has="true"] {
+    color: #1a1817;
+}
+[data-theme="light"] .rp-players-block {
+    background: #ddd8ce;
+    border-color: rgba(26,24,23,0.12);
+}
+[data-theme="light"] .rp-player-name {
+    color: #1a1817;
+}
+[data-theme="light"] .rp-dot--waiting {
+    background: rgba(26,24,23,0.20);
+}
+[data-theme="light"] .rp-waiting-text {
+    color: rgba(26,24,23,0.45);
 }

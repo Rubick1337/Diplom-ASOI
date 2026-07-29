@@ -142,3 +142,32 @@
         grid-template-columns: 1fr;
     }
 }
+
+/* LIGHT THEME */
+[data-theme="light"] .challenges-main {
+    background: #f5f0e8;
+    color: #1a1817;
+}
+[data-theme="light"] .challenges-header-top {
+    border-bottom-color: rgba(26,24,23,0.12);
+}
+[data-theme="light"] .challenges-header-top h1 {
+    color: #1a1817;
+}
+[data-theme="light"] .solutions-count {
+    color: rgba(26,24,23,0.45);
+}
+[data-theme="light"] .sidebar-filter-card {
+    background: #ffffff;
+    border-color: rgba(26,24,23,0.10);
+}
+[data-theme="light"] .sidebar-filter-card h3 {
+    color: #1a1817;
+}
+[data-theme="light"] .filter-label {
+    color: rgba(26,24,23,0.55);
+}
+[data-theme="light"] .filter-hint {
+    color: rgba(26,24,23,0.40);
+    border-top-color: rgba(26,24,23,0.10);
+}

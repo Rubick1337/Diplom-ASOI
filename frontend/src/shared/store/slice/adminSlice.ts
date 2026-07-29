@@ -8,6 +8,7 @@ import AdminApiService, {
     HeatmapPoint,
     FunnelStage,
     UserDistributions,
+    TestStats,
 } from '@/shared/services/AdminApiService';
 
 interface AdminState {
@@ -19,6 +20,7 @@ interface AdminState {
     heatmap: HeatmapPoint[];
     funnel: FunnelStage[];
     distributions: UserDistributions | null;
+    testStats: TestStats | null;
     isLoading: boolean;
     error: string | null;
 }
@@ -32,6 +34,7 @@ const initialState: AdminState = {
     heatmap: [],
     funnel: [],
     distributions: null,
+    testStats: null,
     isLoading: false,
     error: null,
 };
@@ -94,6 +97,14 @@ export const fetchAdminFunnel = createAsyncThunk<FunnelStage[], void, { rejectVa
     }
 );
 
+export const fetchAdminTestStats = createAsyncThunk<TestStats, void, { rejectValue: string }>(
+    'admin/fetchTestStats',
+    async (_, { rejectWithValue }) => {
+        try { return await AdminApiService.getTestStats(); }
+        catch (e: any) { return rejectWithValue(e.message || 'Ошибка загрузки'); }
+    }
+);
+
 type DistributionArgs = { ratingBucket: number; expBucket: number };
 
 export const fetchAdminDistributions = createAsyncThunk<UserDistributions, DistributionArgs | void, { rejectValue: string }>(
@@ -129,6 +140,7 @@ const adminSlice = createSlice({
             .addCase(fetchAdminHeatmap.fulfilled,        (state, action) => { state.heatmap        = action.payload; })
             .addCase(fetchAdminFunnel.fulfilled,         (state, action) => { state.funnel         = action.payload; })
             .addCase(fetchAdminDistributions.fulfilled,  (state, action) => { state.distributions  = action.payload; })
+            .addCase(fetchAdminTestStats.fulfilled,      (state, action) => { state.testStats       = action.payload; })
 
             .addCase(fetchAdminChallengeStats.rejected, (_, action) => { console.log('challengeStats FAILED:', action.payload, action.error); })
             .addCase(fetchAdminTopUsers.rejected,       (_, action) => { console.log('topUsers FAILED:', action.payload, action.error); });

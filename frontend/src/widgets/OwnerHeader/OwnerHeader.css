@@ -29,7 +29,6 @@
     flex: 1;
     justify-content: center;
     flex-wrap: nowrap;
-    overflow: hidden;
     min-width: 0;
 }
 
@@ -193,4 +192,44 @@
     .owner-header-toggle-btn {
         padding: 4px 6px;
     }
+}
+
+/* LIGHT THEME */
+[data-theme="light"] .owner-header-period-btn {
+    background: rgba(26,24,23,0.05);
+    border-color: rgba(26,24,23,0.14);
+    color: rgba(26,24,23,0.6);
+}
+[data-theme="light"] .owner-header-period-btn:hover {
+    border-color: #FF6B35;
+    color: #FF6B35;
+    background: rgba(255,107,53,0.06);
+}
+[data-theme="light"] .owner-header-period-btn--active {
+    background: rgba(255,107,53,0.10);
+    border-color: #FF6B35;
+    color: #FF6B35;
+}
+[data-theme="light"] .owner-header-btn {
+    background: rgba(26,24,23,0.05);
+    border-color: rgba(26,24,23,0.14);
+    color: rgba(26,24,23,0.6);
+}
+[data-theme="light"] .owner-header-btn:hover:not(:disabled) {
+    border-color: rgba(26,24,23,0.28);
+    color: #1a1817;
+}
+[data-theme="light"] .owner-header-btn--primary {
+    background: rgba(255,107,53,0.10);
+    border-color: #FF6B35;
+    color: #FF6B35;
+}
+[data-theme="light"] .owner-header-toggle-btn {
+    background: rgba(26,24,23,0.05);
+    border-color: rgba(26,24,23,0.14);
+    color: rgba(26,24,23,0.55);
+}
+[data-theme="light"] .owner-header-dropdown {
+    background: #f0ece4;
+    border-top-color: rgba(26,24,23,0.10);
 }

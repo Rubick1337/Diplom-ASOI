@@ -1,0 +1,41 @@
+@startuml
+title Admin Tests — Импорт и экспорт тестов
+
+actor Admin
+participant "AdminTestsPage" as Page
+participant "TestController" as TC
+participant "Test" as TestModel
+participant "Question" as Q
+participant "MoodleXMLService" as Moodle
+participant "QuizApiService" as QuizApi
+
+Admin -> Page: click "Экспорт в Moodle"
+Page -> TC: dispatch(exportMoodle(testId))
+TC -> Moodle: exportTest(testId)
+Moodle -> TestModel: findByPk(testId, include=Questions)
+TestModel --> Moodle: test
+Moodle --> TC: { zipBuffer, filename, hasCode, hasImages }
+TC --> Page: скачивание ZIP-файла
+Page --> Admin: файл {filename}.zip скачан
+
+Admin -> Page: click "Импорт из Moodle XML" → upload[xml-file]
+Page -> TC: dispatch(importMoodle(xmlFile))
+TC -> Moodle: importTest(xmlString, adminId)
+Moodle -> TestModel: create(title, description, adminId)
+TestModel --> Moodle: newTest
+Moodle -> Q: bulkCreate(questions[])
+Q --> Moodle: questions[]
+Moodle --> TC: { test, questionsCount }
+TC --> Page: { test, questionsCount }
+Page --> Admin: тест импортирован, добавлен в таблицу
+
+Admin -> Page: click "Импорт из Quiz API"
+Page --> Admin: открывается форма импорта
+Admin -> Page: input[tags, difficulty, limit, title] → click "Импортировать"
+Page -> TC: dispatch(importQuizApi({ tags, difficulty, limit, title, adminId }))
+TC -> QuizApi: importFromQuizApi({ apiKey, tags, difficulty, limit, title, adminId })
+QuizApi --> TC: { test, questionsCount }
+TC --> Page: { test, questionsCount }
+Page --> Admin: тест импортирован из внешнего API
+
+@enduml

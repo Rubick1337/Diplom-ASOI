@@ -425,3 +425,119 @@
     .lb-podium__stat-pill { padding: 3px 7px; font-size: 10px; }
     .lb-player__xp { display: none; }
 }
+
+/* LIGHT THEME */
+[data-theme="light"] .lb-main {
+    background: #f5f0e8;
+}
+[data-theme="light"] .lb-page-header__title {
+    color: #1a1817;
+}
+[data-theme="light"] .lb-page-header__sub {
+    color: rgba(26,24,23,0.40);
+}
+[data-theme="light"] .lb-page-header__badge-label {
+    color: rgba(26,24,23,0.40);
+}
+[data-theme="light"] .lb-podium__card {
+    background: linear-gradient(180deg, rgba(26,24,23,0.04) 0%, rgba(26,24,23,0.01) 100%);
+    border-color: rgba(26,24,23,0.10);
+}
+[data-theme="light"] .lb-podium__card--first {
+    background: linear-gradient(180deg, rgba(255,215,0,0.08) 0%, rgba(255,215,0,0.02) 100%);
+    border-color: rgba(255,215,0,0.22);
+}
+[data-theme="light"] .lb-podium__name {
+    color: #1a1817;
+}
+[data-theme="light"] .lb-search-wrap {
+    background: #ffffff;
+    border-color: rgba(26,24,23,0.14);
+}
+[data-theme="light"] .lb-search-input {
+    color: #1a1817;
+}
+[data-theme="light"] .lb-search-input::placeholder {
+    color: rgba(26,24,23,0.35);
+}
+[data-theme="light"] .lb-search-icon {
+    color: rgba(26,24,23,0.40);
+}
+[data-theme="light"] .lb-filter-label {
+    color: rgba(26,24,23,0.40);
+}
+[data-theme="light"] .lb-dir-btn {
+    background: #ffffff;
+    border-color: rgba(26,24,23,0.14);
+    color: rgba(26,24,23,0.50);
+}
+[data-theme="light"] .lb-card {
+    background: #ffffff;
+    border-color: rgba(26,24,23,0.10);
+}
+[data-theme="light"] .lb-thead-row {
+    background: rgba(26,24,23,0.03);
+}
+[data-theme="light"] .lb-th {
+    color: rgba(26,24,23,0.40);
+    border-bottom-color: rgba(26,24,23,0.08);
+}
+[data-theme="light"] .lb-th--sortable:hover {
+    color: rgba(26,24,23,0.65);
+}
+[data-theme="light"] .lb-td {
+    border-bottom-color: rgba(26,24,23,0.06);
+    color: #1a1817;
+}
+[data-theme="light"] .lb-row:hover {
+    background: rgba(26,24,23,0.03);
+}
+[data-theme="light"] .lb-row--alt {
+    background: rgba(26,24,23,0.018);
+}
+[data-theme="light"] .lb-row--alt:hover {
+    background: rgba(26,24,23,0.05);
+}
+[data-theme="light"] .lb-row--top1 { background: rgba(255,215,0,0.06); }
+[data-theme="light"] .lb-row--top2 { background: rgba(192,192,192,0.04); }
+[data-theme="light"] .lb-row--top3 { background: rgba(205,127,50,0.04); }
+[data-theme="light"] .lb-row--top1:hover { background: rgba(255,215,0,0.10); }
+[data-theme="light"] .lb-row--top2:hover { background: rgba(192,192,192,0.09); }
+[data-theme="light"] .lb-row--top3:hover { background: rgba(205,127,50,0.08); }
+[data-theme="light"] .lb-empty {
+    color: rgba(26,24,23,0.30);
+}
+[data-theme="light"] .lb-rank-num {
+    color: rgba(26,24,23,0.45);
+}
+[data-theme="light"] .lb-player__name {
+    color: #1a1817;
+}
+[data-theme="light"] .lb-player__xp {
+    color: rgba(26,24,23,0.35);
+}
+[data-theme="light"] .lb-val--muted {
+    color: rgba(26,24,23,0.45);
+}
+[data-theme="light"] .lb-pagination {
+    border-top-color: rgba(26,24,23,0.06);
+}
+[data-theme="light"] .lb-page-btn {
+    border-color: rgba(26,24,23,0.14);
+    color: rgba(26,24,23,0.45);
+}
+[data-theme="light"] .lb-page-btn:hover:not(:disabled) {
+    border-color: #FF6B35;
+    color: #FF6B35;
+    background: rgba(255,107,53,0.06);
+}
+[data-theme="light"] .lb-page-ellipsis {
+    color: rgba(26,24,23,0.35);
+}
+[data-theme="light"] .lb-page-info {
+    color: rgba(26,24,23,0.30);
+}
+[data-theme="light"] .lb-spinner {
+    border-color: rgba(26,24,23,0.12);
+    border-top-color: #FF6B35;
+}

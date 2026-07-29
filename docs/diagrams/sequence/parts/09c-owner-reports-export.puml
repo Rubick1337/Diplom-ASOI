@@ -1,0 +1,38 @@
+@startuml
+title Owner Page — Жалобы и экспорт отчётов
+
+actor Owner
+participant "OwnerPage" as Page
+participant "AdminController" as AC
+participant "ReportModel" as RC
+
+Owner -> Page: click "Reports"
+Page -> AC: dispatch(getReportsStats())
+AC -> RC: getReportsByStatus()
+RC --> AC: statusCounts[]
+AC -> RC: getReportsByReason()
+RC --> AC: reasonCounts[]
+AC --> Page: reportsStats
+
+Page -> AC: dispatch(getRecentReports(page=1, limit, status, challenge, reporter, dateFrom, dateTo))
+AC -> RC: getRecentReports(page, limit, status, challenge, reporter, dateFrom, dateTo)
+RC --> AC: rows[], total
+AC --> Page: reportsPage
+Page --> Owner: рендер Reports (статистика жалоб, список)
+
+Owner -> Page: click пагинация → goTo(n)
+Page -> AC: dispatch(getRecentReports(page=n, limit, status, challenge, reporter, dateFrom, dateTo))
+AC -> RC: getRecentReports(n, limit, status, challenge, reporter, dateFrom, dateTo)
+RC --> AC: rows[], total
+AC --> Page: reportsPage
+Page --> Owner: страница n списка жалоб
+
+Owner -> Page: click "Экспорт текущей вкладки"
+Page -> Page: handleExportPDF()
+Page --> Owner: скачивает tab_{name}_{date}.pdf
+
+Owner -> Page: click "Полный отчёт"
+Page -> Page: handleFullReport()
+Page --> Owner: скачивает full_report_{date}.pdf
+
+@enduml

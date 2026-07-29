@@ -1,0 +1,106 @@
+@startuml
+title 08 Admin — Control Classes
+
+class AdminPage <<boundary>> {
+  - page: int
+  - limit: int
+  - status: string
+  - challenge: string
+  - reporter: string
+  - dateFrom: string
+  - dateTo: string
+  - search: string
+  - topicId: int
+  - id: int
+  - isHidden: boolean
+  - name: string
+  - adminMessage: string
+  + reportsStats: ReportsStats
+  + reportsPage: ReportsPage
+  + challengesManage: ChallengePage
+  + topics: Topic[]
+  + challengeStats: ChallengeStats
+}
+
+class AdminController <<control>> {
+  - page: int
+  - limit: int
+  - status: string
+  - challenge: string
+  - reporter: string
+  - dateFrom: string
+  - dateTo: string
+  - search: string
+  - topicId: int
+  - id: int
+  - isHidden: boolean
+  - name: string
+  - adminMessage: string
+  + reportsStats: ReportsStats
+  + reportsPage: ReportsPage
+  + challengesManage: ChallengePage
+  + topics: Topic[]
+  + challengeStats: ChallengeStats
+}
+
+class Challenge <<entity>> {
+  - id: int
+  - isHidden: boolean
+  - page: int
+  - limit: int
+  - search: string
+  - topicId: int
+  + id: int
+  + name: string
+  + isHidden: boolean
+  + items: ChallengeEntry[]
+  + byDifficulty: DifficultyStat[]
+  + hardest: Challenge[]
+}
+
+class HistoryChallenge <<entity>> {
+  + byLanguage: LanguageStat[]
+}
+
+class ReportChallenge <<entity>> {
+  - id: int
+  - status: string
+  - adminId: int
+  - page: int
+  - limit: int
+  - challenge: string
+  - reporter: string
+  - dateFrom: string
+  - dateTo: string
+  + byStatus: StatusStat[]
+  + byReason: ReasonStat[]
+  + items: ReportEntry[]
+  + total: int
+  + totalPages: int
+}
+
+class Topic <<entity>> {
+  - id: int
+  - name: string
+  + id: int
+  + name: string
+  + challengeCount: int
+  + byTopic: TopicStat[]
+}
+
+class Notification <<entity>> {
+  - userId: int
+  - title: string
+  - message: string
+  - type: string
+  + id: int
+}
+
+AdminPage ..> AdminController : getReportsStats() / getRecentReports(...) /\nupdateReportStatus(...) / getChallengesManage(...) /\ntoggleChallengeHidden(...) / deleteChallengeAdmin(id) /\ngetAllTopics() / createTopic(name) / updateTopic(id, name) /\ndeleteTopic(id) / getChallengeStats()
+AdminController o-- ReportChallenge : "1" getReportsByStatus / getReportsByReason /\ngetRecentReports / updateReportStatus "0..*"
+AdminController *-- Notification : createNotification(userId, title, message, type)
+AdminController o-- Challenge : "1" getChallengesManage / toggleChallengeHidden /\ndeleteChallengeAdmin / getChallengesByDifficulty /\ngetHardestChallenges "0..*"
+AdminController o-- HistoryChallenge : getSubmissionsByLanguage()
+AdminController o-- Topic : "1" getAllTopics / createTopic / updateTopic /\ndeleteTopic / getChallengesByTopic "0..*"
+
+@enduml

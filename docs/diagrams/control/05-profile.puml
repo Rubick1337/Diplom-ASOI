@@ -1,0 +1,117 @@
+@startuml
+title 05 Profile — Control Classes
+
+class ProfilePage <<boundary>> {
+  - page: int
+  - pageSize: int
+  - search: string
+  - status: string
+  - language: string
+  - topicName: string
+  - preferences: string
+  + profile: ProfileData
+  + heatmap: HeatmapDay[]
+  + history: HistoryEntry[]
+  + reports: ReportEntry[]
+  + learningPlan: LearningPlan
+  + guide: TopicGuide
+}
+
+class "Redux Store" as ReduxStore <<entity>> {
+  - action: string
+  + profile: ProfileData
+  + heatmap: HeatmapDay[]
+  + history: PaginatedHistory
+  + reports: PaginatedReports
+  + learningPlan: LearningPlan
+  + guide: TopicGuide
+}
+
+class UserController <<control>> {
+  - userId: int
+  - page: int
+  - pageSize: int
+  - search: string
+  - status: string
+  - language: string
+  - topicName: string
+  - preferences: string
+  + user: UserData
+  + stats: UserStats
+  + languages: LanguageStat[]
+  + topics: TopicStat[]
+  + days: HeatmapDay[]
+  + items: HistoryEntry[]
+  + total: int
+  + totalPages: int
+  + guide: TopicGuide
+}
+
+class UserModel <<entity>> {
+  - id: int
+  + username: string
+  + email: string
+  + experience: int
+  + rating: int
+  + avatarUrl: string
+}
+
+class HistoryChallenge <<entity>> {
+  - userId: int
+  - status: string
+  - language: string
+  - search: string
+  - page: int
+  - pageSize: int
+  + rows: HistoryEntry[]
+  + count: int
+}
+
+class Challenge <<entity>> {
+  + id: int
+  + name: string
+  + difficulty: string
+  + isVisible: boolean
+}
+
+class Topic <<entity>> {
+  + id: int
+  + name: string
+}
+
+class ReportChallenge <<entity>> {
+  - userId: int
+  - status: string
+  - search: string
+  - page: int
+  - pageSize: int
+  + rows: ReportEntry[]
+  + count: int
+}
+
+class AIService <<control>> {
+  - topicName: string
+  - preferences: string
+  + concepts: string[]
+  + path: string[]
+  + related: string[]
+}
+
+class Redis <<entity>> {
+  - cacheKey: string
+  - ttl: int
+  + guide: TopicGuide
+}
+
+ProfilePage ..> ReduxStore : dispatch(fetchProfile / fetchActivityHeatmap /\nfetchMyHistory / fetchMyReports /\nfetchLearningPlan / generateTopicGuide)
+ReduxStore ..> UserController : getProfile() / getActivityHeatmap() /\ngetMyHistory() / getMyReports() /\ngetLearningPlan() / generateTopicGuide()
+UserController o-- UserModel : findById(userId)
+UserController o-- HistoryChallenge : "1" findByUser / findByUserAndYear / findPaginated / findByUser "0..*"
+UserController o-- Topic : getAll()
+UserController o-- Challenge : findVisible()
+UserController o-- ReportChallenge : findPaginated(userId, status, search, page, pageSize)
+UserController o-- Redis : get(cacheKey) / setEx(cacheKey, guide, TTL)
+UserController *-- AIService : generateTopicGuide(topicName, preferences)
+ReduxStore --> ProfilePage : profile.data / profile.heatmap /\nprofile.history / profile.reports /\nprofile.learningPlan / guide
+
+@enduml

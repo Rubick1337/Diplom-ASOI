@@ -1,0 +1,23 @@
+@startuml
+title Tests Page — Список тестов и просмотр теста
+
+actor User
+participant "TestsPage" as Page
+participant "TestController" as TC
+participant "Test" as TestModel
+
+User -> Page: открывает /tests
+Page -> TC: dispatch(getPublishedTests())
+TC -> TestModel: findAll(isPublished=true)
+TestModel --> TC: tests[]{ id, title, description, questionCount, timeLimitSec, topics[] }
+TC --> Page: tests[]
+Page --> User: рендер списка тестов (карточки)
+
+User -> Page: click на карточке теста
+Page -> TC: dispatch(getPublishedTestById(id))
+TC -> TestModel: findByPk(id, include=Questions)
+TestModel --> TC: test{ title, description, questions[]{ id, text, type, imageUrl, options? } }
+TC --> Page: test
+Page --> User: рендер страницы теста (описание, вопросы без ответов)
+
+@enduml

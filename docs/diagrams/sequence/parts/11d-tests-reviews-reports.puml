@@ -1,0 +1,38 @@
+@startuml
+title Tests Page — Отзывы и жалобы
+
+actor User
+participant "TestsPage" as Page
+participant "TestController" as TC
+participant "ReviewModel" as RV
+participant "ReportModel" as RP
+
+User -> Page: click "Отзывы"
+Page -> TC: dispatch(getReviews(testId))
+TC -> RV: findAll(testId)
+RV --> TC: reviews[], avgRating, total
+TC --> Page: reviews[], avgRating, pagination
+Page --> User: рендер отзывов на тест
+
+User -> Page: textarea[текст] + select[рейтинг] → click "Оставить отзыв"
+Page -> TC: dispatch(createReview(testId, userId, content, rating))
+TC -> RV: create(testId, userId, content, rating)
+RV --> TC: newReview
+TC --> Page: newReview
+Page --> User: обновлённый список отзывов
+
+User -> Page: click "Пожаловаться"
+Page -> TC: dispatch(getReportReasons(testId))
+TC -> RP: getReportReasons()
+RP --> TC: reasons[]
+TC --> Page: reasons[]
+Page --> User: открывается ReportModal
+
+User -> Page: select[причина] + textarea[текст] → click "Отправить"
+Page -> TC: dispatch(createReport(testId, userId, reasonId, reasonText))
+TC -> RP: create(testId, userId, reasonId, reasonText)
+RP --> TC: ok
+TC --> Page: success
+Page --> User: модалка закрывается
+
+@enduml

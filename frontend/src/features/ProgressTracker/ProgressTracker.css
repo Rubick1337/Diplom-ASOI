@@ -133,3 +133,44 @@
 .tracker-bar-fill.solved {
     background-color: #52c41a !important;
 }
+
+/* LIGHT THEME */
+[data-theme="light"] .progress-tracker {
+    background: #ede8df;
+    border-color: rgba(26,24,23,0.12);
+}
+[data-theme="light"] .tracker-header {
+    background: #ddd8ce;
+    border-bottom-color: rgba(26,24,23,0.10);
+}
+[data-theme="light"] .tracker-player-label {
+    color: rgba(26,24,23,0.50);
+}
+[data-theme="light"] .tracker-player-score {
+    color: #1a1817;
+}
+[data-theme="light"] .tracker-vs {
+    color: rgba(26,24,23,0.25);
+}
+[data-theme="light"] .tracker-challenge-block {
+    background: #ddd8ce;
+    border-color: rgba(26,24,23,0.10);
+}
+[data-theme="light"] .tracker-challenge-name {
+    color: rgba(26,24,23,0.45);
+}
+[data-theme="light"] .tracker-label {
+    color: rgba(26,24,23,0.50);
+}
+[data-theme="light"] .tracker-bar-wrap {
+    background: rgba(26,24,23,0.10);
+}
+[data-theme="light"] .opp-fill {
+    background: rgba(26,24,23,0.25);
+}
+[data-theme="light"] .opp-fill.solved {
+    background: rgba(26,24,23,0.40);
+}
+[data-theme="light"] .tracker-val {
+    color: rgba(26,24,23,0.50);
+}

@@ -1,0 +1,188 @@
+@startuml
+title Диаграмма последовательности — Admin Page
+
+actor Admin
+participant "AdminPage" as Page
+participant "AdminController" as AC
+participant "Challenge" as Challenge
+participant "HistoryChallenge" as HC
+participant "ReportModel" as RC
+participant "Topic" as Topic
+participant "Notification" as Notification
+participant "Achievement" as Ach
+
+Admin -> Page: открывает /admin
+
+Page -> AC: getReportsStats()
+AC -> RC: getReportsByStatus()
+RC --> AC: statusCounts[]
+AC -> RC: getReportsByReason()
+RC --> AC: reasonCounts[]
+AC --> Page: reportsStats
+
+Page -> AC: getRecentReports(page, limit)
+AC -> RC: getRecentReports(page, limit)
+RC --> AC: rows[], total
+AC --> Page: reportsPage
+
+Page --> Admin: рендер Reports (статистика жалоб, список)
+
+Admin -> Page: click Reports
+
+Admin -> Page: select статус / select причина → фильтрация на клиенте
+
+Admin -> Page: click "Применить фильтры"
+Page -> AC: getRecentReports(page, limit, status, challenge, reporter, dateFrom, dateTo)
+AC -> RC: getRecentReports(page, limit, status, challenge, reporter, dateFrom, dateTo)
+RC --> AC: rows[], total
+AC --> Page: reportsPage
+Page --> Admin: обновлённый список жалоб
+
+Admin -> Page: click "Resolved" / "Dismissed" на жалобе
+Page -> AC: updateReportStatus(id, status, adminMessage)
+AC -> RC: updateReportStatus(id, status, adminId)
+RC --> AC: updatedReport
+AC -> Notification: createNotification(userId, title, message, type)
+Notification --> AC: ok
+AC --> Page: обновлённая жалоба
+Page --> Admin: статус жалобы обновлён
+
+Admin -> Page: click Manage
+
+Page -> AC: getChallengesManage(page=1, limit=10)
+AC -> Challenge: getChallengesManage(page, limit)
+Challenge --> AC: items[], total
+AC --> Page: challengesManage
+
+Page --> Admin: рендер Manage (таблица задач)
+
+Admin -> Page: input[search] / select[topic] → click "Применить"
+Page -> AC: getChallengesManage(page=1, limit, search, topicId)
+AC -> Challenge: getChallengesManage(page, limit, search, topicId)
+Challenge --> AC: items[], total
+AC --> Page: challengesManage
+Page --> Admin: отфильтрованная таблица задач
+
+Admin -> Page: click пагинация → goTo(page)
+Page -> AC: getChallengesManage(page, limit, search, topicId)
+AC -> Challenge: getChallengesManage(page, limit, search, topicId)
+Challenge --> AC: items[], total
+AC --> Page: challengesManage
+Page --> Admin: страница таблицы задач
+
+Admin -> Page: click "Скрыть" / "Показать" в меню строки
+Page -> AC: toggleChallengeHidden(id, isHidden)
+AC -> Challenge: toggleChallengeHidden(id, isHidden)
+Challenge --> AC: { id, isHidden }
+AC --> Page: id, isHidden
+Page --> Admin: статус видимости обновлён
+
+Admin -> Page: click "Удалить" в меню строки → ConfirmationModal
+Admin -> Page: click "Удалить" в модалке
+Page -> AC: deleteChallengeAdmin(id)
+AC -> Challenge: deleteChallengeAdmin(id)
+Challenge --> AC: ok
+AC --> Page: success
+Page --> Admin: задача удалена из таблицы
+
+Admin -> Page: click "Редактировать" в меню строки
+Page --> Admin: переход на /challenge/edit/:id
+
+Admin -> Page: click "+ Добавить задачу"
+Page --> Admin: переход на /challenge/create
+
+Admin -> Page: click "Экспорт задач"
+Page -> AC: exportChallenges(filters)
+AC -> Challenge: findAll(filters)
+Challenge --> AC: challenges[]
+AC --> Page: challenges.json (скачивание)
+Page --> Admin: файл скачан
+
+Admin -> Page: click "Импорт задач" → загружает файл
+Page -> AC: importChallenges(file)
+AC -> Challenge: bulkCreate(challenges[])
+Challenge --> AC: importedCount
+AC --> Page: { imported: count }
+Page --> Admin: импорт завершён
+
+Admin -> Page: click "Сгенерировать задачи ИИ" → input[prompt, count]
+Page -> AC: generateChallengesAI(prompt, count)
+AC --> Page: generatedChallenges[]
+Page --> Admin: таблица сгенерированных задач для ревью
+
+Admin -> Page: click Topics
+
+Page -> AC: getAllTopics()
+AC -> Topic: getAllTopics()
+Topic --> AC: topics[]
+AC --> Page: topics[]
+
+Page -> AC: getChallengeStats()
+AC -> Topic: getChallengesByTopic()
+Topic --> AC: topicStats[]
+AC -> Challenge: getChallengesByDifficulty()
+Challenge --> AC: difficultyCounts[]
+AC -> HC: getSubmissionsByLanguage()
+HC --> AC: languageCounts[]
+AC -> Challenge: getHardestChallenges(limit)
+Challenge --> AC: hardestChallenges[]
+AC --> Page: challengeStats
+
+Page --> Admin: рендер Topics (таблица тем + StatsPanel)
+
+Admin -> Page: input[название] → click "+ Добавить"
+Page -> AC: createTopic(name)
+AC -> Topic: createTopic(name)
+Topic --> AC: newTopic
+AC --> Page: новая тема
+Page --> Admin: тема добавлена в таблицу
+
+Admin -> Page: click "Изменить" → input → click "Сохранить"
+Page -> AC: updateTopic(id, name)
+AC -> Topic: updateTopic(id, name)
+Topic --> AC: updatedTopic
+AC --> Page: обновлённая тема
+Page --> Admin: тема обновлена в таблице
+
+Admin -> Page: click "Удалить" → ConfirmationModal
+Admin -> Page: click "Удалить" в модалке
+Page -> AC: deleteTopic(id)
+AC -> Topic: deleteTopic(id)
+Topic --> AC: ok
+AC --> Page: success
+Page --> Admin: тема удалена из таблицы
+
+Admin -> Page: click сортировка (А→Я / Задачи / Популярность)
+Page --> Admin: таблица тем пересортирована
+
+Admin -> Page: click Achievements
+
+Page -> AC: getAllAchievements()
+AC -> Ach: findAll()
+Ach --> AC: achievements[]
+AC --> Page: achievements[]
+Page --> Admin: рендер таблицы достижений
+
+Admin -> Page: input[title, desc, rarity] + upload[image] → click "Создать"
+Page -> AC: createAchievement(title, desc, rarity, imageFile)
+AC -> Ach: create(title, desc, rarity, imageFilename)
+Ach --> AC: newAchievement
+AC --> Page: newAchievement
+Page --> Admin: достижение добавлено в таблицу
+
+Admin -> Page: click "Изменить" → input[поля] / upload[image] → click "Сохранить"
+Page -> AC: updateAchievement(id, { title, desc, rarity, imageFile })
+AC -> Ach: update(id, updates)
+Ach --> AC: updatedAchievement
+AC --> Page: updatedAchievement
+Page --> Admin: достижение обновлено в таблице
+
+Admin -> Page: click "Удалить" → ConfirmationModal
+Admin -> Page: click "Удалить" в модалке
+Page -> AC: deleteAchievement(id)
+AC -> Ach: destroy(id)
+Ach --> AC: ok
+AC --> Page: { ok: true }
+Page --> Admin: достижение удалено из таблицы
+
+@enduml

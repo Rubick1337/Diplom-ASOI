@@ -117,3 +117,41 @@
     .owner-sidebar__icon { font-size: 14px; }
     .owner-sidebar__label { font-size: 8px; }
 }
+
+/* LIGHT THEME */
+[data-theme="light"] .owner-sidebar {
+    background: #ede8df;
+    border-right-color: rgba(26,24,23,0.10);
+}
+[data-theme="light"] .owner-sidebar__item:hover {
+    background: rgba(26,24,23,0.05);
+}
+[data-theme="light"] .owner-sidebar__item--active {
+    background: rgba(255,107,53,0.07);
+}
+[data-theme="light"] .owner-sidebar__icon {
+    color: rgba(26,24,23,0.40);
+}
+[data-theme="light"] .owner-sidebar__item:hover .owner-sidebar__icon {
+    color: rgba(26,24,23,0.70);
+}
+[data-theme="light"] .owner-sidebar__label {
+    color: rgba(26,24,23,0.75);
+}
+[data-theme="light"] .owner-sidebar__item--active .owner-sidebar__label {
+    color: #1a1817;
+}
+[data-theme="light"] .owner-sidebar__desc {
+    color: rgba(26,24,23,0.40);
+}
+@media (max-width: 600px) {
+    [data-theme="light"] .owner-sidebar {
+        border-top-color: rgba(26,24,23,0.12);
+    }
+    [data-theme="light"] .owner-sidebar__label {
+        color: rgba(26,24,23,0.55);
+    }
+    [data-theme="light"] .owner-sidebar__item--active .owner-sidebar__label {
+        color: #FF6B35;
+    }
+}

@@ -6,7 +6,7 @@ import {
     BarChart, Bar, PieChart, Pie, Cell,
     XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
 } from 'recharts';
-import FilterPills from '@/features/Filterpills/Filterpills';
+import FilterPills from '@/shared/components/FilterPills/FilterPills';
 
 const PIE_COLORS = ['#00e5b0', '#38bdf8', '#c084fc', '#fbbf24', '#fb7185', '#67e8f9', '#86efac', '#fca5a5'];
 
@@ -156,29 +156,24 @@ export default function ChallengesTab({
                     </div>
 
                     <div className="challenges-card">
-                        <div className="challenges-card__label">Самые сложные задачи (низкий % успеха)</div>
+                        <div className="challenges-card__label">Низкий рейтинг задач (средняя оценка)</div>
                         <div className="challenges-hardest-scroll">
                             <table className="challenges-table">
                                 <thead>
                                 <tr>
                                     <th className="challenges-th">Задача</th>
-                                    <th className="challenges-th">Сл.</th>
-                                    <th className="challenges-th challenges-th--right">Попыток</th>
-                                    <th className="challenges-th challenges-th--right">% успеха</th>
+                                    <th className="challenges-th challenges-th--right">Отзывов</th>
+                                    <th className="challenges-th challenges-th--right">Ср. оценка</th>
                                 </tr>
                                 </thead>
                                 <tbody>
-                                {challengeStats.hardest.map((c: any, i: number) => {
-                                    const successColor = c.successRate < 30 ? '#fb7185' : c.successRate < 60 ? '#fbbf24' : '#00e5b0';
-                                    const diffColor = c.difficulty <= 3 ? '#00e5b0' : c.difficulty <= 7 ? '#fbbf24' : '#fb7185';
+                                {(challengeStats.lowestRated ?? []).map((c: any, i: number) => {
+                                    const ratingColor = c.avgRating <= 2 ? '#fb7185' : c.avgRating <= 3.5 ? '#fbbf24' : '#00e5b0';
                                     return (
                                         <tr key={i}>
                                             <td className="challenges-td">{c.name}</td>
-                                            <td className="challenges-td">
-                                                <span className="challenges-diff-badge" style={{ background: `${diffColor}1a`, color: diffColor }}>{c.difficulty}</span>
-                                            </td>
-                                            <td className="challenges-td challenges-td--right">{c.attempts}</td>
-                                            <td className="challenges-td challenges-td--right" style={{ color: successColor, fontWeight: 700 }}>{c.successRate}%</td>
+                                            <td className="challenges-td challenges-td--right">{c.reviewCount}</td>
+                                            <td className="challenges-td challenges-td--right" style={{ color: ratingColor, fontWeight: 700 }}>{c.avgRating} ★</td>
                                         </tr>
                                     );
                                 })}

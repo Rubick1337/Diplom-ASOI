@@ -1,5 +1,5 @@
-import $api from '@/http/apiClient';
-import { API_ENDPOINTS } from '@/http/apiEndpoints';
+import $api from '@/shared/api/apiClient';
+import { API_ENDPOINTS } from '@/shared/api/apiEndpoints';
 
 export interface ProfileData {
     user:      { id: number; username: string; email: string; experience: number; rating: number };
@@ -22,6 +22,24 @@ export interface MySubmission {
     challenge: { id: number; name: string } | null;
 }
 
+export interface MyTestAttempt {
+    id: number;
+    testId: number;
+    status: string;
+    score: number | null;
+    maxScore: number;
+    startedAt: string;
+    finishedAt: string | null;
+    test: { id: number; title: string } | null;
+}
+
+export interface TestHistoryParams {
+    page?: number;
+    pageSize?: number;
+    search?: string;
+    status?: string;
+}
+
 export interface MyReport {
     id: number;
     challengeId: number;
@@ -36,6 +54,11 @@ export interface LearningChallenge {
     id: number;
     name: string;
     difficulty: number;
+}
+
+export interface LearningTest {
+    id: number;
+    title: string;
 }
 
 export interface TopicGuide {
@@ -70,12 +93,26 @@ export interface LearningRecommendation {
     score: number;
     factors: RecommendationFactor[];
     challenges: LearningChallenge[];
+    tests: LearningTest[];
 }
 
 export interface LearningPlan {
     topicProgress: TopicProgress[];
     recommendations: LearningRecommendation[];
     overallProgress: { mastered: number; inProgress: number; notStarted: number; total: number };
+}
+
+export type AchievementRarity = 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary';
+
+export interface Achievement {
+    id:            number;
+    title:         string;
+    desc:          string;
+    rarity:        AchievementRarity;
+    imageFilename: string | null;
+    unlockedAt:    string | null;
+    percent:       number;
+    holders:       number;
 }
 
 export interface PagedResult<T> {
@@ -112,6 +149,11 @@ const ProfileService = {
         return data;
     },
 
+    getMyTestHistory: async (params: TestHistoryParams = {}): Promise<PagedResult<MyTestAttempt>> => {
+        const { data } = await $api.get(API_ENDPOINTS.USER.GET_MY_TEST_HISTORY, { params });
+        return data;
+    },
+
     getMyReports: async (params: ReportsParams = {}): Promise<PagedResult<MyReport>> => {
         const { data } = await $api.get(API_ENDPOINTS.USER.GET_MY_REPORTS, { params });
         return data;
@@ -133,6 +175,11 @@ const ProfileService = {
             preferences: preferences || undefined,
             forceRegenerate: forceRegenerate || undefined,
         });
+        return data;
+    },
+
+    getAchievements: async (): Promise<Achievement[]> => {
+        const { data } = await $api.get(API_ENDPOINTS.USER.GET_ACHIEVEMENTS);
         return data;
     },
 };

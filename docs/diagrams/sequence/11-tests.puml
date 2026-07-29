@@ -1,0 +1,103 @@
+@startuml
+title Диаграмма последовательности — Tests Page (пользователь)
+
+actor User
+participant "TestsPage" as Page
+participant "TestController" as TC
+participant "Test" as TestModel
+participant "TestAttempt" as TA
+participant "AttemptQuestion" as AQ
+participant "AttemptAnswer" as AA
+participant "ReviewModel" as RV
+participant "ReportModel" as RP
+participant "DockerRunner" as Docker
+
+User -> Page: открывает /tests
+
+Page -> TC: getPublishedTests()
+TC -> TestModel: findAll(isPublished=true)
+TestModel --> TC: tests[]{ id, title, description, questionCount, timeLimitSec, topics[] }
+TC --> Page: tests[]
+Page --> User: рендер списка тестов (карточки)
+
+User -> Page: click на карточке теста
+Page -> TC: getPublishedTestById(id)
+TC -> TestModel: findByPk(id, include=Questions)
+TestModel --> TC: test{ title, description, questions[]{ id, text, type, imageUrl, options? } }
+TC --> Page: test
+Page --> User: рендер страницы теста (описание, вопросы без ответов)
+
+User -> Page: click "Начать тест"
+Page -> TC: startAttempt(testId, userId)
+TC -> TA: create(testId, userId, startedAt=now)
+TA --> TC: attempt{ id, testId, userId, startedAt }
+TC -> AQ: bulkCreate(attemptId, questions[])
+AQ --> TC: attemptQuestions[]
+TC --> Page: attempt{ id, questions[], timeLimitSec }
+Page --> User: рендер формы прохождения теста (таймер, вопросы)
+
+User -> Page: выбирает ответы на вопросы (single-choice / multiple-choice / matching)
+
+alt вопрос с кодом
+    User -> Page: вводит код → click "Запустить"
+    Page -> TC: runCode(code, language, stdinInput?)
+    TC -> Docker: runInDocker(language, code)
+    Docker --> TC: stdout, stderr, exitCode
+    TC --> Page: { output, error }
+    Page --> User: вывод кода в консоли
+end
+
+User -> Page: click "Завершить тест"
+Page -> TC: submitAttempt(attemptId, userId, answers[])
+TC -> TA: findByPk(attemptId)
+TA --> TC: attempt
+TC -> AA: bulkCreate(attemptId, answers[])
+AA --> TC: savedAnswers[]
+TC -> TA: update(attemptId, { finishedAt=now, score, maxScore })
+TA --> TC: updatedAttempt
+TC --> Page: { score, maxScore, passed: boolean }
+Page --> User: рендер экрана результата (баллы, процент)
+
+User -> Page: click "Подробнее"
+Page -> TC: getAttemptResult(attemptId, userId)
+TC -> TA: findByPk(attemptId, include=Questions+Answers)
+TA --> TC: attempt{ score, maxScore, questions[]{ text, isCorrect, userAnswer, correctAnswer } }
+TC --> Page: attempt
+Page --> User: рендер детального результата (по каждому вопросу)
+
+User -> Page: click "Мои попытки"
+Page -> TC: getMyAttempts(testId, userId)
+TC -> TA: findAll(testId, userId, order=DESC)
+TA --> TC: attempts[]{ id, score, maxScore, finishedAt }
+TC --> Page: attempts[]
+Page --> User: рендер таблицы попыток
+
+User -> Page: click "Отзывы"
+Page -> TC: getReviews(testId)
+TC -> RV: findAll(testId)
+RV --> TC: reviews[], avgRating, total
+TC --> Page: reviews[], avgRating, pagination
+Page --> User: рендер отзывов на тест
+
+User -> Page: textarea[текст] + select[рейтинг] → click "Оставить отзыв"
+Page -> TC: createReview(testId, userId, content, rating)
+TC -> RV: create(testId, userId, content, rating)
+RV --> TC: newReview
+TC --> Page: newReview
+Page --> User: обновлённый список отзывов
+
+User -> Page: click "Пожаловаться"
+Page -> TC: getReportReasons(testId)
+TC -> RP: getReportReasons()
+RP --> TC: reasons[]
+TC --> Page: reasons[]
+Page --> User: открывается ReportModal с причинами
+
+User -> Page: select[причина] + textarea[текст] → click "Отправить"
+Page -> TC: createReport(testId, userId, reasonId, reasonText)
+TC -> RP: create(testId, userId, reasonId, reasonText)
+RP --> TC: ok
+TC --> Page: success
+Page --> User: модалка закрывается
+
+@enduml

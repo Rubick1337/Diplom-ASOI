@@ -211,6 +211,70 @@
 }
 .usb-drawer__item--active .usb-drawer__label { color: #fff; }
 
+.usb-drawer__profile {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 20px;
+    border-bottom: 1px solid #1e1e1e;
+    cursor: pointer;
+    transition: background 0.12s;
+}
+.usb-drawer__profile:hover { background: rgba(255,255,255,0.04); }
+
+.usb-drawer__avatar {
+    width: 42px;
+    height: 42px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    font-weight: 800;
+    color: #fff;
+    flex-shrink: 0;
+    letter-spacing: 0.5px;
+}
+
+.usb-drawer__profile-info {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    flex: 1;
+    min-width: 0;
+}
+
+.usb-drawer__profile-name {
+    font-size: 14px;
+    font-weight: 700;
+    color: #fff;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.usb-drawer__profile-level {
+    font-size: 11px;
+    font-weight: 700;
+    color: #FF6B35;
+}
+
+.usb-drawer__xp-bg {
+    width: 100%;
+    height: 3px;
+    background: rgba(255,255,255,0.10);
+    border-radius: 2px;
+    overflow: hidden;
+    margin-top: 2px;
+}
+
+.usb-drawer__xp-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #FF6B35, #F04949);
+    border-radius: 2px;
+    transition: width 0.8s ease;
+}
+
 .usb-drawer__bottom {
     padding: 8px 0 16px;
     border-top: 1px solid #1e1e1e;
@@ -221,4 +285,87 @@
 
 @media (max-width: 768px) {
     .usb-sidebar { display: none; }
+}
+
+/* LIGHT THEME */
+[data-theme="light"] .usb-sidebar {
+    background: #ede8df;
+    border-right-color: rgba(26,24,23,0.10);
+}
+[data-theme="light"] .usb-item:hover {
+    background: rgba(26,24,23,0.05);
+}
+[data-theme="light"] .usb-item--active {
+    background: rgba(255,107,53,0.08);
+}
+[data-theme="light"] .usb-icon {
+    color: rgba(26,24,23,0.40);
+}
+[data-theme="light"] .usb-item:hover .usb-icon {
+    color: rgba(26,24,23,0.70);
+}
+[data-theme="light"] .usb-label {
+    color: rgba(26,24,23,0.75);
+}
+[data-theme="light"] .usb-item--active .usb-label {
+    color: #1a1817;
+}
+[data-theme="light"] .usb-desc {
+    color: rgba(26,24,23,0.40);
+}
+[data-theme="light"] .usb-bottom {
+    border-top-color: rgba(26,24,23,0.10);
+}
+[data-theme="light"] .usb-drawer {
+    background: #f5f0e8;
+    border-left-color: rgba(26,24,23,0.12);
+}
+[data-theme="light"] .usb-drawer__header {
+    border-bottom-color: rgba(26,24,23,0.10);
+}
+[data-theme="light"] .usb-drawer__title {
+    color: #1a1817;
+}
+[data-theme="light"] .usb-drawer__close {
+    background: rgba(26,24,23,0.06);
+    border-color: rgba(26,24,23,0.14);
+}
+[data-theme="light"] .usb-drawer__close span {
+    background: rgba(26,24,23,0.45);
+}
+[data-theme="light"] .usb-drawer__close:hover span {
+    background: #1a1817;
+}
+[data-theme="light"] .usb-drawer__item:hover {
+    background: rgba(26,24,23,0.05);
+}
+[data-theme="light"] .usb-drawer__item--active {
+    background: rgba(255,107,53,0.08);
+}
+[data-theme="light"] .usb-drawer__icon {
+    color: rgba(26,24,23,0.40);
+}
+[data-theme="light"] .usb-drawer__item:hover .usb-drawer__icon {
+    color: rgba(26,24,23,0.70);
+}
+[data-theme="light"] .usb-drawer__label {
+    color: rgba(26,24,23,0.75);
+}
+[data-theme="light"] .usb-drawer__item--active .usb-drawer__label {
+    color: #1a1817;
+}
+[data-theme="light"] .usb-drawer__bottom {
+    border-top-color: rgba(26,24,23,0.10);
+}
+[data-theme="light"] .usb-drawer__profile {
+    border-bottom-color: rgba(26,24,23,0.10);
+}
+[data-theme="light"] .usb-drawer__profile:hover {
+    background: rgba(26,24,23,0.04);
+}
+[data-theme="light"] .usb-drawer__profile-name {
+    color: #1a1817;
+}
+[data-theme="light"] .usb-drawer__xp-bg {
+    background: rgba(26,24,23,0.10);
 }

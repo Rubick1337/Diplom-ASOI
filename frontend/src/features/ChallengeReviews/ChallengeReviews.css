@@ -112,3 +112,25 @@
     .header-info h2 { font-size: 1.1rem; }
     .review-rating-static .star { font-size: 0.8rem; }
 }
+
+/* LIGHT THEME */
+[data-theme="light"] .reviews-section { color: #1a1817; }
+[data-theme="light"] .reviews-header {
+    border-bottom-color: rgba(26,24,23,0.12);
+}
+[data-theme="light"] .header-info h2 { color: #1a1817; }
+[data-theme="light"] .review-card-form {
+    background: #ede8df;
+    border-color: rgba(26,24,23,0.12);
+}
+[data-theme="light"] .review-textarea {
+    background: #ddd8ce;
+    border-color: rgba(26,24,23,0.14);
+    color: #1a1817;
+}
+[data-theme="light"] .review-card {
+    background: #ede8df;
+    border-color: rgba(26,24,23,0.10);
+}
+[data-theme="light"] .username { color: #1a1817; }
+[data-theme="light"] .date { color: rgba(26,24,23,0.45); }

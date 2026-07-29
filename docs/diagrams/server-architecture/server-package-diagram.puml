@@ -1,0 +1,223 @@
+@startuml Server Architecture — GooseCode Backend
+skinparam packageStyle rectangle
+skinparam componentStyle rectangle
+skinparam backgroundColor #FAFAFA
+skinparam defaultFontName Arial
+
+skinparam package {
+  BorderColor #2D6A9F
+  BackgroundColor #E8F0FB
+  FontStyle bold
+  FontSize 12
+}
+skinparam component {
+  BorderColor #555
+  BackgroundColor #FFFFFF
+  FontSize 10
+}
+
+package "backend" {
+
+  package "Presentation" {
+    [app]
+
+    package "Auth" as pres_auth {
+      [passport]
+    }
+
+    package "ErrorExtend" {
+      [ApiError]
+    }
+
+    package "controllers" {
+      [AdminController]
+      [SolutionController]
+      [achievementController]
+      [challengeController]
+      [codewarsController]
+      [testController]
+      [userController]
+    }
+
+    package "middleware" {
+      [ErrorHandlingMiddleware]
+    }
+
+    package "routes" {
+      [adminRouter]
+      [authRouter]
+      [challengeRouter]
+      [indexRoute]
+      [solutionRouter]
+      [testRouter]
+      [userRouter]
+    }
+
+    package "socket" {
+      [roomStore]
+      [socket]
+    }
+  }
+
+  package "Application" {
+
+    package "dto" {
+      package "Auth" as dto_auth {
+        [LoginDto]
+        [RefreshTokenDto]
+      }
+      package "Users" as dto_users {
+        [UserCreateDto]
+        [UserResponseDto]
+        [UserUpdateDto]
+      }
+    }
+
+    package "services" {
+      [AIService]
+      [AchievementService]
+      [AdminService]
+      [ChallengeService]
+      [EmailService]
+      [MoodleXMLService]
+      [QuizApiService]
+      [SolutionService]
+      [TestService]
+      [TokenService]
+      [UserService]
+    }
+
+    package "utilts" {
+      [jwt]
+      [passwordHasher]
+    }
+
+    package "validators" {
+      package "Auth" as val_auth {
+        [validateLogin]
+      }
+      package "Users" as val_users {
+        [validateUserCreate]
+        [validateUserUpdate]
+      }
+    }
+  }
+
+  package "Domain" {
+
+    package "entities" {
+      [Achievement]
+      [AnswerMatchingPair]
+      [AnswerSelectedOption]
+      [AnswerTestCaseResult]
+      [AttemptAnswer]
+      [AttemptQuestion]
+      [Challenge]
+      [ChallengeParameter]
+      [ChallengeTestCase]
+      [ChallengeTopic]
+      [HistoryChallenges]
+      [Notification]
+      [Question]
+      [QuestionOption]
+      [QuestionTestCase]
+      [QuestionType]
+      [Report]
+      [ReportReason]
+      [ReviewChallenges]
+      [Role]
+      [SolutionComment]
+      [SolutionVote]
+      [Test]
+      [TestAttempt]
+      [TestCaseArgument]
+      [Topic]
+      [User]
+      [UserAchievement]
+    }
+
+    package "repository" as domain_repo {
+      [IAdminRepository]
+      [IChallengeRepository]
+      [ITestRepository]
+      [IUserRepository]
+    }
+  }
+
+  package "Data" {
+
+    package "DockerRunner" {
+      [DockerRunner]
+    }
+
+    package "config" {
+      [HarnessConfig]
+      [config]
+      [dbConfig]
+      [redisConfig]
+      [uploadConfig]
+
+      package "harness" {
+        [cpp]
+        [csharp]
+        [helpers]
+        [index]
+        [java]
+        [javascript]
+        [php]
+        [python]
+      }
+    }
+
+    package "models" {
+      [AchievementModel]
+      [AnswerMatchingPairModel]
+      [AnswerSelectedOptionModel]
+      [AnswerTestCaseResultModel]
+      [AttemptAnswerModel]
+      [AttemptQuestionModel]
+      [ChallengeModel]
+      [ChallengeParameterModel]
+      [ChallengeTestCaseModel]
+      [ChallengeTopicModel]
+      [HistoryChallengesModel]
+      [NotificationModel]
+      [QuestionModel]
+      [QuestionOptionModel]
+      [QuestionTestCaseModel]
+      [QuestionTypeModel]
+      [ReportModel]
+      [ReportReasonModel]
+      [ReviewModel]
+      [RoleModel]
+      [SolutionCommentModel]
+      [SolutionVoteModel]
+      [TestAttemptModel]
+      [TestCaseArgumentModel]
+      [TestModel]
+      [TopicModel]
+      [UserAchievementModel]
+      [UserModel]
+      [index] as models_index
+    }
+
+    package "repository" as data_repo {
+      [AdminRepositorySequelize]
+      [ChallengeRepositorySequelize]
+      [TestRepositorySequelize]
+      [UserRepositorySequelize]
+    }
+
+    package "utils" as data_utils {
+      [cacheUtils]
+    }
+  }
+
+}
+
+' ===== СВЯЗИ МЕЖДУ ПАПКАМИ (СЛОЯМИ) =====
+Presentation ..> Application
+Application   ..> Domain
+Data          ..> Domain
+
+@enduml

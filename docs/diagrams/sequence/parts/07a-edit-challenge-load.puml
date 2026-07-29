@@ -1,0 +1,34 @@
+@startuml
+title Edit Challenge Page — Загрузка и редактирование формы
+
+actor Author
+participant "EditChallengePage" as Page
+participant "ChallengeController" as CC
+participant "Topic" as Topic
+participant "Challenge" as Challenge
+
+Author -> Page: открывает /challenge/edit/:id
+
+Page -> CC: dispatch(getTopics())
+CC -> Topic: getTopics()
+Topic --> CC: topics[]
+CC --> Page: topics[]
+
+Page -> CC: dispatch(getOne(id))
+CC -> Challenge: findByIdWithTestCases(id)
+Challenge --> CC: name, difficulty, funcName, timeLimitMs, description, sampleInput, sampleOutput, topics[], parameters[], testCases[]
+CC --> Page: все поля задачи
+Page --> Author: форма заполнена данными задачи
+
+Author -> Page: input[название, сложность, funcName, описание]
+Author -> Page: click "+ Добавить параметр" / "+ Добавить тест-кейс"
+Author -> Page: select тема из списка → setSelectedTopicIds
+
+Author -> Page: input[новая тема] → click "+ Добавить тему"
+Page -> CC: dispatch(createTopic(name))
+CC -> Topic: createTopic(name)
+Topic --> CC: newTopic
+CC --> Page: новая тема
+Page --> Author: тема добавлена в список
+
+@enduml

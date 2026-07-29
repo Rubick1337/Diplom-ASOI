@@ -102,6 +102,31 @@
     padding: 20px;
 }
 
+/* LIGHT THEME */
+[data-theme="light"] .tests-panel-widget {
+    background: #ede8df;
+    border-color: rgba(26,24,23,0.12);
+}
+[data-theme="light"] .tests-header-ui {
+    background: #ddd8ce;
+    border-bottom-color: rgba(26,24,23,0.10);
+}
+[data-theme="light"] .label {
+    color: rgba(26,24,23,0.45);
+}
+[data-theme="light"] .count {
+    color: #1a1817;
+}
+[data-theme="light"] .progress-track {
+    background: rgba(26,24,23,0.10);
+}
+[data-theme="light"] .tests-scroll-container::-webkit-scrollbar-thumb {
+    background: rgba(26,24,23,0.18);
+}
+[data-theme="light"] .tests-empty-state {
+    color: rgba(26,24,23,0.40);
+}
+
 .running-tag {
     margin-left: 10px;
     font-size: 10px;

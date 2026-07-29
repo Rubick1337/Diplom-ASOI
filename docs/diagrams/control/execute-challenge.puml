@@ -1,0 +1,72 @@
+@startuml
+title 01 Execute Challenge — Управляющие классы
+
+class ChallengeController {
+  - challengeId: int
+  - code: string
+  - language: string
+  - userId: int
+  + testResults: TestResult[]
+  + execute(challengeId, code, language, userId): TestResult[]
+  + verify(funcName, timeLimitMs, testCases, code, language, parameters): TestResult[]
+  + getChallengeById(id): Challenge
+  + getReviews(challengeId): Review[]
+  + addReview(challengeId, userId, content, rating): Review
+  + getSolutions(challengeId, userId, page, language): SolutionPage
+  + createReport(challengeId, userId, reasonId, reasonText): void
+}
+
+class DockerRunner {
+  - language: string
+  - code: string
+  - timeLimitMs: int
+  + status: string
+  + actual: string
+  + duration: int
+  + runInDocker(language, code, timeLimitMs): TestResult[]
+  + filterStack(output: string): string
+}
+
+class HistoryChallenge {
+  - userId: int
+  - challengeId: int
+  - status: string
+  - language: string
+  - code: string
+  - testsPassed: int
+  - executionTimeMs: int
+  + saveHistory(userId, challengeId, status, language, code, testsPassed, executionTimeMs): void
+  + findAll(challengeId, status): SolutionPage
+  + findPaginated(userId, status, language, search, page, pageSize): HistoryPage
+}
+
+class UserController {
+  - userId: int
+  - experience: int
+  - rating: int
+  + addExperience(xpGained: int): User
+  + getProfile(): ProfileData
+  + getActivityHeatmap(): HeatmapData
+  + getMyHistory(page, pageSize, search, status, language): HistoryPage
+}
+
+class Challenge {
+  - id: int
+  - name: string
+  - description: string
+  - difficulty: int
+  - funcName: string
+  - timeLimitMs: int
+  - isHidden: boolean
+  + findByIdWithTestCases(id: int): ChallengeData
+  + findAll(query: object): ChallengePage
+  + createWithTestCases(data, testCases): Challenge
+  + updateWithTestCases(id, data, testCases): Challenge
+}
+
+ChallengeController *-- DockerRunner : runInDocker
+ChallengeController o-- HistoryChallenge : saveHistory
+ChallengeController o-- UserController : addExperience
+ChallengeController ..> Challenge : findById
+
+@enduml

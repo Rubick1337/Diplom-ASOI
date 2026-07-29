@@ -1,7 +1,7 @@
 'use client';
 
-import $api from '@/http/apiClient';
-import { API_ENDPOINTS } from '@/http/apiEndpoints';
+import $api from '@/shared/api/apiClient';
+import { API_ENDPOINTS } from '@/shared/api/apiEndpoints';
 
 export interface AuthUser {
     id: number;
@@ -39,8 +39,12 @@ export default class AuthService {
         return this.mapResponse(data);
     }
 
-    static async registration(username: string, email: string, password: string, role: number): Promise<AuthResponse> {
-        const { data } = await $api.post(API_ENDPOINTS.USER.REGISTRATION, { username, email, password, role });
+    static async sendVerificationCode(username: string, email: string, password: string): Promise<void> {
+        await $api.post(API_ENDPOINTS.USER.SEND_CODE, { username, email, password });
+    }
+
+    static async registration(email: string, code: string): Promise<AuthResponse> {
+        const { data } = await $api.post(API_ENDPOINTS.USER.REGISTRATION, { email, code });
         return this.mapResponse(data);
     }
 

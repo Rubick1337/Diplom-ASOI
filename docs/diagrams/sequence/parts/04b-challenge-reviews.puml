@@ -1,0 +1,23 @@
+@startuml
+title Challenge Page — Отзывы
+
+actor User
+participant "ChallengeWorkspace" as Page
+participant "ChallengeController" as CC
+participant "ReviewModel" as RV
+
+User -> Page: click "Отзывы"
+Page -> CC: dispatch(getReviews(challengeId))
+CC -> RV: findAll(challengeId)
+RV --> CC: reviews[], avgRating, total
+CC --> Page: reviews[], avgRating, pagination
+Page --> User: рендер отзывов
+
+User -> Page: textarea[текст] + select[рейтинг] → click "Оставить отзыв"
+Page -> CC: dispatch(addReview(challengeId, userId, content, rating))
+CC -> RV: create(challengeId, userId, content, rating)
+RV --> CC: newReview
+CC --> Page: новый отзыв
+Page --> User: обновлённый список отзывов
+
+@enduml

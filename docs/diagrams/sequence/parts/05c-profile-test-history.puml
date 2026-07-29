@@ -1,0 +1,30 @@
+@startuml
+title Profile Page — История тестов
+
+actor User
+participant "ProfilePage" as Page
+participant "UserController" as UC
+participant "TestAttempt" as TA
+
+User -> Page: click "История тестов"
+Page -> UC: dispatch(fetchMyTestHistory(page=1, pageSize))
+UC -> TA: findPaginated(userId, page, pageSize)
+TA --> UC: rows[], count
+UC --> Page: items[], total, totalPages
+Page --> User: рендер таблицы истории прохождений тестов
+
+User -> Page: click пагинация → setTestHistPage(n)
+Page -> UC: dispatch(fetchMyTestHistory(page=n, pageSize))
+UC -> TA: findPaginated(userId, n, pageSize)
+TA --> UC: rows[], count
+UC --> Page: items[], total, totalPages
+Page --> User: страница n таблицы
+
+User -> Page: click строку истории → просмотр результата
+Page -> UC: dispatch(fetchAttemptResult(attemptId))
+UC -> TA: findByPk(attemptId, include=Questions+Answers)
+TA --> UC: attempt{ score, maxScore, questions[]{ isCorrect, userAnswer, correctAnswer } }
+UC --> Page: attemptResult
+Page --> User: модалка с детальным результатом
+
+@enduml

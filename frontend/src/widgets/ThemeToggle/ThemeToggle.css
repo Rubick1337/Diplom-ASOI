@@ -1,0 +1,32 @@
+.theme-toggle {
+    width: 36px;
+    height: 36px;
+    border-radius: 9px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.05);
+    color: rgba(255, 255, 255, 0.6);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s;
+    flex-shrink: 0;
+}
+.theme-toggle svg { width: 17px; height: 17px; }
+.theme-toggle:hover {
+    border-color: #FF6B35;
+    color: #FF6B35;
+    background: rgba(255, 107, 53, 0.08);
+}
+
+/* Светлая тема — кнопка адаптируется */
+[data-theme="light"] .theme-toggle {
+    border-color: rgba(26, 24, 23, 0.15);
+    background: rgba(26, 24, 23, 0.05);
+    color: rgba(26, 24, 23, 0.55);
+}
+[data-theme="light"] .theme-toggle:hover {
+    border-color: #FF6B35;
+    color: #FF6B35;
+    background: rgba(255, 107, 53, 0.10);
+}

@@ -80,3 +80,21 @@
         grid-template-columns: 1fr;
     }
 }
+
+/* LIGHT THEME */
+[data-theme="light"] .hiw-card {
+    background: #ddd8ce;
+    border-color: rgba(26,24,23,0.14);
+}
+[data-theme="light"] .hiw-ttl {
+    color: #1a1817;
+}
+[data-theme="light"] .hiw-desc {
+    color: rgba(26,24,23,0.7);
+    opacity: 1;
+}
+[data-theme="light"] .hiw-step-badge {
+    background: rgba(26,24,23,0.07);
+    border-color: rgba(26,24,23,0.15);
+    color: #1a1817;
+}

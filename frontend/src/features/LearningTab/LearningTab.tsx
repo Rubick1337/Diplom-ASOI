@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { LearningPlan, TopicGuide } from '@/shared/services/ProfileService';
+import { LearningPlan, TopicGuide, LearningTest } from '@/shared/services/ProfileService';
 import ProfileService from '@/shared/services/ProfileService';
 import './LearningTab.css';
 
@@ -163,6 +163,25 @@ export default function LearningTab({ plan }: { plan: LearningPlan }) {
                                                         </button>
                                                     );
                                                 })}
+                                            </>
+                                        )}
+
+                                        {}
+                                        {rec.tests?.length > 0 && (
+                                            <>
+                                                <div className="lt-term-line lt-term-line--mt">
+                                                    <span className="lt-prompt" style={{ color: '#555' }}>$</span>
+                                                    <span className="lt-cmd-section">Пройди тест по теме:</span>
+                                                </div>
+                                                {rec.tests.map((t: LearningTest, ti: number) => (
+                                                    <button key={t.id} className="lt-term-challenge"
+                                                        onClick={() => router.push(`/tests/${t.id}/take`)}>
+                                                        <span className="lt-term-idx" style={{ color: cfg.color }}>{ti + 1}.</span>
+                                                        <span className="lt-term-ch-name">{t.title}</span>
+                                                        <span className="lt-term-ch-diff" style={{ color: '#38bdf8' }}>Тест</span>
+                                                        <span className="lt-term-arrow">→</span>
+                                                    </button>
+                                                ))}
                                             </>
                                         )}
 
